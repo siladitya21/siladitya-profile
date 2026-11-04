@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Siladitya Datta — Software Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body data-theme="light">
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <header class="navbar" id="navbar">
+    <a href="#home" class="logo">Siladitya Datta<span>.</span></a>
+    <nav class="nav-links" id="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle night mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <p class="hero-greet">Hi, I'm</p>
+        <h1 class="hero-name">Siladitya Datta</h1>
+        <h2 class="hero-role">Software Developer</h2>
+        <p class="hero-tagline">I build colorful, functional things for the web — one project at a time.</p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn btn-primary">View Projects</a>
+          <a href="#contact" class="btn btn-outline">Get In Touch</a>
+        </div>
+      </div>
+      <a href="#about" class="scroll-cue" aria-label="Scroll down"><i class="fa-solid fa-chevron-down"></i></a>
+    </section>
+
+    <section id="about" class="section">
+      <h2 class="section-title"><span>01.</span> About Me</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <p>
+            I'm a software developer who enjoys turning ideas into working products —
+            from quick scripts and automations to full web applications. I like clean
+            code, colorful interfaces, and tools that actually get used.
+          </p>
+          <p>
+            Most of my recent work has been building Angular/TypeScript front ends for
+            production SaaS products — an AI-assisted construction estimating platform,
+            a logistics & delivery management suite, an e-commerce reporting dashboard,
+            and a Flutter-based learning app — alongside Node.js APIs and exploring
+            AI-assisted development workflows.
+          </p>
+        </div>
+        <div class="about-highlights">
+          <div class="highlight-card">
+            <span class="highlight-icon"><i class="fa-solid fa-code"></i></span>
+            <h3>Builder</h3>
+            <p>Ship small, ship often — side projects to production apps.</p>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-icon"><i class="fa-solid fa-palette"></i></span>
+            <h3>Design-minded</h3>
+            <p>Care about how things look as much as how they work.</p>
+          </div>
+          <div class="highlight-card">
+            <span class="highlight-icon"><i class="fa-solid fa-rocket"></i></span>
+            <h3>Curious</h3>
+            <p>Always picking up new tools, frameworks, and tricks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="section section-alt">
+      <h2 class="section-title"><span>02.</span> Skills</h2>
+      <div class="skills-grid">
+        <div class="skill-pill">Angular</div>
+        <div class="skill-pill">TypeScript</div>
+        <div class="skill-pill">HTML5</div>
+        <div class="skill-pill">CSS3</div>
+        <div class="skill-pill">JavaScript</div>
+        <div class="skill-pill">Node.js</div>
+        <div class="skill-pill">Express</div>
+        <div class="skill-pill">Flutter &amp; Dart</div>
+        <div class="skill-pill">React</div>
+        <div class="skill-pill">Firebase</div>
+        <div class="skill-pill">Python</div>
+        <div class="skill-pill">Git &amp; GitHub</div>
+        <div class="skill-pill">REST APIs</div>
+        <div class="skill-pill">SQL</div>
+        <div class="skill-pill">Responsive Design</div>
+        <div class="skill-pill">Problem Solving</div>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <h2 class="section-title"><span>03.</span> Projects</h2>
+      <div class="projects-grid">
+        <article class="project-card" tabindex="0" role="button" aria-haspopup="dialog"
+          data-title="Apium Delivery — Logistics Platform"
+          data-icon="fa-solid fa-truck-fast"
+          data-full="My longest-running and largest body of work — the full software stack behind a multi-year delivery/logistics operation, spanning eight+ apps and services built up over several generations of the product:"
+          data-tags="Angular,React,Node.js / Express,Firebase,Google Maps,REST APIs"
+          data-services='[{"name":"Admin","desc":"Internal operations console for staff — driver onboarding and editing, work-hour tracking, tip/payroll accounting sync, employee management, platform-wide configurations, and integrations with third-party task/delivery providers."},{"name":"Admin API","desc":"Node.js/Express backend powering the Admin console — auth, driver/employee data, accounting sync, and third-party task integrations."},{"name":"Manager","desc":"Dispatch console for field managers — assigning and tracking delivery tasks in real time, overseeing drivers, and generating state-specific compliance reports (e.g. California labor-law reports, late-delivery reports)."},{"name":"Manager API","desc":"Node.js/Express backend serving the Manager app’s live task/dispatch data and reporting queries."},{"name":"Console","desc":"The platform’s original React-based ops console — dashboard, delivery task history, customer feedback tracking, and account/report management. Predates the Admin/Manager split."},{"name":"Report","desc":"A dedicated compliance-reporting app covering California and other states’ delivery-labor regulations, plus a store-level sales reporting module."},{"name":"Report API / Report2","desc":"Node.js/Express services that generate and serve the compliance and store-sales reports the Report app displays."},{"name":"Dashboard (apium-dashboard)","desc":"The newest, unified multi-tenant dashboard — organization, zone, and state-based management of drivers and tasks on a modern Angular + Tailwind + Firebase stack. The platform’s current generation."}]'>
+          <div class="project-icon"><i class="fa-solid fa-truck-fast"></i></div>
+          <h3>Apium Delivery — Logistics Platform</h3>
+          <p>The full software stack behind a multi-year delivery/logistics operation — my longest-running and largest body of work.</p>
+          <div class="project-tags"><span>Angular</span><span>React</span><span>Node.js / Express</span><span>Firebase</span></div>
+          <span class="project-expand">Click to read more <i class="fa-solid fa-arrow-right"></i></span>
+        </article>
+        <article class="project-card" tabindex="0" role="button" aria-haspopup="dialog"
+          data-title="AI Construction Takeoff Platform"
+          data-icon="fa-solid fa-drafting-compass"
+          data-full="An end-to-end platform connecting builders and subcontractors around AI-assisted construction estimating. Builders upload architectural PDF blueprints; the platform auto-crops floor plans and uses AI detection to identify rooms, doors, windows, electrical fixtures, plumbing, and HVAC ductwork for the user to review and correct. Detected elements flow into trade-by-trade pricing with cost breakdowns and exportable Word/Excel/PDF takeoff reports, alongside an admin side for builder/subcontractor onboarding, project oversight, and subscription billing."
+          data-tags="Angular,TypeScript,AI-Assisted Detection,Subscriptions &amp; Billing">
+          <div class="project-icon"><i class="fa-solid fa-drafting-compass"></i></div>
+          <h3>AI Construction Takeoff Platform</h3>
+          <p>An AI-assisted platform connecting builders and subcontractors around construction cost estimating.</p>
+          <div class="project-tags"><span>Angular</span><span>TypeScript</span><span>AI-Assisted Detection</span></div>
+          <span class="project-expand">Click to read more <i class="fa-solid fa-arrow-right"></i></span>
+        </article>
+        <article class="project-card" tabindex="0" role="button" aria-haspopup="dialog"
+          data-title="Store Performance Reporting Dashboard"
+          data-icon="fa-solid fa-chart-line"
+          data-full="An Angular analytics dashboard for e-commerce store operators, with authenticated, store-scoped views and Chart.js-driven reporting for sales and operational performance across locations."
+          data-tags="Angular,Chart.js,TypeScript">
+          <div class="project-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>Store Performance Reporting Dashboard</h3>
+          <p>An Angular analytics dashboard for e-commerce store operators, with Chart.js-driven reporting.</p>
+          <div class="project-tags"><span>Angular</span><span>Chart.js</span><span>TypeScript</span></div>
+          <span class="project-expand">Click to read more <i class="fa-solid fa-arrow-right"></i></span>
+        </article>
+        <article class="project-card" tabindex="0" role="button" aria-haspopup="dialog"
+          data-title="StudySense — Learning Platform"
+          data-icon="fa-solid fa-graduation-cap"
+          data-full="A role-based learning platform: a Flutter mobile app with distinct student, learner, and parent experiences (auth, progress tracking, in-app chat, subscriptions), paired with an Angular + Tailwind admin console for managing question banks, categories, subscription packages, and payments."
+          data-tags="Flutter,Dart,Angular,Tailwind CSS">
+          <div class="project-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <h3>StudySense — Learning Platform</h3>
+          <p>A role-based learning platform spanning a Flutter mobile app and an Angular admin console.</p>
+          <div class="project-tags"><span>Flutter</span><span>Dart</span><span>Angular</span></div>
+          <span class="project-expand">Click to read more <i class="fa-solid fa-arrow-right"></i></span>
+        </article>
+      </div>
+    </section>
+
+    <div class="project-modal-overlay" id="project-modal-overlay">
+      <div class="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+        <button class="project-modal-close" id="project-modal-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        <div class="project-modal-icon" id="project-modal-icon"><i class="fa-solid fa-circle"></i></div>
+        <h3 id="project-modal-title"></h3>
+        <p id="project-modal-full"></p>
+        <div class="project-modal-services" id="project-modal-services"></div>
+        <div class="project-tags" id="project-modal-tags"></div>
+      </div>
+    </div>
+
+    <section id="contact" class="section section-alt contact-section">
+      <h2 class="section-title"><span>04.</span> Get In Touch</h2>
+      <p class="contact-text">Have an idea, a project, or just want to say hi? My inbox is open.</p>
+      <div class="contact-actions">
+        <a href="mailto:siladityadatta@gmail.com" class="btn btn-primary btn-large">siladityadatta@gmail.com</a>
+        <a href="tel:+917076977210" class="btn btn-outline btn-large">+91 70769 77210</a>
+      </div>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/in/siladityadatta21/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Siladitya Datta. Built with HTML, CSS &amp; JS.</p>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
