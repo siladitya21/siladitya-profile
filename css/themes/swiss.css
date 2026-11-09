@@ -1,0 +1,316 @@
+/* =========================================================
+   Swiss / Minimalist theme — enabled with <html data-style="swiss">
+   Typography first: hard rules, flush-left alignment, one red accent.
+   Works with both light and dark (moon toggle) modes.
+   ========================================================= */
+html[data-style="swiss"],
+html[data-style="swiss"] body {
+  --emerald: #e4002b;
+  --gold: #e4002b;
+  --gradient: linear-gradient(#e4002b, #e4002b);
+  --font-heading: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+
+  --bg: #ffffff;
+  --bg-alt: #ffffff;
+  --text: #111111;
+  --text-dim: #555555;
+  --card-border: #111111;
+  --nav-bg: #ffffff;
+  --rule: 2px solid var(--text);
+}
+html[data-style="swiss"] body[data-theme="dark"] {
+  --bg: #0b0b0b;
+  --bg-alt: #0b0b0b;
+  --text: #f2f2f2;
+  --text-dim: #a5a5a5;
+  --card-border: #f2f2f2;
+  --nav-bg: #0b0b0b;
+}
+
+html[data-style="swiss"] body { background: var(--bg); }
+html[data-style="swiss"] .blob { display: none; }
+html[data-style="swiss"] .section-alt { background: transparent; }
+
+/* Navbar */
+html[data-style="swiss"] .navbar {
+  backdrop-filter: none;
+  border-bottom: var(--rule);
+  box-shadow: none !important;
+  padding: 1.1rem 8%;
+}
+html[data-style="swiss"] .logo { font-weight: 900; letter-spacing: -0.5px; }
+html[data-style="swiss"] .logo span { color: var(--emerald); }
+html[data-style="swiss"] .nav-links a {
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+html[data-style="swiss"] .nav-links a:hover { color: var(--emerald); }
+html[data-style="swiss"] .nav-links a::after { background: var(--emerald); }
+html[data-style="swiss"] .theme-toggle,
+html[data-style="swiss"] .style-toggle,
+html[data-style="swiss"] .project-modal-close {
+  border-radius: 0;
+  border: 1px solid var(--text);
+  background: transparent;
+  color: var(--text);
+}
+html[data-style="swiss"] .theme-toggle:hover,
+html[data-style="swiss"] .style-toggle:hover,
+html[data-style="swiss"] .project-modal-close:hover {
+  transform: none;
+  background: var(--text);
+  color: var(--bg);
+}
+html[data-style="swiss"] .style-menu {
+  border-radius: 0;
+  border: var(--rule);
+  box-shadow: none;
+  padding: 0;
+}
+html[data-style="swiss"] .style-menu button { border-radius: 0; border-bottom: 1px solid var(--card-border); }
+html[data-style="swiss"] .style-menu button:last-child { border-bottom: none; }
+html[data-style="swiss"] .style-menu button i { color: var(--text); }
+html[data-style="swiss"] .style-menu button:hover,
+html[data-style="swiss"] .style-menu button:focus-visible { background: var(--text); color: var(--bg); }
+html[data-style="swiss"] .style-menu button:hover i,
+html[data-style="swiss"] .style-menu button:focus-visible i { color: var(--bg); }
+html[data-style="swiss"] .style-menu button[aria-checked="true"]::after { color: var(--emerald); }
+html[data-style="swiss"] .nav-toggle span { background: var(--text); border-radius: 0; }
+
+/* Hero: oversized flush-left type */
+html[data-style="swiss"] .hero {
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 8%;
+}
+html[data-style="swiss"] .hero-greet {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--emerald);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+html[data-style="swiss"] .hero-greet::before {
+  content: '';
+  width: 48px;
+  height: 4px;
+  background: var(--emerald);
+}
+html[data-style="swiss"] .hero-name {
+  font-size: clamp(3.2rem, 11vw, 9rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  background: none;
+  -webkit-text-fill-color: var(--text);
+  color: var(--text);
+  margin-top: 1rem;
+}
+html[data-style="swiss"] .hero-role {
+  font-weight: 400;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  letter-spacing: -0.02em;
+  margin-top: 1.2rem;
+}
+html[data-style="swiss"] .hero-tagline { margin: 1rem 0 2.2rem; color: var(--text-dim); }
+html[data-style="swiss"] .hero-actions { justify-content: flex-start; }
+html[data-style="swiss"] .scroll-cue { left: 8%; color: var(--text); }
+
+/* Buttons */
+html[data-style="swiss"] .btn {
+  border-radius: 0;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+}
+html[data-style="swiss"] .btn:hover { transform: none; }
+html[data-style="swiss"] .btn-primary {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: none;
+}
+html[data-style="swiss"] .btn-primary:hover { background: var(--emerald); color: #fff; box-shadow: none; }
+html[data-style="swiss"] .btn-outline {
+  border: 2px solid var(--text);
+  color: var(--text);
+}
+html[data-style="swiss"] .btn-outline:hover { background: var(--text); color: var(--bg); }
+
+/* Sections: rule on top, number in its own column */
+html[data-style="swiss"] .section { border-top: var(--rule); }
+html[data-style="swiss"] .section-title {
+  display: grid;
+  grid-template-columns: minmax(80px, 160px) 1fr;
+  align-items: baseline;
+  text-align: left;
+  max-width: 1100px;
+  margin: 0 auto 3rem;
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  letter-spacing: -0.04em;
+}
+html[data-style="swiss"] .section-title span {
+  background: none;
+  -webkit-text-fill-color: var(--emerald);
+  color: var(--emerald);
+  font-size: 0.4em;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+/* About */
+html[data-style="swiss"] .about-grid { gap: 4rem; }
+html[data-style="swiss"] .about-card p { color: var(--text); font-size: 1.15rem; line-height: 1.65; }
+html[data-style="swiss"] .about-highlights { gap: 0; }
+html[data-style="swiss"] .highlight-card {
+  background: none;
+  border: none;
+  border-top: var(--rule);
+  border-radius: 0;
+  padding: 1.2rem 0 1.6rem;
+}
+html[data-style="swiss"] .highlight-card:hover { transform: none; border-color: var(--emerald); }
+html[data-style="swiss"] .highlight-icon,
+html[data-style="swiss"] .project-icon,
+html[data-style="swiss"] .project-modal-icon { display: none; }
+html[data-style="swiss"] .highlight-card h3 { margin-top: 0; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.02em; }
+
+/* Skills: a typographic list separated by slashes */
+html[data-style="swiss"] .skills-grid {
+  justify-content: flex-start;
+  gap: 0.2rem 0;
+  max-width: 1100px;
+}
+html[data-style="swiss"] .skill-pill {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0.2rem 0;
+  font-size: clamp(1.2rem, 2.6vw, 1.8rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+html[data-style="swiss"] .skill-pill::after {
+  content: '/';
+  margin: 0 0.8rem;
+  color: var(--emerald);
+  font-weight: 400;
+}
+html[data-style="swiss"] .skill-pill:last-child::after { content: none; }
+html[data-style="swiss"] .skill-pill:hover {
+  transform: none;
+  background: none;
+  color: var(--emerald);
+}
+
+/* Projects: numbered entries on a 2-column grid */
+html[data-style="swiss"] .projects-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 3rem;
+  counter-reset: swiss-project;
+}
+html[data-style="swiss"] .project-card {
+  counter-increment: swiss-project;
+  background: none;
+  border: none;
+  border-top: var(--rule);
+  border-radius: 0;
+  padding: 1.4rem 0 2.6rem;
+}
+html[data-style="swiss"] .project-card::before {
+  content: counter(swiss-project, decimal-leading-zero);
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--emerald);
+}
+html[data-style="swiss"] .project-card:hover,
+html[data-style="swiss"] .project-card:focus-visible { transform: none; box-shadow: none; }
+html[data-style="swiss"] .project-card:hover h3 { color: var(--emerald); }
+html[data-style="swiss"] .project-card h3 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; }
+html[data-style="swiss"] .project-card p { font-size: 0.95rem; }
+html[data-style="swiss"] .project-tags { gap: 0.3rem 1rem; }
+html[data-style="swiss"] .project-tags span {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+html[data-style="swiss"] .project-expand {
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  border-bottom: 2px solid var(--emerald);
+  padding-bottom: 2px;
+}
+
+/* Modal */
+html[data-style="swiss"] .project-modal-overlay { background: rgba(0, 0, 0, 0.55); backdrop-filter: none; }
+html[data-style="swiss"] .project-modal {
+  border-radius: 0;
+  border: var(--rule);
+  box-shadow: none;
+}
+html[data-style="swiss"] .project-modal h3 { font-weight: 900; font-size: 1.8rem; letter-spacing: -0.03em; padding-right: 3rem; }
+html[data-style="swiss"] .service-item {
+  background: none;
+  border: none;
+  border-top: 1px solid var(--card-border);
+  border-radius: 0;
+  padding: 0.9rem 0 0;
+}
+html[data-style="swiss"] .project-modal .project-tags span { color: var(--text-dim); }
+
+/* Contact + footer, flush left */
+html[data-style="swiss"] .contact-section { text-align: left; }
+html[data-style="swiss"] .contact-text {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+html[data-style="swiss"] .contact-actions,
+html[data-style="swiss"] .social-links {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: flex-start;
+}
+html[data-style="swiss"] .social-links a { color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85rem; }
+html[data-style="swiss"] .social-links a:hover { color: var(--emerald); }
+html[data-style="swiss"] .footer {
+  text-align: left;
+  padding: 2rem 8%;
+  border-top: var(--rule);
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 768px) {
+  html[data-style="swiss"] .navbar { padding: 1rem 5%; }
+  html[data-style="swiss"] .nav-links {
+    background: var(--bg);
+    border: var(--rule);
+    border-top: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  html[data-style="swiss"] .section-title { grid-template-columns: 1fr; }
+  html[data-style="swiss"] .projects-grid { grid-template-columns: 1fr; }
+}

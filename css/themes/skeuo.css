@@ -1,0 +1,328 @@
+/* =========================================================
+   Skeuomorphism theme — enabled with <html data-style="skeuo">
+   A desk of real objects: linen backdrop, stitched leather bar,
+   label-maker tape, notebook paper, sticky notes, keyboard keys,
+   manila folders and glossy buttons.
+   Light only: the moon toggle is hidden.
+   ========================================================= */
+html[data-style="skeuo"],
+html[data-style="skeuo"] body {
+  --emerald: #2f6fb5;
+  --gold: #c8851f;
+  --gradient: linear-gradient(#5aa2e6, #2f6fb5);
+  --font-heading: 'Lora', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-type: 'Special Elite', 'Courier New', monospace;
+
+  --bg: #e7dfcf;
+  --bg-alt: #fffdf6;
+  --text: #2f2418;
+  --text-dim: #5e4c38;
+  --card-border: rgba(80, 55, 30, 0.25);
+  --nav-bg: #5a3820;
+
+  --paper-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 10px 18px -8px rgba(60, 35, 10, 0.45);
+  --leather:
+    repeating-linear-gradient(35deg, rgba(0, 0, 0, 0.04) 0 2px, transparent 2px 5px),
+    linear-gradient(180deg, #74492a, #4f2f19);
+}
+
+/* Linen backdrop */
+html[data-style="skeuo"] body {
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 95, 60, 0.06) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(120, 95, 60, 0.06) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, #efe8da 0%, #ddd2bd 100%);
+  background-attachment: fixed;
+}
+html[data-style="skeuo"] .blob,
+html[data-style="skeuo"] .theme-toggle { display: none; }
+html[data-style="skeuo"] .section-alt { background: transparent; }
+
+/* Stitched leather navbar */
+html[data-style="skeuo"] .navbar {
+  background: var(--leather);
+  border-bottom: 1px solid #2f1b0d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+html[data-style="skeuo"] .navbar::after {
+  content: '';
+  position: absolute;
+  inset: 5px 8px;
+  border: 1px dashed rgba(255, 236, 200, 0.45);
+  border-radius: 4px;
+  pointer-events: none;
+}
+html[data-style="skeuo"] .logo {
+  color: #f6e7cb;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+html[data-style="skeuo"] .logo span { color: #e9b44c; }
+html[data-style="skeuo"] .nav-links a {
+  color: #ecdcbc;
+  font-family: var(--font-type);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+html[data-style="skeuo"] .nav-links a:hover { color: #fff; }
+html[data-style="skeuo"] .nav-links a::after { background: #e9b44c; }
+html[data-style="skeuo"] .nav-toggle span { background: #f6e7cb; }
+
+/* Brushed-metal knobs */
+html[data-style="skeuo"] .style-toggle,
+html[data-style="skeuo"] .project-modal-close {
+  border: 1px solid #6d6d6d;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #d9d9d9 45%, #9b9b9b 100%);
+  color: #3a3a3a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+html[data-style="skeuo"] .style-toggle:hover { transform: rotate(25deg); }
+html[data-style="skeuo"] .style-toggle:active,
+html[data-style="skeuo"] .project-modal-close:active { box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45); }
+
+/* Dropdown as a paper card */
+html[data-style="skeuo"] .style-menu {
+  background: var(--bg-alt);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  box-shadow: var(--paper-shadow);
+}
+html[data-style="skeuo"] .style-menu button { font-family: var(--font-type); border-radius: 4px; }
+html[data-style="skeuo"] .style-menu button i { color: #8a5a2b; }
+html[data-style="skeuo"] .style-menu button:hover,
+html[data-style="skeuo"] .style-menu button:focus-visible { background: #f1e6c8; }
+
+/* Hero: letterpress */
+html[data-style="skeuo"] .hero-greet {
+  font-family: var(--font-type);
+  color: #8a5a2b;
+  font-weight: 400;
+  font-size: 1.1rem;
+}
+html[data-style="skeuo"] .hero-name {
+  font-weight: 700;
+  background: none;
+  -webkit-text-fill-color: #4a2f1a;
+  color: #4a2f1a;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.75), 0 -1px 0 rgba(0, 0, 0, 0.35);
+}
+html[data-style="skeuo"] .hero-role { font-style: italic; font-weight: 500; color: var(--text-dim); }
+html[data-style="skeuo"] .hero-tagline { font-family: var(--font-type); color: var(--text-dim); }
+html[data-style="skeuo"] .scroll-cue { color: #8a5a2b; }
+
+/* Glossy physical buttons */
+html[data-style="skeuo"] .btn {
+  font-family: 'Inter', sans-serif;
+  border-radius: 10px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+html[data-style="skeuo"] .btn-primary {
+  background: linear-gradient(180deg, #7ab8f0 0%, #3f86d0 48%, #2f6fb5 52%, #2a5f9c 100%);
+  border: 1px solid #1d4a7d;
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 3px 5px rgba(0, 0, 0, 0.35);
+}
+html[data-style="skeuo"] .btn-primary:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 5px 9px rgba(0, 0, 0, 0.35); }
+html[data-style="skeuo"] .btn-outline {
+  border: 1px solid #8f8f8f;
+  background: linear-gradient(180deg, #ffffff 0%, #ececec 50%, #dcdcdc 51%, #cfcfcf 100%);
+  color: #333;
+  text-shadow: 0 1px 0 #fff;
+  box-shadow: inset 0 1px 0 #fff, 0 3px 5px rgba(0, 0, 0, 0.25);
+}
+html[data-style="skeuo"] .btn-outline:hover { background: linear-gradient(180deg, #ffffff 0%, #f3f3f3 50%, #e4e4e4 51%, #d8d8d8 100%); }
+html[data-style="skeuo"] .btn:active { transform: translateY(1px); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35); }
+html[data-style="skeuo"] [data-theme="dark"] .btn-outline,
+html[data-style="skeuo"] body[data-theme="dark"] .btn-outline { color: #333; border-color: #8f8f8f; }
+
+/* Section titles as label-maker tape */
+html[data-style="skeuo"] .section-title {
+  width: fit-content;
+  margin: 0 auto 3rem;
+  padding: 0.35rem 1.3rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #fdfdfd;
+  background: linear-gradient(180deg, #2b2b2b, #151515);
+  border-radius: 3px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35), 0 -1px 0 rgba(0, 0, 0, 0.8);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: rotate(-1.2deg);
+}
+html[data-style="skeuo"] #about .section-title { background: linear-gradient(180deg, #c8323a, #9e1f26); }
+html[data-style="skeuo"] #skills .section-title { background: linear-gradient(180deg, #2f62b5, #1f468a); transform: rotate(1deg); }
+html[data-style="skeuo"] #contact .section-title { background: linear-gradient(180deg, #2f8a4f, #1f6538); transform: rotate(0.8deg); }
+html[data-style="skeuo"] .section-title span {
+  background: none;
+  -webkit-text-fill-color: #ffe08a;
+  color: #ffe08a;
+}
+
+/* About: lined notebook paper */
+html[data-style="skeuo"] .about-card {
+  position: relative;
+  padding: 30px 1.6rem 30px 4.2rem;
+  border-radius: 3px;
+  background:
+    linear-gradient(90deg, transparent 3.2rem, rgba(214, 72, 72, 0.55) 3.2rem, rgba(214, 72, 72, 0.55) calc(3.2rem + 2px), transparent calc(3.2rem + 2px)),
+    repeating-linear-gradient(180deg, transparent 0 29px, rgba(70, 120, 200, 0.28) 29px 30px),
+    #fffef8;
+  box-shadow: var(--paper-shadow);
+}
+html[data-style="skeuo"] .about-card::before {
+  /* punched holes */
+  content: '';
+  position: absolute;
+  left: 1.1rem;
+  top: 40px;
+  bottom: 40px;
+  width: 14px;
+  background: radial-gradient(circle, #ddd2bd 5px, rgba(0, 0, 0, 0.18) 6px, transparent 7px) center top / 14px 33% repeat-y;
+}
+html[data-style="skeuo"] .about-card p {
+  font-size: 1rem;
+  line-height: 30px;
+  margin-bottom: 30px;
+  color: #2b2b3a;
+}
+html[data-style="skeuo"] .about-card p:last-child { margin-bottom: 0; }
+
+/* Highlights: sticky notes with tape */
+html[data-style="skeuo"] .about-highlights { gap: 1.6rem; }
+html[data-style="skeuo"] .highlight-card {
+  position: relative;
+  border: none;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fff59a, #ffe86b);
+  box-shadow: 0 12px 14px -10px rgba(0, 0, 0, 0.45), 0 1px 1px rgba(0, 0, 0, 0.1);
+  transform: rotate(-1.2deg);
+}
+html[data-style="skeuo"] .highlight-card:nth-child(2) { background: linear-gradient(180deg, #ffd6e2, #ffbfd2); transform: rotate(1deg); }
+html[data-style="skeuo"] .highlight-card:nth-child(3) { background: linear-gradient(180deg, #d3ecff, #b9dfff); transform: rotate(-0.6deg); }
+html[data-style="skeuo"] .highlight-card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 90px;
+  height: 22px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+html[data-style="skeuo"] .highlight-card:hover { transform: rotate(0deg) scale(1.02); }
+html[data-style="skeuo"] .highlight-card h3 { font-family: var(--font-type); font-weight: 400; color: #3a2a12; }
+html[data-style="skeuo"] .highlight-card p { color: #4d3b22; }
+html[data-style="skeuo"] .highlight-icon {
+  background: none;
+  color: #6b4a1e;
+  width: auto;
+  height: auto;
+  font-size: 1.4rem;
+}
+
+/* Skills: keyboard keys */
+html[data-style="skeuo"] .skill-pill {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  color: #333;
+  background: linear-gradient(180deg, #fefefe, #e6e6e6);
+  border: 1px solid #b0b0b0;
+  border-bottom: 5px solid #9a9a9a;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
+}
+html[data-style="skeuo"] .skill-pill:hover {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+  background: linear-gradient(180deg, #f4f4f4, #dedede);
+  color: #111;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Projects: manila folders */
+html[data-style="skeuo"] .projects-grid { row-gap: 3rem; }
+html[data-style="skeuo"] .project-card {
+  position: relative;
+  border: 1px solid #c49a54;
+  border-radius: 0 10px 6px 6px;
+  background: linear-gradient(180deg, #f6dfa9 0%, #edcd86 100%);
+  box-shadow: var(--paper-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+html[data-style="skeuo"] .project-card::before {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: -1px;
+  width: 42%;
+  height: 18px;
+  border: 1px solid #c49a54;
+  border-bottom: none;
+  border-radius: 8px 12px 0 0;
+  background: #f6dfa9;
+}
+html[data-style="skeuo"] .project-card:hover,
+html[data-style="skeuo"] .project-card:focus-visible {
+  transform: translateY(-5px) rotate(-0.5deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15), 0 18px 24px -10px rgba(60, 35, 10, 0.55);
+}
+html[data-style="skeuo"] .project-card h3 { color: #3e2a10; }
+html[data-style="skeuo"] .project-card p { color: #5a4220; }
+/* Rubber-stamp icons */
+html[data-style="skeuo"] .project-icon,
+html[data-style="skeuo"] .project-modal-icon {
+  background: none;
+  border: 2px solid #b3262d;
+  color: #b3262d;
+  border-radius: 50%;
+  transform: rotate(-10deg);
+  opacity: 0.85;
+}
+html[data-style="skeuo"] .project-tags span {
+  font-family: var(--font-type);
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px dashed #8a5a2b;
+  color: #6b4218;
+}
+html[data-style="skeuo"] .project-expand { font-family: var(--font-type); font-weight: 400; color: #7a3e12; }
+
+/* Modal: a sheet of paper on the desk */
+html[data-style="skeuo"] .project-modal-overlay { background: rgba(40, 25, 10, 0.5); }
+html[data-style="skeuo"] .project-modal {
+  border-radius: 4px;
+  border: 1px solid var(--card-border);
+  background:
+    repeating-linear-gradient(0deg, rgba(120, 95, 60, 0.03) 0 1px, transparent 1px 3px),
+    var(--bg-alt);
+  box-shadow: 0 30px 60px rgba(30, 15, 0, 0.5);
+}
+html[data-style="skeuo"] .service-item {
+  border: 1px solid #e5dccb;
+  border-top: 3px solid #d66;
+  border-left: 1px solid #e5dccb;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+html[data-style="skeuo"] .service-item h4 { font-family: var(--font-type); font-weight: 400; }
+
+/* Contact + footer */
+html[data-style="skeuo"] .contact-text { font-family: var(--font-type); color: var(--text-dim); }
+html[data-style="skeuo"] .social-links a { color: #6b4218; }
+html[data-style="skeuo"] .social-links a:hover { color: #2f6fb5; }
+html[data-style="skeuo"] .footer {
+  font-family: var(--font-type);
+  border-top: 1px solid rgba(80, 55, 30, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  html[data-style="skeuo"] .nav-links {
+    background: var(--leather);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  }
+}

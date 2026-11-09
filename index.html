@@ -5,11 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Siladitya Datta — Software Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font files only download when a theme actually uses that family -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600&family=Share+Tech+Mono&family=Nunito:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;700&family=Chakra+Petch:wght@400;600;700&family=Audiowide&family=VT323&family=Lora:wght@500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<script>
+  // Apply the saved visual theme before first paint to avoid a flash
+  try {
+    var s = localStorage.getItem('style');
+    var themes = ['glass', 'neu', 'clay', 'hud', 'cyber', 'bento', 'swiss', 'aurora', 'vapor', 'skeuo'];
+    if (themes.indexOf(s) !== -1) document.documentElement.setAttribute('data-style', s);
+  } catch (e) {}
+</script>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/themes/glass.css">
+<link rel="stylesheet" href="css/themes/neu.css">
+<link rel="stylesheet" href="css/themes/clay.css">
+<link rel="stylesheet" href="css/themes/hud.css">
+<link rel="stylesheet" href="css/themes/cyber.css">
+<link rel="stylesheet" href="css/themes/bento.css">
+<link rel="stylesheet" href="css/themes/swiss.css">
+<link rel="stylesheet" href="css/themes/aurora.css">
+<link rel="stylesheet" href="css/themes/vapor.css">
+<link rel="stylesheet" href="css/themes/skeuo.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body data-theme="light">
@@ -17,6 +37,13 @@
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
+
+  <div class="hud-overlay" aria-hidden="true">
+    <span class="hud-corner hud-tl"></span><span class="hud-corner hud-tr"></span>
+    <span class="hud-corner hud-bl"></span><span class="hud-corner hud-br"></span>
+    <div class="hud-readout hud-readout-left"><span class="hud-dot"></span> SYS.ONLINE // SD-21</div>
+    <div class="hud-readout hud-readout-right"><span id="hud-clock">00:00:00</span> // SCROLL <span id="hud-scroll">000</span>%</div>
+  </div>
 
   <header class="navbar" id="navbar">
     <a href="#home" class="logo">Siladitya Datta<span>.</span></a>
@@ -27,6 +54,22 @@
       <a href="#projects">Projects</a>
       <a href="#contact">Contact</a>
     </nav>
+    <div class="style-switcher" id="style-switcher">
+      <button class="style-toggle" id="style-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="style-menu" aria-label="Choose theme" title="Choose theme"><i class="fa-solid fa-seedling" id="style-icon"></i></button>
+      <div class="style-menu" id="style-menu" role="menu" aria-label="Theme" hidden>
+        <button type="button" role="menuitemradio" aria-checked="true" data-style-option="default"><i class="fa-solid fa-seedling"></i> Default</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="glass"><i class="fa-solid fa-gem"></i> Glassmorphism</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="neu"><i class="fa-solid fa-circle-half-stroke"></i> Neumorphism</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="clay"><i class="fa-solid fa-cookie"></i> Claymorphism</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="hud"><i class="fa-solid fa-crosshairs"></i> Sci-fi HUD</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="cyber"><i class="fa-solid fa-bolt"></i> Cyberpunk</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="bento"><i class="fa-solid fa-table-cells-large"></i> Bento Grid</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="swiss"><i class="fa-solid fa-font"></i> Swiss</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="aurora"><i class="fa-solid fa-wand-magic-sparkles"></i> Aurora</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="vapor"><i class="fa-solid fa-compact-disc"></i> Synthwave</button>
+        <button type="button" role="menuitemradio" aria-checked="false" data-style-option="skeuo"><i class="fa-solid fa-book-open"></i> Skeuomorphism</button>
+      </div>
+    </div>
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle night mode"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
       <span></span><span></span><span></span>
@@ -37,7 +80,7 @@
     <section id="home" class="hero">
       <div class="hero-content">
         <p class="hero-greet">Hi, I'm</p>
-        <h1 class="hero-name">Siladitya Datta</h1>
+        <h1 class="hero-name" data-text="Siladitya Datta">Siladitya Datta</h1>
         <h2 class="hero-role">Software Developer</h2>
         <p class="hero-tagline">I build colorful, functional things for the web — one project at a time.</p>
         <div class="hero-actions">

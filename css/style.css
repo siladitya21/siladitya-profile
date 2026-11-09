@@ -104,8 +104,10 @@ body {
 }
 .nav-links a:hover::after { width: 100%; }
 
-.theme-toggle {
+.theme-toggle,
+.style-toggle {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 38px;
@@ -118,10 +120,59 @@ body {
   font-size: 1.1rem;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
-.theme-toggle:hover {
+.theme-toggle:hover,
+.style-toggle:hover {
   transform: rotate(15deg);
   border-color: var(--gold);
 }
+/* Theme picker */
+.style-switcher { position: relative; flex-shrink: 0; }
+.style-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 210px;
+  max-height: min(72vh, 540px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+  z-index: 200;
+}
+.style-menu[hidden] { display: none; }
+.style-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: 500 0.92rem var(--font-body);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.style-menu button i { width: 1rem; text-align: center; color: var(--emerald); }
+.style-menu button:hover,
+.style-menu button:focus-visible { background: rgba(31, 138, 91, 0.1); outline: none; }
+.style-menu button[aria-checked="true"]::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--gold);
+}
+
+/* HUD overlay is only shown in the HUD theme */
+.hud-overlay { display: none; }
 
 .nav-toggle {
   display: none;
@@ -578,6 +629,7 @@ body {
     margin-left: 0;
   }
   .nav-links.open { transform: translateX(0); }
+  .style-switcher { margin-left: auto; }
   .nav-toggle { display: flex; }
   .about-grid { grid-template-columns: 1fr; }
 }

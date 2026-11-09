@@ -1,0 +1,165 @@
+/* =========================================================
+   Neumorphism theme — enabled with <html data-style="neu">
+   Soft extruded / inset surfaces cut from one material.
+   Works with both light and dark (moon toggle) modes.
+   ========================================================= */
+html[data-style="neu"],
+html[data-style="neu"] body {
+  --emerald: #4f6df5;
+  --gold: #4f6df5;
+  --gradient: linear-gradient(135deg, #4f6df5, #8a6cff);
+
+  --bg: #e4e8ef;
+  --bg-alt: #e4e8ef;
+  --text: #2e3648;
+  --text-dim: #687286;
+  --card-border: transparent;
+  --nav-bg: #e4e8ef;
+
+  --neu-dark: #bec4d0;
+  --neu-light: #ffffff;
+  --neu-out: 10px 10px 22px var(--neu-dark), -10px -10px 22px var(--neu-light);
+  --neu-out-sm: 5px 5px 11px var(--neu-dark), -5px -5px 11px var(--neu-light);
+  --neu-in: inset 6px 6px 12px var(--neu-dark), inset -6px -6px 12px var(--neu-light);
+  --neu-in-sm: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 6px var(--neu-light);
+}
+html[data-style="neu"] body[data-theme="dark"] {
+  --bg: #272b34;
+  --bg-alt: #272b34;
+  --text: #e6e9f2;
+  --text-dim: #9aa3b8;
+  --nav-bg: #272b34;
+  --emerald: #7d93ff;
+  --gold: #7d93ff;
+  --neu-dark: #1a1d23;
+  --neu-light: #343a45;
+}
+
+html[data-style="neu"] body { background: var(--bg); }
+html[data-style="neu"] .blob { display: none; }
+html[data-style="neu"] .section-alt { background: transparent; }
+
+/* Raised surfaces */
+html[data-style="neu"] .navbar,
+html[data-style="neu"] .about-card,
+html[data-style="neu"] .highlight-card,
+html[data-style="neu"] .project-card,
+html[data-style="neu"] .project-modal,
+html[data-style="neu"] .style-menu {
+  background: var(--bg);
+  border: none;
+  box-shadow: var(--neu-out);
+}
+html[data-style="neu"] .navbar {
+  top: 14px;
+  left: 3%;
+  right: 3%;
+  border-radius: 22px;
+  padding: 0.9rem 1.4rem 0.9rem 2rem;
+}
+html[data-style="neu"] .about-card { padding: 2rem; border-radius: 28px; }
+html[data-style="neu"] .highlight-card,
+html[data-style="neu"] .project-card { border-radius: 28px; padding: 1.7rem; }
+html[data-style="neu"] .project-modal { border-radius: 30px; }
+html[data-style="neu"] .style-menu { border-radius: 20px; padding: 0.6rem; gap: 0.2rem; }
+
+html[data-style="neu"] .highlight-card:hover,
+html[data-style="neu"] .project-card:hover,
+html[data-style="neu"] .project-card:focus-visible {
+  transform: none;
+  box-shadow: var(--neu-in);
+}
+
+/* Small controls */
+html[data-style="neu"] .theme-toggle,
+html[data-style="neu"] .style-toggle,
+html[data-style="neu"] .project-modal-close,
+html[data-style="neu"] .skill-pill {
+  background: var(--bg);
+  border: none;
+  color: var(--text);
+  box-shadow: var(--neu-out-sm);
+}
+html[data-style="neu"] .theme-toggle,
+html[data-style="neu"] .style-toggle { width: 42px; height: 42px; }
+html[data-style="neu"] .theme-toggle:hover,
+html[data-style="neu"] .style-toggle:hover { transform: none; color: var(--emerald); }
+html[data-style="neu"] .theme-toggle:active,
+html[data-style="neu"] .style-toggle:active,
+html[data-style="neu"] .style-toggle[aria-expanded="true"],
+html[data-style="neu"] .project-modal-close:hover { box-shadow: var(--neu-in-sm); background: var(--bg); color: var(--emerald); }
+html[data-style="neu"] .style-menu button { border-radius: 12px; }
+html[data-style="neu"] .style-menu button i { color: var(--emerald); }
+html[data-style="neu"] .style-menu button:hover,
+html[data-style="neu"] .style-menu button:focus-visible { background: transparent; box-shadow: var(--neu-in-sm); }
+html[data-style="neu"] .nav-toggle span { background: var(--text-dim); }
+
+html[data-style="neu"] .skill-pill { padding: 0.75rem 1.5rem; }
+html[data-style="neu"] .skill-pill:hover {
+  transform: none;
+  background: var(--bg);
+  color: var(--emerald);
+  box-shadow: var(--neu-in-sm);
+}
+
+/* Inset wells for icons */
+html[data-style="neu"] .highlight-icon,
+html[data-style="neu"] .project-icon,
+html[data-style="neu"] .project-modal-icon {
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--emerald);
+  box-shadow: var(--neu-in-sm);
+}
+html[data-style="neu"] .highlight-icon,
+html[data-style="neu"] .project-icon { width: 54px; height: 54px; }
+
+/* Hero */
+html[data-style="neu"] .hero-greet { color: var(--emerald); }
+html[data-style="neu"] .hero-name { letter-spacing: -0.5px; }
+
+/* Buttons */
+html[data-style="neu"] .btn-primary {
+  background: var(--emerald);
+  color: #fff;
+  box-shadow: var(--neu-out-sm);
+}
+html[data-style="neu"] .btn-primary:hover { box-shadow: var(--neu-out); }
+html[data-style="neu"] .btn-outline {
+  border: none;
+  background: var(--bg);
+  color: var(--emerald);
+  box-shadow: var(--neu-out-sm);
+}
+html[data-style="neu"] .btn-outline:hover { background: var(--bg); }
+html[data-style="neu"] .btn:active { transform: none; box-shadow: var(--neu-in-sm); }
+
+/* Tags, links, modal */
+html[data-style="neu"] .project-tags span {
+  background: var(--bg);
+  color: var(--emerald);
+  box-shadow: var(--neu-in-sm);
+}
+html[data-style="neu"] .project-expand,
+html[data-style="neu"] .social-links a:hover { color: var(--emerald); }
+html[data-style="neu"] .service-item {
+  border: none;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow: var(--neu-in-sm);
+}
+html[data-style="neu"] .project-modal-overlay { background: rgba(40, 46, 60, 0.3); }
+html[data-style="neu"] .footer { border-top: none; }
+
+@media (max-width: 768px) {
+  html[data-style="neu"] .navbar { left: 12px; right: 12px; padding: 0.7rem 1rem 0.7rem 1.3rem; }
+  html[data-style="neu"] .nav-links {
+    top: calc(100% + 14px);
+    right: 0;
+    border-radius: 24px;
+    background: var(--bg);
+    box-shadow: var(--neu-out);
+    transform: translateX(calc(100% + 24px));
+  }
+  html[data-style="neu"] .nav-links.open { transform: translateX(0); }
+}
