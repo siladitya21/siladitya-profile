@@ -145,17 +145,10 @@ html[data-style="bento"] .btn-outline {
 html[data-style="bento"] .btn-outline:hover { background: var(--tile-muted); border-color: var(--text); }
 
 /* About: 4-column bento */
-html[data-style="bento"] .about-grid {
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  align-items: stretch;
-}
-html[data-style="bento"] .about-highlights { display: contents; }
-html[data-style="bento"] .about-card { grid-column: 1 / 3; grid-row: 1 / 4; padding: 2rem; }
+html[data-style="bento"] .about-card { padding: 2rem; }
 html[data-style="bento"] .about-card p { color: var(--text); }
 html[data-style="bento"] .highlight-card { padding: 1.6rem; border-radius: var(--tile-radius); }
 html[data-style="bento"] .highlight-card:nth-child(1) {
-  grid-column: 3 / 5;
   background: var(--emerald);
   border-color: transparent;
 }
@@ -255,15 +248,11 @@ html[data-style="bento"] .service-item {
 html[data-style="bento"] .footer { border-top: none; }
 
 @media (max-width: 900px) {
-  html[data-style="bento"] .about-grid { grid-template-columns: 1fr 1fr; }
-  html[data-style="bento"] .about-card { grid-column: 1 / -1; grid-row: auto; }
-  html[data-style="bento"] .highlight-card:nth-child(1) { grid-column: 1 / -1; }
   html[data-style="bento"] .projects-grid { grid-template-columns: 1fr 1fr; }
   html[data-style="bento"] .project-card:nth-child(1),
   html[data-style="bento"] .project-card:nth-child(4) { grid-column: 1 / -1; }
 }
 @media (max-width: 600px) {
-  html[data-style="bento"] .about-grid,
   html[data-style="bento"] .projects-grid { grid-template-columns: 1fr; }
   html[data-style="bento"] .highlight-card { grid-column: auto !important; }
   html[data-style="bento"] .contact-section { width: calc(100% - 24px); }
@@ -280,3 +269,7 @@ html[data-style="bento"] .footer { border-top: none; }
   }
   html[data-style="bento"] .nav-links.open { transform: translateX(0); }
 }
+
+/* About stats on coloured tiles */
+html[data-style="bento"] .highlight-card:nth-child(-n+2) .stat-num { background: none; -webkit-text-fill-color: #fff; color: #fff; }
+html[data-style="bento"] .highlight-card:nth-child(-n+2) .stat-label { color: rgba(255, 255, 255, 0.85); }

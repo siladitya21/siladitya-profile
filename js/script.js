@@ -134,7 +134,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 // Scroll reveal animation
 const revealTargets = document.querySelectorAll(
-  '.about-card, .highlight-card, .skill-pill, .project-card, .section-title'
+  '.about-portrait, .about-card, .highlight-card, .about-gallery figure, .skill-pill, .project-card, .section-title'
 );
 revealTargets.forEach(el => el.classList.add('reveal'));
 
