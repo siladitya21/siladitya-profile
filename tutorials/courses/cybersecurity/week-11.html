@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 11: Vulnerability &amp; Patch Management — CodeVerse Creatives</title>
+<meta name="description" content="Week 11 of the Cybersecurity Basics curriculum: CVEs and CVSS scoring, prioritizing what needs fixing first, scanning a host and network with Nmap and an open-source vulnerability scanner, and building a patch cadence that doesn't break production." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cybersecurity">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cybersecurity/index.html">Cybersecurity Basics Syllabus</a>
+        <span>/</span>
+        <a href="../cybersecurity/index.html#timeline">Module 10 · Vulnerability &amp; Patch Management</a>
+        <span>/</span>
+        <span aria-current="page">Week 11</span>
+      </div>
+
+      <h1>Week 11: Vulnerability &amp; Patch Management</h1>
+      <p class="lesson-header__lede">
+        Weeks 6–10 covered specific vulnerability classes; this week is about the ongoing process
+        of finding out what's actually exposed on your own systems, deciding what genuinely needs
+        fixing first out of a list that's always longer than the time available, and shipping fixes
+        on a cadence that doesn't itself become a source of outages.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 10 of 15</span>
+        <span class="chip">Week 11 of 16</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Read a CVSS score and use it correctly to prioritize, not just to rank</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Scan a host and a small network with Nmap and an open-source vulnerability scanner</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Design a patch cadence that balances risk against operational stability</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#cve-cvss"><span>1</span> CVEs &amp; CVSS Scoring</a>
+        <a href="#prioritizing"><span>2</span> Prioritizing What's Fixed First</a>
+        <a href="#nmap"><span>3</span> Scanning with Nmap</a>
+        <a href="#vuln-scanners"><span>4</span> Vulnerability Scanners</a>
+        <a href="#patch-cadence"><span>5</span> A Patch Cadence That Works</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="cve-cvss">
+            <h2>1. CVEs &amp; CVSS Scoring</h2>
+            <p>
+              A <strong>CVE (Common Vulnerabilities and Exposures)</strong> is a unique identifier
+              for one specific, publicly disclosed vulnerability — <code>CVE-2024-3094</code>, for
+              instance. <strong>CVSS (Common Vulnerability Scoring System)</strong> is a standardized
+              way of expressing how severe one is, from 0.0 to 10.0.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a CVSS score, broken into its inputs</div>
+              <pre><code>CVSS 9.8 (Critical) -- CVE-2024-XXXXX
+
+Attack Vector:       Network       (exploitable remotely, no local access needed)
+Attack Complexity:   Low           (no special conditions required)
+Privileges Required: None          (no authentication needed to exploit)
+User Interaction:    None          (no victim action required)
+Impact:              High/High/High (confidentiality/integrity/availability all affected)
+
+# Contrast with a 9.8 that requires LOCAL access, valid credentials, AND
+# user interaction -- technically a high score for its raw impact, but
+# with an attack path that's meaningfully harder to actually exploit
+</code></pre>
+            </div>
+
+            <p>
+              The score alone is a starting point, not the whole answer — Week 1's risk formula
+              (likelihood × impact) still applies. A 9.8 CVE in a library you don't actually use in
+              production, or one requiring an attack vector your architecture doesn't expose, is a
+              lower <em>real</em> risk than the raw score suggests. This is exactly why Week 10's
+              SBOM matters here too: you need to know whether a disclosed CVE even applies to you
+              before scoring it against your own systems.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>CVSS measures severity, not urgency</strong>
+                <p>A vulnerability with active, widespread exploitation in the wild (check the CISA Known Exploited Vulnerabilities catalog, or similar feeds) deserves urgent attention even at a moderate CVSS score, because attackers are already using it right now. A theoretically severe CVE with no known exploit and a hard-to-reach attack path can reasonably wait behind it. Score and urgency are related, not identical.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="prioritizing">
+            <h2>2. Prioritizing What Actually Needs Fixing First</h2>
+            <p>
+              A real vulnerability scan against any non-trivial environment returns far more
+              findings than can be fixed immediately — the actual skill is triage, using more than
+              just the raw severity score.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a prioritization framework beyond raw CVSS</div>
+              <pre><code>Priority = Severity x Exploitability x Exposure x Business Impact
+
+Severity:        the CVSS score itself
+Exploitability:  is there a known, public exploit? Active exploitation in the wild?
+Exposure:        internet-facing vs. internal-only vs. air-gapped (Week 1's risk lens)
+Business impact: what does this system actually do -- payment processing,
+                 an internal wiki, a decommissioned service nobody uses?
+
+# A 7.5 CVSS finding on an internet-facing payment system, with a known
+# public exploit, likely outranks a 9.1 on an internal tool with no
+# known exploit and no direct internet exposure
+</code></pre>
+            </div>
+
+            <p>
+              This is also where Week 10's SBOM becomes directly actionable: when a new critical
+              CVE drops in a widely-used library, a searchable SBOM tells you within minutes exactly
+              which of your systems are affected — rather than starting the prioritization process
+              with "do we even use this?"
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>A vulnerability with no fix available needs a different response</strong>
+                <p>Not every finding has a patch ready — a zero-day, or a vendor still working on a fix. Prioritization in that case shifts to compensating controls: can you restrict network access to the affected service (Week 2's segmentation), disable the vulnerable feature entirely, or add detection specifically for exploitation attempts (Week 12) while waiting for a real fix?</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="nmap">
+            <h2>3. Scanning a Host and Network with Nmap</h2>
+            <p>
+              <strong>Nmap</strong> is the standard tool for discovering what's actually running on a
+              network — open ports, services, versions — the reconnaissance step every vulnerability
+              assessment (and, in Week 14, every penetration test) starts with.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a basic Nmap scan</div>
+              <pre><code># Scan a single host's most common 1000 ports
+$ nmap 192.168.1.10
+
+PORT     STATE  SERVICE
+22/tcp   open   ssh
+80/tcp   open   http
+443/tcp  open   https
+3306/tcp open   mysql       # a database port exposed on this host at all
+                              # is worth investigating -- should it be reachable here?
+
+# Service/version detection -- specifically what's listening, not just the port
+$ nmap -sV 192.168.1.10
+
+22/tcp  open  ssh   OpenSSH 8.2p1 Ubuntu
+80/tcp  open  http  Apache httpd 2.4.41   # a specific, checkable version
+</code></pre>
+            </div>
+
+            <p>
+              Version detection is what turns a port scan into something Section 4's vulnerability
+              scanners can act on — knowing exactly which Apache version is running lets you check
+              it against known CVEs for that specific version, rather than guessing.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">scanning a whole subnet</div>
+              <pre><code># Discover every live host on a /24 network, then scan each
+$ nmap -sn 192.168.1.0/24    # "ping scan" -- just discover what's alive
+$ nmap -sV 192.168.1.0/24    # full scan across every discovered host
+
+# On a real network, this is exactly how you'd find the forgotten test
+# server nobody remembered was still running, still on the old OS version
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Only scan networks and hosts you own or have explicit authorization to scan</strong>
+                <p>A port scan against a system you don't control is, in many jurisdictions, itself a potential legal issue — this is the exact same authorization boundary Week 2 and Week 7 raised, and Week 14 covers formally. Scan your own lab network, your own home network, or an explicitly authorized target only.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="vuln-scanners">
+            <h2>4. Vulnerability Scanners</h2>
+            <p>
+              Where Nmap discovers what's running, a dedicated <strong>vulnerability scanner</strong>
+              checks discovered services against a database of known CVEs and misconfigurations,
+              producing an actionable report instead of a raw service list.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a scan with OpenVAS/Greenbone (open-source)</div>
+              <pre><code># Configure a scan target and task in OpenVAS's web UI, then review the report:
+
+Host: 192.168.1.10
+Finding: Apache httpd 2.4.41 -- CVE-2021-XXXXX (High, CVSS 8.1)
+  Description: [specific vulnerability details]
+  Solution: Upgrade to Apache httpd 2.4.52 or later
+  References: [CVE link, vendor advisory]
+
+# This is the exact "which of my systems is affected, and what's the
+# concrete fix" answer that raw port-scanning alone doesn't provide
+</code></pre>
+            </div>
+
+            <p>
+              A vulnerability scanner's report is the input to Section 2's prioritization process —
+              a long list of findings, each with a CVSS score, that still needs to be triaged against
+              exploitability, exposure, and business impact before deciding what gets fixed this
+              week versus this quarter.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Scanners produce false positives — verify before you panic (or ignore)</strong>
+                <p>A vulnerability scanner often flags a service version as vulnerable based purely on its version string, without confirming the specific vulnerable code path is actually reachable or that a distro-specific backport hasn't already silently patched it. Treat scan output as a prioritized list to investigate, the same caution as Week 7's automated scanner findings — not a verified, final list.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="patch-cadence">
+            <h2>5. Building a Patch Cadence That Doesn't Break Production</h2>
+            <p>
+              Patching perfectly and instantly sounds ideal and is rarely realistic — an
+              update can break something, and rolling it out untested to production is its own
+              availability risk (Week 1's CIA triad, cutting the other way).
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a tiered patch cadence</div>
+              <pre><code>Critical, actively-exploited (CISA KEV list, or equivalent):
+  -> patch within 24-72 hours, expedited testing, out-of-band if needed
+
+High severity, no known active exploitation:
+  -> patch within the next scheduled maintenance window (e.g. weekly)
+
+Medium/Low severity:
+  -> batch into the regular monthly patch cycle, full testing pipeline
+
+Every tier: deploy to staging first, run the automated test suite
+  (Week 14/15 of the React course covers exactly this kind of gate),
+  THEN promote to production -- never patch production directly and first
+</code></pre>
+            </div>
+
+            <p>
+              The tiers exist because treating every patch with maximum urgency is unsustainable —
+              teams that try eventually patch nothing carefully, while teams that batch everything
+              into a slow quarterly cycle leave actively-exploited vulnerabilities open far too long.
+              The tiered approach matches response speed to actual risk.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Automated patching needs a rollback plan, not just automation</strong>
+                <p>Auto-applying patches on a schedule reduces the human effort of staying current, but only safely if there's an equally automated way to detect a bad patch and roll back quickly — this is a direct preview of Week 22's release-safety discussion in the React course, and Week 13's incident-response process here, both of which assume "something we deployed made things worse" is a real, planned-for scenario, not a surprise.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Scan a lab network, triage the findings, and write a patch cadence</h3>
+              <p>Run real scanning tools against a network you control, then apply this week's prioritization framework to the actual results.</p>
+
+              <p><strong>Part 1 — Discover and scan:</strong></p>
+              <ol>
+                <li>Set up a small lab: your own home network, or a couple of local VMs on a private virtual network (deliberately including at least one older/unpatched image, e.g. an older Ubuntu or a vulnerable-by-design VM like Metasploitable).</li>
+                <li>Run <code>nmap -sn</code> against the lab subnet to discover every live host, then <code>nmap -sV</code> against each to identify open ports and service versions.</li>
+                <li>Install OpenVAS (or an equivalent open-source scanner) and run a full vulnerability scan against your lab hosts.</li>
+                <li>Export or record the top 10 findings by CVSS score.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Only scan hosts on your own private network/lab — the exact authorization boundary from Section 3. Metasploitable and similar intentionally-vulnerable VMs exist specifically so you have safe, legal, realistic scan targets to practice against.</p>
+                </div>
+              </div>
+
+              <p><strong>Part 2 — Triage using more than raw severity:</strong></p>
+              <ol>
+                <li>Take your top 10 findings and re-rank them using Section 2's fuller framework (severity × exploitability × exposure × business impact), not just raw CVSS — write one sentence per finding justifying its new rank.</li>
+                <li>Identify at least one finding whose priority changed meaningfully between "raw CVSS rank" and "full framework rank," and explain why.</li>
+                <li>For your #1 priority finding, look up whether a patch is actually available, and if so, what it is specifically.</li>
+              </ol>
+
+              <p><strong>Part 3 — Write a patch cadence:</strong></p>
+              <ol>
+                <li>Using Section 5's tiered structure, write a patch cadence policy for a hypothetical small company's fleet of servers — specific timeframes per tier, and where the CISA KEV list (or equivalent) fits into deciding tier assignment.</li>
+                <li>Describe, concretely, what "testing before production" would look like for a critical patch that needs to go out in 24-72 hours — what's the minimum testing that's still responsible under that time pressure?</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>"Deploy straight to production with no testing" is never the right answer, even under 24-hour urgency — the minimum viable testing is usually a smoke test confirming the service starts and its core health check passes, deployed to one instance first (a canary) before the full fleet, not skipped entirely.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>A CVE has a CVSS score of 9.8, but requires local access and valid credentials to exploit. Should it automatically be your #1 priority over a 7.5 that's remotely exploitable with no authentication?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Not automatically. CVSS measures severity given successful exploitation, but the attack path matters for real-world risk — a vulnerability requiring local access and valid credentials has a meaningfully smaller pool of potential attackers than one exploitable remotely with no authentication at all. Priority should weigh exploitability and exposure alongside the raw score, not the score in isolation.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why does knowing whether a CVE is on a list of actively, currently exploited vulnerabilities (like CISA's KEV catalog) change how urgently it should be patched?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Active exploitation in the wild means real attackers are, right now, actively scanning for and exploiting this specific vulnerability — the theoretical risk has become a concrete, ongoing one. A high-severity vulnerability with no known exploit is still worth fixing, but doesn't carry the same immediate urgency as one attackers are demonstrably already using.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why does <code>nmap -sV</code> (version detection) matter more for vulnerability management than a plain port scan?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A plain port scan tells you a port is open and roughly what kind of service is likely running there. Version detection identifies the exact software and version — the specific piece of information needed to check against known CVEs for that exact version. "Port 80 is open" isn't actionable on its own; "Apache 2.4.41 is running on port 80" can be checked against a specific vulnerability database.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why is a tiered patch cadence generally better than either "patch everything immediately" or "batch everything into one slow quarterly cycle"?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Patching everything immediately, with no testing time, risks breaking production and trades one availability risk for another. Batching everything into one slow cycle leaves genuinely critical, actively-exploited vulnerabilities open far longer than the risk justifies. A tiered cadence matches response speed to actual urgency — fast for critical/actively-exploited issues, more measured for lower-risk ones — balancing both risks instead of ignoring one.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-10.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 10: Secrets Management &amp; Supply-Chain Security</span>
+          </a>
+          <a href="week-12.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 12: Security Monitoring, Logging &amp; SIEM Basics →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

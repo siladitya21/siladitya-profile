@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 10: The DOM &amp; Runtime Basics — CodeVerse Creatives</title>
+<meta name="description" content="Week 10 of the JavaScript & TypeScript Fundamentals curriculum: selecting and updating DOM elements, handling events and event delegation, fetch() and working with a real API, and what Node.js's runtime gives you that a browser doesn't." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="javascript-typescript">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+<main>
+<!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../javascript-typescript/index.html">JavaScript &amp; TypeScript Syllabus</a>
+        <span>/</span>
+        <a href="../javascript-typescript/index.html#timeline">Phase 6 · The DOM &amp; Runtime</a>
+        <span>/</span>
+        <span aria-current="page">Week 10</span>
+      </div>
+
+      <h1>Week 10: The DOM &amp; Runtime Basics</h1>
+      <p class="lesson-header__lede">
+        Nine weeks of JavaScript, and none of it has touched a web page yet. This week puts it to
+        work: selecting and changing elements, reacting to clicks and input, and fetching real
+        data from a real API. It closes with a quick look at what Node.js's runtime offers that a
+        browser simply doesn't have — and vice versa.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Phase 6 of 8</span>
+        <span class="chip">Week 10 of 14</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Select, read and update elements on a page with the DOM API</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Handle events efficiently with event delegation instead of one listener per element</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Fetch and render real data from an API using <code>fetch</code> and <code>async</code>/<code>await</code></li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#selecting-updating"><span>1</span> Selecting &amp; Updating Elements</a>
+        <a href="#events"><span>2</span> Handling Events</a>
+        <a href="#delegation"><span>3</span> Event Delegation</a>
+        <a href="#fetch"><span>4</span> fetch() &amp; a Real API</a>
+        <a href="#node-runtime"><span>5</span> What Node's Runtime Adds</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="selecting-updating">
+            <h2>1. Selecting &amp; Updating Elements</h2>
+            <p>
+              The <strong>DOM</strong> (Document Object Model) is the browser's live, in-memory
+              representation of the page — every HTML tag becomes an object you can read from and
+              write to with JavaScript:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">selecting elements</div>
+              <pre><code>// querySelector returns the FIRST match, using CSS-selector syntax
+const heading = document.querySelector("h1");
+const firstButton = document.querySelector(".btn");
+
+// querySelectorAll returns ALL matches, as a NodeList (array-like, not a real array)
+const allButtons = document.querySelectorAll(".btn");
+console.log(allButtons.length);
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">reading &amp; updating elements</div>
+              <pre><code>const heading = document.querySelector("h1");
+
+heading.textContent = "Updated title";       // change the text
+heading.classList.add("highlight");          // add a CSS class
+heading.classList.remove("hidden");           // remove a CSS class
+heading.classList.toggle("active");           // add if missing, remove if present
+heading.style.color = "blue";                 // set an inline style directly
+heading.setAttribute("data-id", "42");        // set any HTML attribute
+</code></pre>
+            </div>
+
+            <p>
+              <code>querySelector</code>/<code>querySelectorAll</code> accept the exact same
+              selector syntax as CSS — a tag name, a <code>.class</code>, an <code>#id</code>, or
+              any combination — which means anything you already know how to target in a
+              stylesheet, you already know how to select in JavaScript. <code>classList</code> is
+              almost always the right tool for changing appearance: toggling a CSS class is more
+              maintainable than setting individual <code>style</code> properties by hand.
+            </p>
+
+            <div class="callout callout--warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <strong>Prefer <code>textContent</code> over <code>innerHTML</code> for plain text</strong>
+                <p><code>innerHTML</code> parses its string as actual HTML — setting it from untrusted input (like something a user typed) opens the door to injecting scripts onto your own page. <code>textContent</code> always inserts a plain string safely, with no HTML parsing at all.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="events">
+            <h2>2. Handling Events</h2>
+            <p>
+              <code>addEventListener</code> registers a callback — a familiar idea from every
+              earlier week — to run whenever a specific event happens on an element:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a basic click handler</div>
+              <pre><code>const button = document.querySelector("#save-btn");
+
+button.addEventListener("click", (event) =&gt; {
+  console.log("Clicked!", event.target); // event.target is the element that was clicked
+});
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">reading form input</div>
+              <pre><code>const input = document.querySelector("#search");
+
+input.addEventListener("input", (event) =&gt; {
+  console.log("Current value:", event.target.value);
+});
+
+const form = document.querySelector("#signup-form");
+form.addEventListener("submit", (event) =&gt; {
+  event.preventDefault(); // stop the browser's default full-page reload on submit
+  console.log("Form submitted without reloading the page");
+});
+</code></pre>
+            </div>
+
+            <p>
+              The callback always receives an <strong>event object</strong> with details about
+              what happened — <code>event.target</code> is the actual element the event fired on,
+              and <code>event.target.value</code> is how you read the current text out of an input
+              as the user types. <code>event.preventDefault()</code> stops the browser's own
+              default behavior for that event — essential for forms, where the default is a full
+              page reload that would otherwise wipe out any JavaScript-driven behavior.
+            </p>
+          </section>
+
+          <section id="delegation">
+            <h2>3. Event Delegation</h2>
+            <p>
+              Attaching a separate listener to every single item in a list works, but breaks the
+              moment new items are added dynamically — and it's wasteful for a large list.
+              <strong>Event delegation</strong> solves both problems by taking advantage of a
+              behavior called <strong>event bubbling</strong>: an event fired on an element also
+              fires on each of its ancestors, all the way up.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">one listener, instead of one per item</div>
+              <pre><code>// HTML:
+// &lt;ul id="todo-list"&gt;
+//   &lt;li&gt;Buy milk&lt;/li&gt;
+//   &lt;li&gt;Walk the dog&lt;/li&gt;
+// &lt;/ul&gt;
+
+const list = document.querySelector("#todo-list");
+
+list.addEventListener("click", (event) =&gt; {
+  if (event.target.tagName === "LI") {
+    event.target.classList.toggle("done"); // works even for &lt;li&gt;s added AFTER this ran
+  }
+});
+</code></pre>
+            </div>
+
+            <p>
+              The click actually fires on the specific <code>&lt;li&gt;</code>, then
+              <strong>bubbles up</strong> through its parents — including <code>#todo-list</code>,
+              where the one listener above catches it. Checking <code>event.target</code> tells you
+              exactly which child was actually clicked. Because there's only one listener on the
+              parent (which never gets removed or recreated), this pattern keeps working correctly
+              even for list items added long after the listener was first attached.
+            </p>
+          </section>
+
+          <section id="fetch">
+            <h2>4. fetch() &amp; a Real API</h2>
+            <p>
+              <code>fetch</code> makes an HTTP request and returns a Promise — everything from
+              Weeks 7 and 8 applies directly:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">fetching &amp; rendering real data</div>
+              <pre><code>async function loadUsers() {
+  const list = document.querySelector("#user-list");
+  list.textContent = "Loading...";
+
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+
+    const users = await response.json(); // parses the response body as JSON
+    list.innerHTML = ""; // clear "Loading..."
+
+    for (const user of users) {
+      const item = document.createElement("li");
+      item.textContent = user.name; // textContent -- safe, no HTML parsing
+      list.appendChild(item);
+    }
+  } catch (err) {
+    list.textContent = `Failed to load users: ${err.message}`;
+  }
+}
+
+loadUsers();
+</code></pre>
+            </div>
+
+            <p>
+              Two things about <code>fetch</code> catch people off guard: first,
+              <code>await fetch(...)</code> only rejects on a genuine network failure —
+              <strong>a 404 or 500 response is still a "successful" fetch as far as the Promise is
+              concerned</strong>, which is exactly why <code>response.ok</code> needs to be checked
+              explicitly and thrown on manually. Second, the response body has to be read
+              separately with <code>await response.json()</code> (itself another Promise) —
+              parsing the body is a distinct async step from getting the response headers back.
+            </p>
+          </section>
+
+          <section id="node-runtime">
+            <h2>5. What Node's Runtime Adds</h2>
+            <p>
+              JavaScript the <em>language</em> is identical in a browser and in Node — closures,
+              Promises, classes, all of it work exactly the same. What differs is the
+              <strong>runtime environment</strong> surrounding the language: the set of built-in
+              objects and APIs available to it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">browser-only vs. Node-only</div>
+              <pre><code>// Browser-only: document, window, DOM, localStorage -- none of this exists in Node
+document.querySelector("h1"); // ReferenceError in Node: document is not defined
+
+// Node-only: direct filesystem and process access -- none of this exists in a browser
+const fs = require("fs");    // (or: import fs from "node:fs")
+fs.readFileSync("data.txt", "utf8");
+process.env.API_KEY;          // read an environment variable
+</code></pre>
+            </div>
+
+            <p>
+              A browser gives JavaScript a DOM to manipulate, but deliberately walls it off from
+              the local filesystem and OS-level details, for obvious security reasons — a random
+              website should never be able to read your files. Node removes the DOM entirely (there
+              is no page to manipulate) but opens up direct filesystem, network-server, and process
+              access instead, which is exactly why Node is used for servers and build tools rather
+              than in-browser UI code.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a filterable, fetched todo list</h3>
+              <p>Combine DOM updates, event delegation and a real fetch call in one small page.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Create a minimal HTML page with an empty <code>&lt;ul id="todo-list"&gt;</code> and a text input <code>#filter-input</code>.</li>
+                <li>On page load, <code>fetch("https://jsonplaceholder.typicode.com/todos?_limit=15")</code>, and render each todo as an <code>&lt;li&gt;</code> (use <code>textContent</code>, and add a CSS class if the fetched <code>completed</code> field is true).</li>
+                <li>Use event delegation on <code>#todo-list</code> so clicking any <code>&lt;li&gt;</code> toggles a <code>done</code> class on it.</li>
+                <li>Add an <code>input</code> listener on <code>#filter-input</code> that hides any <code>&lt;li&gt;</code> whose text doesn't include the typed value (case-insensitive), using <code>classList</code> to toggle a <code>hidden</code> class rather than removing elements.</li>
+                <li>Wrap the fetch in <code>try</code>/<code>catch</code> and show an error message in the list if the request fails.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>For step 4, <code>list.querySelectorAll("li")</code> combined with <code>Array.from(...)</code> and Week 5's <code>forEach</code> is a clean way to loop over every item and check each one's text against the filter.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why is <code>textContent</code> generally safer than <code>innerHTML</code> when inserting data from an API or user input?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>innerHTML</code> parses whatever string it's given as real HTML, which means untrusted text containing a <code>&lt;script&gt;</code> tag or similar could actually execute on your page. <code>textContent</code> always inserts a plain string with no HTML parsing at all, so it can't be used to inject markup or scripts, regardless of what the string contains.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What makes event delegation work — why does a click on a child <code>&lt;li&gt;</code> get caught by a listener on its parent <code>&lt;ul&gt;</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Event bubbling. A click event doesn't only fire on the exact element clicked — it also fires on every ancestor of that element, all the way up the DOM tree, unless something explicitly stops it. A listener on the <code>&lt;ul&gt;</code> catches the bubbled event, and <code>event.target</code> tells it exactly which <code>&lt;li&gt;</code> was the original source.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Does <code>await fetch(url)</code> throw an error if the server responds with a 404?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>No — <code>fetch</code>'s Promise only rejects on a genuine network-level failure (like no connection at all). A 404 or 500 response is still a "successful" HTTP exchange as far as <code>fetch</code> is concerned, so it resolves normally. Checking <code>response.ok</code> (or <code>response.status</code>) and throwing manually is the correct way to treat an error status code as a failure.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why does <code>document.querySelector("h1")</code> throw a <code>ReferenceError</code> when run in Node instead of a browser?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>document</code> is part of the DOM, which is a browser-provided runtime API, not part of the JavaScript language itself. Node's runtime has no page to represent and doesn't provide <code>document</code> or <code>window</code> at all — it offers a different set of built-ins instead, like direct filesystem access, that a browser doesn't provide for security reasons.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-09.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 9: Modern ES6+ &amp; Modules</span>
+          </a>
+          <a href="week-11.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Week 11: TypeScript Setup &amp; Basic Types</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+    <nav class="footer__links">
+      <a href="../../index.html">Home</a>
+            <a href="../angular/index.html">Angular</a>
+      <a href="../cybersecurity/index.html">Cybersecurity Basics</a>
+      <a href="../data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+      <a href="../golang/index.html">Go</a>
+      <a href="../devops-cloud/index.html">DevOps &amp; Cloud</a>
+      <a href="../dsa-cpp/index.html">DSA in C++</a>
+      <a href="../github/index.html">Git &amp; GitHub</a>
+      <a href="../javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+      <a href="../llm-ml/index.html">AI &amp; ML</a>
+      <a href="../artificial-intelligence/index.html">Artificial Intelligence</a>
+      <a href="../machine-learning/index.html">Machine Learning</a>
+      <a href="../data-science/index.html">Data Science</a>
+      <a href="../node-express/index.html">Node.js &amp; Express</a>
+      <a href="../aptitude/index.html">Numerical Aptitude</a>
+      <a href="../php/index.html">PHP</a>
+      <a href="../python/index.html">Python</a>
+      <a href="../react/index.html">React</a>
+      <a href="../react-native/index.html">React Native</a>
+      <a href="../servicenow/index.html">ServiceNow</a>
+      <a href="../spring-boot/index.html">Spring Boot</a>
+      <a href="../system-design/index.html">System Design</a>
+      <a href="../coding-practice/index.html">Coding Practice</a>
+      <a href="../docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+      <a href="../sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../claude/index.html">Claude</a>
+      <a href="#top">Back to top</a>
+    </nav>
+    <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

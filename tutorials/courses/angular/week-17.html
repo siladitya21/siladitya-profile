@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 17: State Management at Scale — CodeVerse Creatives</title>
+<meta name="description" content="Week 17 of the Angular curriculum: signal-based state services, NgRx Signal Store fundamentals, classic NgRx actions/reducers/effects/selectors, when to reach for each, entity state patterns, DevTools time-travel debugging, and testing stateful services." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="angular">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../angular/index.html">Angular Syllabus</a>
+        <span>/</span>
+        <a href="../angular/index.html#phase-4">Phase 4 · Data &amp; State</a>
+        <span>/</span>
+        <span aria-current="page">Week 17</span>
+      </div>
+
+      <h1>Week 17: State Management at Scale</h1>
+      <p class="lesson-header__lede">
+        The last week of Phase 4 asks a question every growing app eventually faces: once state is
+        shared across more components than one service naturally holds, how do you keep it
+        predictable? Not by defaulting to a heavyweight library — by knowing what problem each option
+        actually solves.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Phase 4 of 7</span>
+        <span class="chip">Week 17 of 34</span>
+        <span class="chip">~5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Design shared state that stays predictable as an app grows</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a typed NgRx Signal Store and know when it's actually worth reaching for</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Read and write classic NgRx actions, reducers, effects and selectors</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Test stateful services with the same confidence as any other service</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#state-services"><span>1</span> Signal-Based State Services</a>
+        <a href="#signal-store"><span>2</span> NgRx Signal Store</a>
+        <a href="#classic-ngrx"><span>3</span> Classic NgRx</a>
+        <a href="#when-to-reach"><span>4</span> When to Reach for Which</a>
+        <a href="#entity-state"><span>5</span> Entity State Patterns</a>
+        <a href="#devtools"><span>6</span> DevTools &amp; Time Travel</a>
+        <a href="#testing-state"><span>7</span> Testing Stateful Services</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+        <a href="#quiz"><span>9</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="state-services">
+            <h2>1. Signal-Based State Services (the "Poor Man's Store")</h2>
+            <p>
+              The simplest real state-management pattern in Angular is a plain injectable service
+              holding a signal, with methods that update it — everything you already know from Week
+              9, applied to shared state instead of a single feature.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart-state.service.ts</div>
+              <pre><code>import { Injectable, signal, computed } from '@angular/core';
+
+interface CartItem { id: string; price: number; quantity: number; }
+
+@Injectable({ providedIn: 'root' })
+export class CartState {
+  private items = signal&lt;CartItem[]&gt;([]);
+
+  readonly cartItems = this.items.asReadonly();
+  readonly itemCount = computed(() =&gt; this.items().reduce((n, i) =&gt; n + i.quantity, 0));
+  readonly total = computed(() =&gt; this.items().reduce((sum, i) =&gt; sum + i.price * i.quantity, 0));
+
+  addItem(item: CartItem) {
+    this.items.update((list) =&gt; [...list, item]);
+  }
+
+  removeItem(id: string) {
+    this.items.update((list) =&gt; list.filter((i) =&gt; i.id !== id));
+  }
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>.asReadonly()</code> is the detail worth internalizing — it exposes a read-only
+              signal to consumers, so only <code>CartState</code>'s own methods can actually mutate
+              <code>items</code>. Any component can read <code>cartItems</code>, but only this service
+              controls how it changes — the same encapsulation principle from Week 9, applied to
+              state.
+            </p>
+
+            <p>
+              This pattern alone covers the majority of real apps. Reach for something heavier only
+              once you hit a problem it doesn't solve well — Section 4 covers exactly when that
+              happens.
+            </p>
+          </section>
+
+          <section id="signal-store">
+            <h2>2. NgRx Signal Store Fundamentals</h2>
+            <p>
+              <code>@ngrx/signals</code> provides a more structured version of the same idea — state,
+              computed values, and methods declared together with a consistent shape, plus a
+              convention for how updates happen.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.store.ts</div>
+              <pre><code>import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
+import { computed } from '@angular/core';
+
+interface CartItem { id: string; price: number; quantity: number; }
+interface CartStateShape { items: CartItem[]; }
+
+export const CartStore = signalStore(
+  { providedIn: 'root' },
+  withState&lt;CartStateShape&gt;({ items: [] }),
+  withComputed(({ items }) =&gt; ({
+    itemCount: computed(() =&gt; items().reduce((n, i) =&gt; n + i.quantity, 0)),
+    total: computed(() =&gt; items().reduce((sum, i) =&gt; sum + i.price * i.quantity, 0)),
+  })),
+  withMethods((store) =&gt; ({
+    addItem(item: CartItem) {
+      patchState(store, (state) =&gt; ({ items: [...state.items, item] }));
+    },
+    removeItem(id: string) {
+      patchState(store, (state) =&gt; ({ items: state.items.filter((i) =&gt; i.id !== id) }));
+    },
+  }))
+);
+</code></pre>
+            </div>
+
+            <p>
+              <code>patchState()</code> is the one required way to update a Signal Store's state —
+              it's a small but deliberate constraint: every state change goes through one recognizable
+              call, which is what makes the DevTools story in Section 6 possible.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">using it — cart-summary.ts</div>
+              <pre><code>import { Component, inject } from '@angular/core';
+import { CartStore } from './cart.store';
+
+export class CartSummary {
+  cart = inject(CartStore);
+  // cart.items(), cart.itemCount(), cart.total(), cart.addItem(...) -- all directly available
+}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="classic-ngrx">
+            <h2>3. Classic NgRx: Actions, Reducers, Effects &amp; Selectors</h2>
+            <p>
+              Before <code>@ngrx/signals</code> existed, "NgRx" meant the Redux-style pattern below —
+              and it's still what most job postings and existing large Angular codebases mean by
+              "NgRx experience." The same <code>CartState</code> from Sections 1 and 2, rebuilt the
+              classic way:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.actions.ts</div>
+              <pre><code>import { createActionGroup, props, emptyProps } from '@ngrx/store';
+
+export const CartActions = createActionGroup({
+  source: 'Cart',
+  events: {
+    'Load Cart': emptyProps(),
+    'Load Cart Failure': emptyProps(),
+    'Load Cart Success': props&lt;{ items: CartItem[] }&gt;(),
+    'Add Item': props&lt;{ item: CartItem }&gt;(),
+    'Remove Item': props&lt;{ id: string }&gt;(),
+  },
+});
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.reducer.ts</div>
+              <pre><code>import { createReducer, on } from '@ngrx/store';
+import { CartActions } from './cart.actions';
+
+interface CartState { items: CartItem[]; loading: boolean; }
+const initialState: CartState = { items: [], loading: false };
+
+export const cartReducer = createReducer(
+  initialState,
+  on(CartActions.loadCart, (state) =&gt; ({ ...state, loading: true })),
+  on(CartActions.loadCartSuccess, (state, { items }) =&gt; ({ ...state, items, loading: false })),
+  on(CartActions.addItem, (state, { item }) =&gt; ({ ...state, items: [...state.items, item] })),
+  on(CartActions.removeItem, (state, { id }) =&gt; ({
+    ...state,
+    items: state.items.filter((i) =&gt; i.id !== id),
+  }))
+);
+</code></pre>
+            </div>
+
+            <p>
+              A reducer is a pure function: given the current state and an action, it returns the
+              <em>next</em> state. It never mutates <code>state</code> directly and never performs a
+              side effect (an HTTP call, a timer) itself — that's what effects are for.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.effects.ts</div>
+              <pre><code>import { Injectable, inject } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { exhaustMap, map, catchError, of } from 'rxjs'; // Week 15
+import { CartApi } from './cart-api.service';
+import { CartActions } from './cart.actions';
+
+@Injectable()
+export class CartEffects {
+  private actions$ = inject(Actions);
+  private api = inject(CartApi);
+
+  loadCart$ = createEffect(() =&gt;
+    this.actions$.pipe(
+      ofType(CartActions.loadCart),
+      exhaustMap(() =&gt;
+        this.api.fetchCart().pipe(
+          map((items) =&gt; CartActions.loadCartSuccess({ items })),
+          catchError(() =&gt; of(CartActions.loadCartFailure()))
+        )
+      )
+    )
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              An effect listens for an action, runs the side effect (here, an HTTP call via the
+              <code>exhaustMap</code>/<code>catchError</code> operators from Week 15), and dispatches a
+              new action with the result — the reducer above then handles <em>that</em> action to
+              actually update state. This is the same RxJS you already know, applied to a specific,
+              consistent convention for where side effects live.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.selectors.ts &amp; using it in a component</div>
+              <pre><code>import { createFeatureSelector, createSelector } from '@ngrx/store';
+
+export const selectCartState = createFeatureSelector&lt;CartState&gt;('cart');
+export const selectCartItems = createSelector(selectCartState, (state) =&gt; state.items);
+export const selectCartTotal = createSelector(selectCartItems, (items) =&gt;
+  items.reduce((sum, i) =&gt; sum + i.price * i.quantity, 0)
+);
+
+// cart-summary.ts
+export class CartSummary {
+  private store = inject(Store);
+  total = this.store.selectSignal(selectCartTotal); // selectors read as signals via selectSignal()
+  addItem(item: CartItem) {
+    this.store.dispatch(CartActions.addItem({ item }));
+  }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Selectors are also memoized — <code>selectCartTotal</code> only recomputes when
+              <code>selectCartItems</code>'s output actually changes, the same performance idea as a
+              Signal Store's <code>withComputed</code>, just expressed through <code>createSelector</code>
+              instead.
+            </p>
+          </section>
+
+          <section id="when-to-reach">
+            <h2>4. When to Reach for Which Option</h2>
+            <p>Three options now, each solving a slightly different problem:</p>
+            <ul>
+              <li><strong>Plain signal-based service fits:</strong> most apps, most of the time. Less ceremony, no new dependency, and every technique is one you already know from Week 9.</li>
+              <li><strong>Signal Store fits:</strong> state shared across many features with a real need for consistent structure in a codebase that's already signals-first — a large team wanting every feature's state to look the same, or state complex enough that <code>withComputed</code>'s composition and a single <code>patchState</code> convention genuinely earns its keep.</li>
+              <li><strong>Classic NgRx (Section 3) fits:</strong> a large, existing codebase already built on it (rewriting a working action/reducer/effect architecture just to switch styles is rarely worth the churn), a team that's standardized on its action-based auditability and middleware ecosystem, or — pragmatically — a job market where "NgRx" on a job posting specifically means this pattern. Functionally, it solves the same problem as a Signal Store with more ceremony (separate actions/reducers/effects/selectors files vs. one store definition) in exchange for a longer track record and a larger plugin ecosystem.</li>
+            </ul>
+            <p>
+              The failure mode worth avoiding either way is reaching for <em>any</em> of the structured
+              options — Signal Store or classic NgRx — for a feature with two pieces of state and one
+              component that reads them. That's Section 1's pattern, with less code and nothing lost.
+              State-management tooling should follow a real scaling problem (or a real codebase/team
+              constraint), not precede one.
+            </p>
+          </section>
+
+          <section id="entity-state">
+            <h2>5. Entity State Patterns</h2>
+            <p>
+              "Entity state" means storing a normalized collection — a flat map keyed by ID, rather
+              than a raw array — which makes lookups, updates, and removals by ID all O(1) instead of
+              requiring an array scan.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">entity-shaped state</div>
+              <pre><code>interface ProductsStateShape {
+  entities: Record&lt;string, Product&gt;;
+  ids: string[]; // preserves order, since object key order isn't guaranteed to be stable
+}
+
+// Looking up a product by ID: O(1)
+const product = state.entities[productId];
+
+// Rendering in order:
+const orderedProducts = state.ids.map((id) =&gt; state.entities[id]);
+</code></pre>
+            </div>
+
+            <p>
+              This matters once a collection grows past a trivial size — updating one product by ID in
+              a plain array means <code>.map()</code>-ing the whole array to find and replace it;
+              updating it in entity-shaped state is a single object-key write. <code>@ngrx/signals</code>
+              ships an <code>entities</code> feature implementing exactly this pattern, so you rarely
+              need to hand-write the normalization logic yourself.
+            </p>
+          </section>
+
+          <section id="devtools">
+            <h2>6. DevTools &amp; Time-Travel Debugging</h2>
+            <p>
+              Because every Signal Store update goes through <code>patchState()</code>, tooling can
+              intercept and log each one — Redux DevTools (originally built for Redux, and usable with
+              NgRx) shows a timeline of every state change, and lets you "time travel" by replaying
+              state back to any previous point.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">enabling devtools — app.config.ts (development only)</div>
+              <pre><code>import { withDevtools } from '@angular/core'; // conceptual -- actual API varies by NgRx version
+
+// Wire the store (or a root-level state) through a devtools integration in dev builds only,
+// so every patchState() call becomes a visible, inspectable entry in the Redux DevTools timeline.
+</code></pre>
+            </div>
+
+            <p>
+              The practical value: when a bug report says "the cart total was wrong," you can scrub
+              backward through the exact sequence of <code>addItem</code>/<code>removeItem</code>
+              calls that produced it — far faster than reproducing the bug from scratch by guessing at
+              user actions.
+            </p>
+          </section>
+
+          <section id="testing-state">
+            <h2>7. Testing Stateful Services</h2>
+            <p>
+              Both patterns from this lesson are testable with the same technique from Week 9 — a
+              plain signal-based service needs nothing special at all:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart-state.spec.ts</div>
+              <pre><code>import { CartState } from './cart-state.service';
+
+describe('CartState', () =&gt; {
+  it('computes the total price correctly', () =&gt; {
+    const cart = new CartState();
+
+    cart.addItem({ id: '1', price: 10, quantity: 2 });
+    cart.addItem({ id: '2', price: 5, quantity: 1 });
+
+    expect(cart.total()).toBe(25);
+  });
+});
+</code></pre>
+            </div>
+
+            <p>
+              A Signal Store needs <code>TestBed</code>, since <code>signalStore()</code> relies on
+              Angular's injector internally:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">cart.store.spec.ts</div>
+              <pre><code>import { TestBed } from '@angular/core/testing';
+import { CartStore } from './cart.store';
+
+describe('CartStore', () =&gt; {
+  it('computes the total price correctly', () =&gt; {
+    TestBed.configureTestingModule({ providers: [CartStore] });
+    const store = TestBed.inject(CartStore);
+
+    store.addItem({ id: '1', price: 10, quantity: 2 });
+    store.addItem({ id: '2', price: 5, quantity: 1 });
+
+    expect(store.total()).toBe(25);
+  });
+});
+</code></pre>
+            </div>
+
+            <p>
+              Either way, the assertions themselves read identically to any other signal-based test —
+              state management doesn't need special-cased testing techniques once it's built on
+              signals.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Refactor cross-cutting dashboard state into a Signal Store</h3>
+              <p>Take the auth, notifications, and filters state scattered across your dashboard app (Weeks 9-11) and consolidate it.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Create an <code>AppStore</code> Signal Store with three state slices: <code>currentUser</code> (from your Week 11 auth work), <code>notifications</code> (an array), and <code>activeFilters</code> (from any list/filter UI you've built).</li>
+                <li>Add <code>withComputed</code> selectors: <code>unreadNotificationCount</code>, and <code>isAuthenticated</code> derived from <code>currentUser</code>.</li>
+                <li>Add <code>withMethods</code> for every mutation — login/logout, mark-notification-read, and updating filters — each going through <code>patchState</code>.</li>
+                <li>Replace every component that previously read this state from separate services with <code>inject(AppStore)</code> instead, and confirm nothing in the UI's behavior changed.</li>
+                <li>Write at least three unit tests covering the computed selectors and one method each.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Before starting, write one sentence for why this state deserves a Signal Store rather than three separate plain services — if you can't articulate a real reason beyond "the lesson said to," that's worth sitting with, since Section 4's guidance applies to your own projects just as much as this exercise.</p>
+                </div>
+              </div>
+
+              <h3>Part 2: The plain-service alternative, entity state, and DevTools</h3>
+              <p>Part 1 jumped straight to a Signal Store without ever building Section 1's plain alternative to compare against, and never touched Sections 5 or 6.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li><strong>Plain service comparison (Sections 1 &amp; 4):</strong> implement just the <code>notifications</code> slice a second time as a plain <code>@Injectable</code> signal-based service (Section 1's <code>CartState</code> shape) — <code>.asReadonly()</code>, an <code>addNotification</code> method, and an <code>unreadCount</code> computed. Write one paragraph comparing it directly to the equivalent slice of your <code>AppStore</code>: how much code did each need, and was the Signal Store actually worth it here?</li>
+                <li><strong>Entity state (Section 5):</strong> convert <code>AppStore</code>'s <code>notifications</code> from a plain array to entity-shaped state — <code>entities: Record&lt;string, Notification&gt;</code> plus an <code>ids: string[]</code> — and rewrite <code>markAsRead(id)</code> as a single-key <code>patchState</code> write instead of an array <code>.map()</code>.</li>
+                <li><strong>DevTools (Section 6):</strong> wire up Redux DevTools (or your NgRx version's devtools integration) in a dev-only config, then click through adding a notification and marking it read in the running app. Confirm each <code>patchState</code> call shows up as its own entry in the timeline, and try time-traveling back one step.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Once <code>notifications</code> is entity-shaped, your <code>unreadNotificationCount</code> computed needs to iterate <code>ids.map(id => entities[id])</code> rather than the old plain array — a small but easy-to-miss update everywhere the old shape was assumed.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>9. Knowledge Check</h2>
+            <p>Five quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>What does <code>.asReadonly()</code> actually prevent, in Section 1's <code>CartState</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It stops any consumer of <code>cartItems</code> from calling <code>.set()</code> or <code>.update()</code> on it directly — the returned signal only exposes the read side. State changes can only happen through <code>CartState</code>'s own methods (<code>addItem</code>, <code>removeItem</code>), keeping the service the single place that controls how its state actually changes.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why does a Signal Store require every state update to go through <code>patchState()</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Routing every change through one recognizable function is what makes tooling like Redux DevTools possible — it gives every update a single point to intercept, log, and replay. It's a deliberate constraint traded for that inspectability, not an arbitrary API restriction.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why is looking up a product by ID faster in entity-shaped state than in a plain array?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An array lookup by ID requires scanning elements one at a time until a match is found — O(n) in the size of the array. An entity map keyed by ID (<code>state.entities[id]</code>) is a direct object-property access — O(1), regardless of how many entities exist. The tradeoff is needing a separate <code>ids</code> array to preserve display order, since object key order isn't a reliable ordering mechanism.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>A small feature has two pieces of state, read by exactly one component. Per this lesson's guidance, should it use a Signal Store?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>No — this is exactly the case Section 4 argues against. A plain signal-based service (or even a signal directly in the component, if it's not shared at all) handles this with less ceremony and no new dependency. Signal Store or classic NgRx earn their complexity when state is genuinely shared across many features, a team wants enforced structural consistency, or a codebase is already built on one of them — not by default for every piece of local state.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q5</span>
+                  <div class="week-item__heading">
+                    <h4>In Signal Store, every update goes through <code>patchState()</code>. What's the equivalent discipline in classic NgRx (Section 3), and what's the key structural difference?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Classic NgRx's equivalent is dispatching an <strong>action</strong> and letting a <strong>reducer</strong> compute the next state — <code>store.dispatch(CartActions.addItem({ item }))</code> rather than a direct <code>patchState</code> call. The key difference: a Signal Store's methods (<code>addItem()</code>, etc.) call <code>patchState</code> directly and synchronously, while classic NgRx separates "what happened" (the action) from "how state changes" (the reducer) into two distinct pieces, with side effects pulled out into a third (the effect). More files and ceremony, but a stricter separation of concerns — the tradeoff named in Section 4.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-16.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 16: Bridging Signals &amp; Observables</span>
+          </a>
+          <a href="week-18.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 18: Unit Testing →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

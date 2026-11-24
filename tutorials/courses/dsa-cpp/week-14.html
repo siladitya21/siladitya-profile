@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 14: Dynamic Programming II: Grids, Trees &amp; Interval DP — CodeVerse Creatives</title>
+<meta name="description" content="Week 14 of the DSA in C++ curriculum: DP on grids with obstacles, DP on trees, interval DP with matrix chain multiplication, and palindrome partitioning." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="dsa-cpp">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../dsa-cpp/index.html">DSA in C++ Syllabus</a>
+        <span>/</span>
+        <a href="../dsa-cpp/index.html#timeline">Module 11 · Dynamic Programming II: Grids, Trees &amp; Interval DP</a>
+        <span>/</span>
+        <span aria-current="page">Week 14</span>
+      </div>
+
+      <h1>Week 14: Dynamic Programming II: Grids, Trees &amp; Interval DP</h1>
+      <p class="lesson-header__lede">
+        Last week's DP recurrences were all defined over a single index or a pair of string
+        positions — this week extends the same "define the state, write the recurrence" discipline
+        to two dimensions with obstacles and to the tree structures you built back in Module 7.
+        Then it pivots to a shape that trips up most candidates the first time they see it: interval
+        DP, where the state is a range <code>[i, j]</code> rather than a prefix, and the recurrence
+        tries every way to split that range in two. You'll close by applying that same interval
+        thinking to a second classic problem, palindrome partitioning — good preparation for the
+        range-query data structures in Module 16 and the bitmask and digit DP in Module 15, both of
+        which build directly on the "index the state by more than one dimension" habit this week
+        establishes.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 11 of 17</span>
+        <span class="chip">Week 14 of 20</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Solve grid DP problems with obstacles and DP problems defined on tree structures</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Recognize and solve interval DP problems by defining state over a range <code>[i, j]</code> and trying every split point</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Apply interval DP to matrix chain multiplication and minimum-cut palindrome partitioning</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#grid-dp"><span>1</span> DP on Grids</a>
+        <a href="#tree-dp"><span>2</span> DP on Trees</a>
+        <a href="#matrix-chain"><span>3</span> Interval DP: Matrix Chain</a>
+        <a href="#palindrome-partition"><span>4</span> Palindrome Partitioning</a>
+        <a href="#exercise"><span>5</span> Exercise</a>
+        <a href="#quiz"><span>6</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="grid-dp">
+            <h2>1. DP on Grids with Obstacles</h2>
+            <p>
+              Grid DP extends the "define <code>dp[i]</code> in terms of earlier states" idea to
+              two dimensions: <code>dp[i][j]</code> depends on the cell above it and the cell to
+              its left. Obstacles are handled by forcing any blocked cell's count to zero, which
+              then correctly propagates "unreachable" forward through the rest of the grid.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">grid_dp.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+using namespace std;
+
+// Count paths from top-left to bottom-right, moving only right/down,
+// where grid[i][j] == 1 marks an obstacle -- O(rows * cols) time and space
+int uniquePathsWithObstacles(const vector&lt;vector&lt;int&gt;&gt;&amp; grid) {
+    int rows = grid.size(), cols = grid[0].size();
+    vector&lt;vector&lt;long long&gt;&gt; dp(rows, vector&lt;long long&gt;(cols, 0));
+
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; cols; j++) {
+            if (grid[i][j] == 1) {
+                dp[i][j] = 0;   // obstacle: unreachable
+                continue;
+            }
+            if (i == 0 &amp;&amp; j == 0) {
+                dp[i][j] = 1;   // starting cell
+            } else {
+                long long fromTop = (i &gt; 0) ? dp[i - 1][j] : 0;
+                long long fromLeft = (j &gt; 0) ? dp[i][j - 1] : 0;
+                dp[i][j] = fromTop + fromLeft;
+            }
+        }
+    }
+    return (int)dp[rows - 1][cols - 1];
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Fill order matters just as much as the recurrence</strong>
+                <p>Processing cells in row-major order guarantees <code>dp[i-1][j]</code> and <code>dp[i][j-1]</code> are always already computed before you need them — the same "process dependencies before dependents" discipline you used for topological order in Week 12, just applied along two axes instead of one.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="tree-dp">
+            <h2>2. DP on Trees</h2>
+            <p>
+              DP on trees runs a post-order recursion where each call returns not just one number,
+              but a small bundle of answers under different local constraints — one per child
+              state the parent might care about. The classic example is "House Robber III": robbing
+              houses arranged in a binary tree, where you can't rob two directly-connected nodes.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">tree_dp.cpp</div>
+              <pre><code>#include &lt;algorithm&gt;
+using namespace std;
+
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
+};
+
+// Returns {best sum if we ROB this node, best sum if we DON'T rob this node}
+pair&lt;int,int&gt; robTreeHelper(TreeNode* node) {
+    if (!node) return {0, 0};
+
+    auto [leftRob, leftSkip] = robTreeHelper(node-&gt;left);
+    auto [rightRob, rightSkip] = robTreeHelper(node-&gt;right);
+
+    int rob = node-&gt;val + leftSkip + rightSkip;                     // take node -> children must be skipped
+    int skip = max(leftRob, leftSkip) + max(rightRob, rightSkip);   // free choice per child
+
+    return {rob, skip};
+}
+
+// O(n) time -- one post-order pass, O(h) space for the call stack
+int robTree(TreeNode* root) {
+    auto [rob, skip] = robTreeHelper(root);
+    return max(rob, skip);
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Same shape as diameter-of-tree</strong>
+                <p>Returning a small struct or pair of "answer under each local constraint" from every recursive call, computed post-order, is the same pattern you used for the diameter-of-a-tree problem in Week 10 — DP on trees is almost always that pattern with a different pair of values being tracked.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="matrix-chain">
+            <h2>3. Interval DP: Matrix Chain Multiplication</h2>
+            <p>
+              Every DP you've written so far indexes state by a prefix — <code>dp[i]</code> or
+              <code>dp[i][j]</code> meaning "the best answer using the first <code>i</code>
+              elements." Interval DP indexes state by a <strong>range</strong> instead:
+              <code>dp[i][j]</code> means "the best answer for the subarray from <code>i</code> to
+              <code>j</code> inclusive," and the recurrence tries every way to split that range at
+              some point <code>k</code> and combines the two halves. Matrix chain multiplication is
+              the canonical example: given a chain of matrices, find the parenthesization that
+              minimizes the total number of scalar multiplications, since multiplication is
+              associative but the cost of each order differs enormously.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">matrix_chain.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+#include &lt;climits&gt;
+using namespace std;
+
+// dims[i-1] x dims[i] is the shape of matrix i (1-indexed), for i in [1, n]
+// dp[i][j] = min scalar multiplications to compute the product of matrices i..j
+// O(n^3) time, O(n^2) space
+int matrixChainOrder(vector&lt;int&gt;&amp; dims) {
+    int n = dims.size() - 1;              // number of matrices
+    vector&lt;vector&lt;int&gt;&gt; dp(n + 1, vector&lt;int&gt;(n + 1, 0));
+
+    // len is the interval length -- intervals of length 1 (single matrices) cost 0
+    for (int len = 2; len &lt;= n; len++) {
+        for (int i = 1; i &lt;= n - len + 1; i++) {
+            int j = i + len - 1;
+            dp[i][j] = INT_MAX;
+            for (int k = i; k &lt; j; k++) {        // try every split point
+                int cost = dp[i][k] + dp[k + 1][j]
+                         + dims[i - 1] * dims[k] * dims[j];
+                dp[i][j] = min(dp[i][j], cost);
+            }
+        }
+    }
+    return dp[1][n];
+}
+</code></pre>
+            </div>
+
+            <p>
+              The outer loop over <code>len</code> is what makes this DP correct: to fill
+              <code>dp[i][j]</code> you need every smaller sub-interval already computed, so
+              processing intervals in increasing order of length guarantees every
+              <code>dp[i][k]</code> and <code>dp[k+1][j]</code> the inner loop reads is ready before
+              it's read — the same "dependencies before dependents" discipline as grid DP's
+              row-major fill, just organized by interval size instead of row.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Recognize the shape, not the story</strong>
+                <p>Any problem asking "what's the optimal way to combine/merge/multiply a sequence, where order changes the cost" is almost always interval DP wearing a different costume — burst balloons, optimal BST construction, and polygon triangulation all reduce to the exact same <code>dp[i][j] = min over k of dp[i][k] + dp[k+1][j] + mergeCost(i, k, j)</code> recurrence.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="palindrome-partition">
+            <h2>4. Palindrome Partitioning: Minimum Cuts</h2>
+            <p>
+              Given a string, partition it into the fewest possible substrings such that every
+              substring is a palindrome, and return the minimum number of cuts needed. This
+              combines interval thinking (precomputing which <code>[i, j]</code> ranges are
+              palindromes) with prefix DP (the fewest cuts to partition everything up to index
+              <code>i</code>).
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">palindrome_partition.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+#include &lt;string&gt;
+using namespace std;
+
+// Minimum cuts to partition s into palindromic substrings -- O(n^2) time and space
+int minCut(const string&amp; s) {
+    int n = s.size();
+
+    // isPalin[i][j]: is s[i..j] a palindrome? Built from shorter intervals outward.
+    vector&lt;vector&lt;bool&gt;&gt; isPalin(n, vector&lt;bool&gt;(n, false));
+    for (int len = 1; len &lt;= n; len++) {
+        for (int i = 0; i + len - 1 &lt; n; i++) {
+            int j = i + len - 1;
+            if (s[i] != s[j]) continue;
+            isPalin[i][j] = (len &lt;= 2) || isPalin[i + 1][j - 1];
+        }
+    }
+
+    // cuts[i] = min cuts needed for the prefix s[0..i]
+    vector&lt;int&gt; cuts(n, 0);
+    for (int i = 0; i &lt; n; i++) {
+        if (isPalin[0][i]) { cuts[i] = 0; continue; }   // whole prefix is already a palindrome
+        cuts[i] = i;   // worst case: cut before every character
+        for (int j = 1; j &lt;= i; j++) {
+            if (isPalin[j][i] &amp;&amp; cuts[j - 1] + 1 &lt; cuts[i]) {
+                cuts[i] = cuts[j - 1] + 1;
+            }
+        }
+    }
+    return cuts[n - 1];
+}
+</code></pre>
+            </div>
+
+            <p>
+              Precomputing <code>isPalin</code> is itself interval DP — <code>s[i..j]</code> is a
+              palindrome exactly when its endpoints match <em>and</em> the interval one shorter on
+              each side, <code>s[i+1..j-1]</code>, is also a palindrome, filled in order of
+              increasing length just like matrix chain. That precomputation turns what would be an
+              <code>O(n)</code> palindrome check inside the main loop into an <code>O(1)</code>
+              lookup, which is what keeps the overall algorithm at <code>O(n&sup2;)</code> instead
+              of <code>O(n&sup3;)</code>.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Precompute the interval table before the prefix DP</strong>
+                <p>Whenever a prefix or subsequence DP's transition needs to ask "is this range valid/a palindrome/sorted?" repeatedly, build an <code>O(n&sup2;)</code> lookup table for that question first with its own interval DP, exactly like <code>isPalin</code> here — recomputing the check inline is the single most common way this pattern accidentally becomes <code>O(n&sup3;)</code> or worse.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>5. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a Two-Dimensional DP Toolkit</h3>
+              <p>Implement all four state shapes from this week and confirm each on a hand-worked example.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Implement <code>uniquePathsWithObstacles</code> and test it on a grid with a fully blocked row (expect 0 paths).</li>
+                <li>Implement <code>robTree</code> on a sample binary tree and confirm it matches a brute-force recursive solution that doesn't use the post-order pair trick.</li>
+                <li>Implement <code>matrixChainOrder</code> for the dims array <code>{40, 20, 30, 10, 30}</code> and confirm it returns <code>26000</code>.</li>
+                <li>Implement <code>minCut</code> for <code>"aab"</code> and confirm it returns <code>1</code> (cut into <code>"aa"</code> and <code>"b"</code>), and for <code>"a"</code> confirm it returns <code>0</code>.</li>
+                <li>Extend <code>matrixChainOrder</code> to also return the actual optimal parenthesization as a string, by tracking the best split point <code>k</code> for each <code>dp[i][j]</code> in a separate table and reconstructing recursively.</li>
+                <li>Write a one-line comment above each function stating its state definition (what <code>dp[i][j]</code> or the returned pair means) and its time complexity.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>For the reconstruction in requirement 5, add a parallel <code>vector&lt;vector&lt;int&gt;&gt; split</code> table sized like <code>dp</code>; every time you update <code>dp[i][j]</code> to a new best cost inside the <code>k</code> loop, also record <code>split[i][j] = k</code>. A small recursive helper that reads <code>split[i][j]</code> can then rebuild the full parenthesization from <code>dp[1][n]</code> down.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>6. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why does the DP-on-trees pattern for House Robber III return a pair (rob this node, skip this node) from each recursive call instead of a single value?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A parent node's own decision depends on whether each child was robbed or skipped — if the parent is robbed, its children must be in their "skip" state, but if the parent is skipped, each child is free to be in whichever state is larger. Returning only one number per child would throw away exactly the information the parent needs to make that decision correctly.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>In matrix chain multiplication, why must the outer loop iterate by increasing interval length rather than by increasing <code>i</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Computing <code>dp[i][j]</code> requires <code>dp[i][k]</code> and <code>dp[k+1][j]</code> for every split point <code>k</code> — both of which are strictly shorter intervals than <code>[i, j]</code>. Iterating by increasing length guarantees every shorter interval a longer one depends on has already been filled in, while iterating by increasing <code>i</code> alone gives no such guarantee, since <code>dp[i][j]</code> for a large <code>j</code> could still depend on an unfilled <code>dp[k+1][j]</code> with a larger starting index.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>In the palindrome partitioning solution, what would go wrong (asymptotically) if <code>isPalin</code> were not precomputed and each palindrome check were done inline instead?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The main loop already does O(n&sup2;) work — an outer loop over <code>i</code> and an inner loop over <code>j</code>. An inline palindrome check on <code>s[j..i]</code> costs O(n) in the worst case, which multiplied across that O(n&sup2;) loop pushes the total to O(n&sup3;). Precomputing <code>isPalin</code> first, itself an O(n&sup2;) pass, turns every check inside the main loop into an O(1) lookup and keeps the overall algorithm at O(n&sup2;).</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>What is the general signal that a problem calls for interval DP (state over a range) rather than prefix DP (state over a prefix)?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Interval DP fits when the answer for a segment depends on how that segment itself gets split or combined internally — merging matrices, cutting a string, triangulating a polygon — so the recurrence needs to try every internal split point <code>k</code> and combine both halves. Prefix DP fits when each new element is decided once, in order, based only on what came before it, with no need to reconsider how an earlier segment was internally structured.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-13.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 13: Dynamic Programming I: Foundations</span>
+          </a>
+          <a href="week-15.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 15: Advanced Graphs: MST &amp; Shortest Paths II →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

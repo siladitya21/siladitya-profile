@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 6: Multi-Leader &amp; Leaderless Replication — CodeVerse Creatives</title>
+<meta name="description" content="Week 6 of the Distributed Systems curriculum: multi-leader replication topologies and conflict resolution, Dynamo-style leaderless replication and N/R/W quorums, read repair and anti-entropy with Merkle trees, and sloppy quorums with hinted handoff." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="distributed-systems">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+          <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../distributed-systems/index.html">Distributed Systems Syllabus</a>
+        <span>/</span>
+        <a href="../distributed-systems/index.html#timeline">Module 2 · Data Across Machines</a>
+        <span>/</span>
+        <span aria-current="page">Week 6</span>
+      </div>
+
+      <h1>Week 6: Multi-Leader &amp; Leaderless Replication</h1>
+      <p class="lesson-header__lede">
+        A single leader is a single place writes can happen — fine until you need writes to
+        succeed in two data centers at once, or to keep working while any one node is down.
+        This week looks at two topologies that accept writes in more than one place: multi-leader
+        replication, where each leader's writes must eventually be reconciled with the others',
+        and Dynamo-style leaderless replication, where quorums of reads and writes stand in for
+        a leader entirely, backed by read repair and anti-entropy to keep replicas converging.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 2 of 5</span>
+        <span class="chip">Week 6 of 16</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain why a system would accept writes in more than one place, and what it costs</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Describe multi-leader topologies and at least two conflict-resolution strategies</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Reason about Dynamo-style N/R/W quorums and when reads are guaranteed to see the latest write</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain how read repair, anti-entropy and Merkle trees keep leaderless replicas converging</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#accept-everywhere"><span>1</span> Writes in Many Places</a>
+        <a href="#multi-leader"><span>2</span> Multi-Leader &amp; Conflicts</a>
+        <a href="#quorums"><span>3</span> Leaderless &amp; Quorums</a>
+        <a href="#repair"><span>4</span> Read Repair &amp; Anti-Entropy</a>
+        <a href="#sloppy"><span>5</span> Sloppy Quorums</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="accept-everywhere">
+            <h2>1. Why Accept Writes in More Than One Place</h2>
+
+            <p>
+              Leader-follower replication has one structural weakness: while the leader is
+              unreachable from some part of the network, that part cannot write at all. Three
+              situations push systems past that limit:
+            </p>
+
+            <ul>
+              <li><strong>Multiple data centers</strong>: a single leader means every write in Tokyo crosses the ocean to a leader in Virginia. Letting Tokyo have its own leader removes that latency.</li>
+              <li><strong>Offline-first clients</strong>: a mobile app or a laptop that keeps working (and writing) with no network at all is, in effect, its own leader until it reconnects and syncs.</li>
+              <li><strong>Availability during partitions</strong>: if any reachable replica can accept a write, a network split no longer stops writes on either side of it.</li>
+            </ul>
+
+            <p>
+              All three buy availability by giving up something leader-follower replication gave
+              you for free: a single, globally agreed order of writes. Once two nodes can each
+              accept a write to the same key before either has heard about the other's, the system
+              must decide what to do when those writes <strong>conflict</strong>. This week covers
+              two topologies that make that trade and the machinery each needs to recover from it.
+            </p>
+          </section>
+
+          <section id="multi-leader">
+            <h2>2. Multi-Leader Topologies &amp; Conflict Resolution</h2>
+
+            <p>
+              In <strong>multi-leader replication</strong>, each data center (or client) has its own
+              leader, which replicates to its local followers and also exchanges writes with the
+              other leaders:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">multi-leader topology — two data centers</div>
+              <pre><code>  DATA CENTER A                      DATA CENTER B
+  writes --&gt; LEADER A &lt;----cross-replication----&gt; LEADER B &lt;-- writes
+                 |                                     |
+            followers A                           followers B
+</code></pre>
+            </div>
+
+            <p>
+              If a key is updated in both data centers before either update reaches the other,
+              both leaders eventually see two different values for the same key with no inherent
+              order between them — a <strong>write conflict</strong>. Three common ways to resolve one:
+            </p>
+
+            <ul>
+              <li><strong>Last-write-wins (LWW)</strong>: attach a timestamp (or a Lamport clock from Week 3) to every write; on conflict, keep the one with the higher timestamp. Simple, but it silently discards one write — fine for a cache, risky for anything a user cares about.</li>
+              <li><strong>Application-specific merge</strong>: let the domain define the merge, e.g. a shopping cart conflict merges to the <em>union</em> of both carts' items rather than picking one side.</li>
+              <li><strong>Convergent replicated data types</strong>: design the value itself so concurrent updates always merge the same way, no matter what order they're applied in. Week 13 covers CRDTs in depth.</li>
+            </ul>
+
+            <div class="code-block">
+              <div class="code-block__label">last-write-wins with a tiebreak — python-style pseudocode</div>
+              <pre><code>def resolve_conflict(write_a, write_b):
+    # each write carries (lamport_timestamp, node_id, value) — Week 3
+    if write_a.ts != write_b.ts:
+        return write_a if write_a.ts &gt; write_b.ts else write_b
+    # ties (rare, but possible with Lamport clocks) break on node_id
+    # so every replica picks the SAME winner deterministically
+    return write_a if write_a.node_id &gt; write_b.node_id else write_b
+</code></pre>
+            </div>
+
+            <div class="callout callout--warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <strong>Wall-clock LWW can lose a "later" write</strong>
+                <p>If timestamps come from unsynchronized wall clocks (Week 3), a write from a node with a fast clock can beat a genuinely later write from a node with a slow one. A logical clock, or an explicit version vector that detects concurrency instead of guessing at ordering, avoids this.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="quorums">
+            <h2>3. Leaderless Replication &amp; Dynamo-Style Quorums</h2>
+
+            <p>
+              <strong>Leaderless replication</strong> (the Dynamo/Cassandra/Riak model) removes the
+              leader entirely. For a dataset replicated across <code>N</code> nodes, a client writes
+              directly to multiple replicas and reads from multiple replicas, using two tunable
+              numbers:
+            </p>
+
+            <ul>
+              <li><strong>W</strong> — the write succeeds once <code>W</code> of the <code>N</code> replicas have acknowledged it.</li>
+              <li><strong>R</strong> — a read queries <code>R</code> of the <code>N</code> replicas and returns the newest value among their responses.</li>
+            </ul>
+
+            <div class="code-block">
+              <div class="code-block__label">the quorum overlap rule</div>
+              <pre><code>If  W + R &gt; N
+then every read quorum and every write quorum share at least one node —
+so a read is guaranteed to see the most recent SUCCESSFUL write.
+
+example: N=3, W=2, R=2  →  W+R=4 &gt; 3   ✓ overlap guaranteed
+example: N=3, W=1, R=1  →  W+R=2 &lt;= 3  ✗ a read can miss the latest write
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">leaderless client write/read — python-style pseudocode</div>
+              <pre><code>def write(key, value, replicas, N, W):
+    version = new_version_vector(key, replicas)
+    acked = 0
+    for r in replicas:
+        if r.put(key, value, version):
+            acked += 1
+    if acked &lt; W:
+        raise WriteFailed()           # could not reach a write quorum
+
+def read(key, replicas, N, R):
+    responses = [replicas[i].get(key) for i in sample(replicas, R)]
+    return newest_by_version(responses)   # may trigger read repair — Section 4
+</code></pre>
+            </div>
+
+            <p>
+              Smaller <code>W</code> and <code>R</code> buy lower latency and more availability (fewer
+              nodes must be reachable); larger values buy stronger consistency. <code>W=N, R=1</code>
+              behaves like synchronous replication for writes; <code>W=1, R=N</code> pushes the cost
+              onto reads instead.
+            </p>
+          </section>
+
+          <section id="repair">
+            <h2>4. Read Repair &amp; Anti-Entropy with Merkle Trees</h2>
+
+            <p>
+              Quorums alone don't make replicas identical — a slow or temporarily unreachable node
+              still holds a stale value after a write, even one that met its write quorum. Two
+              background mechanisms close that gap:
+            </p>
+
+            <p>
+              <strong>Read repair</strong> happens inline: when a read queries <code>R</code> replicas
+              and sees that one returned an older version than the others, the client (or coordinator)
+              writes the newer value back to the stale replica right then. It's opportunistic — it
+              only fixes keys that actually get read.
+            </p>
+
+            <p>
+              <strong>Anti-entropy</strong> runs in the background, independent of reads, comparing
+              replicas wholesale and repairing whatever read repair never touched. Comparing every
+              key between two large replicas byte-by-byte is expensive, so systems compare
+              <strong>Merkle trees</strong> instead — a tree of hashes where each parent hash is a hash
+              of its children. Two replicas with identical data have identical root hashes in O(1)
+              comparisons; where the roots differ, only the diverging branches need to be walked
+              and compared.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">merkle tree comparison — python-style pseudocode</div>
+              <pre><code>def diff(node_a, node_b):
+    if node_a.hash == node_b.hash:
+        return []                              # subtrees identical — stop here
+    if node_a.is_leaf():
+        return [node_a.key]                    # found a divergent key
+    mismatches = []
+    for child_a, child_b in zip(node_a.children, node_b.children):
+        mismatches += diff(child_a, child_b)   # recurse only where hashes differ
+    return mismatches
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why this matters</strong>
+                <p>Without Merkle trees, finding the handful of keys that differ between two replicas holding millions of rows means transferring and comparing all of them. With a Merkle tree, the cost is proportional to how much actually diverged, not to how much data exists.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="sloppy">
+            <h2>5. Sloppy Quorums &amp; Hinted Handoff</h2>
+
+            <p>
+              The quorum rule in Section 3 assumes a write always lands on the <code>N</code> nodes
+              officially responsible for a key. If enough of those specific nodes are down, a
+              strict quorum blocks writes entirely — exactly the availability leaderless
+              replication was meant to buy back. A <strong>sloppy quorum</strong> relaxes this: if
+              fewer than <code>W</code> of the "home" nodes are reachable, the write is accepted on
+              any <code>W</code> reachable nodes instead, even ones not normally responsible for that key.
+            </p>
+
+            <p>
+              Those substitute nodes hold the write temporarily. Once a home node comes back, the
+              data is forwarded to it and removed from the stand-in — <strong>hinted handoff</strong>.
+            </p>
+
+            <div class="callout callout--warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <strong>Sloppy quorums break the W+R&gt;N guarantee</strong>
+                <p>A write accepted on stand-in nodes means the home nodes a read actually queries may not have it yet. Sloppy quorums trade the "a quorum read always sees the latest quorum write" guarantee from Section 3 for more availability. Dynamo and Cassandra both make this an explicit, tunable choice rather than a hidden one.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a toy Dynamo-style key-value store with N=3, W=2, R=2</h3>
+              <p>Three in-process "nodes" (plain dicts behind a small interface) stand in for replicas.</p>
+
+              <p><strong>Part 1 — Quorum writes and reads:</strong></p>
+              <ol>
+                <li>Implement <code>write(key, value)</code> that writes to all 3 nodes but only waits for 2 acks, and <code>read(key)</code> that queries 2 nodes and returns the response with the higher version.</li>
+                <li>Kill one node (stop routing to it) and confirm writes and reads still succeed.</li>
+              </ol>
+
+              <p><strong>Part 2 — Detect a real conflict:</strong></p>
+              <ol>
+                <li>Attach a version vector (Week 3) to every value instead of a single counter.</li>
+                <li>Simulate two "concurrent" writes to the same key on two different nodes before either replicates, then read: your code should detect that the version vectors are concurrent (neither dominates the other), not just pick one by timestamp.</li>
+                <li>Resolve the conflict with a simple application-specific merge (e.g. if the value is a set, union both sides) rather than LWW, and confirm no update is silently dropped.</li>
+              </ol>
+
+              <p><strong>Part 3 — Read repair:</strong></p>
+              <ol>
+                <li>After resolving a conflict in Part 2, have the read path write the merged value back to whichever node(s) returned the older version.</li>
+                <li>Read the key again and confirm all 3 nodes now agree, without running any separate anti-entropy step.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>If you use plain timestamps instead of version vectors in Part 2, you can't tell a real conflict apart from a write that simply happened later — that's exactly the LWW trap from Section 2's warning callout.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>5 quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Name two situations that push a system toward accepting writes in more than one place.</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Any two of: multiple data centers wanting a local leader to avoid cross-region latency, offline-first clients that must keep writing with no network, and wanting writes to keep working on either side of a network partition.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why can wall-clock-based last-write-wins discard the "actually later" write?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Because wall clocks on different nodes are never perfectly in sync (Week 3). A write stamped by a node whose clock runs fast can show a higher timestamp than a genuinely later write stamped by a node with a slower clock, so LWW keeps the wrong one.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>For N=5 replicas, give values of W and R that guarantee a read sees the latest successful write, and one pair that doesn't.</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Any W and R with W+R&gt;5 guarantees overlap, e.g. W=3, R=3 (sum 6). W=2, R=2 (sum 4 &lt;= 5) does not guarantee it — a read quorum and a write quorum of those sizes can fail to share a node.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>What is the difference between read repair and anti-entropy?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Read repair fixes a stale replica opportunistically, only when a read happens to touch that key. Anti-entropy is a background process that compares replicas wholesale (efficiently, using Merkle trees) and repairs divergence whether or not anyone ever reads those keys.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q5</span>
+                  <div class="week-item__heading">
+                    <h4>What does a sloppy quorum trade away, and what mechanism moves data back to its home nodes afterward?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It trades away the guarantee that a quorum read overlaps with every quorum write, since the write may have landed on stand-in nodes instead of the key's home nodes. Hinted handoff moves the data to the correct home nodes once they're reachable again.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Week 5: Leader-Follower Replication</span>
+          </a>
+          <a href="week-07.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next →</span>
+            <span class="lesson-pager__title">Week 7: Partitioning &amp; Consistent Hashing</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+          <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

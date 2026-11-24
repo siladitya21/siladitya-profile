@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 15: RxJS Deep Dive — CodeVerse Creatives</title>
+<meta name="description" content="Week 15 of the Angular curriculum: Subjects and BehaviorSubject, the flattening operators (switchMap, mergeMap, concatMap, exhaustMap), combineLatest/forkJoin/withLatestFrom, error handling, subscription management, and a full typeahead search build." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="angular">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../angular/index.html">Angular Syllabus</a>
+        <span>/</span>
+        <a href="../angular/index.html#phase-4">Phase 4 · Data &amp; State</a>
+        <span>/</span>
+        <span aria-current="page">Week 15</span>
+      </div>
+
+      <h1>Week 15: RxJS Deep Dive</h1>
+      <p class="lesson-header__lede">
+        You've used <code>pipe()</code>, <code>map</code>, and <code>catchError</code> since Week 14
+        without a full explanation of the library underneath. This week fixes that — the handful of
+        operators that turn "requests" into genuinely composable async flows.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Phase 4 of 7</span>
+        <span class="chip">Week 15 of 26</span>
+        <span class="chip">~4–5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Compose non-trivial async flows with RxJS confidently</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Choose the right flattening operator instead of defaulting to <code>switchMap</code> everywhere</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Avoid the subscription leaks that quietly slow an app down over time</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#subjects"><span>1</span> Subjects</a>
+        <a href="#flattening"><span>2</span> Flattening Operators</a>
+        <a href="#combining"><span>3</span> Combining Streams</a>
+        <a href="#error-handling"><span>4</span> Error Handling</a>
+        <a href="#subscriptions"><span>5</span> Subscription Management</a>
+        <a href="#typeahead"><span>6</span> Building a Typeahead</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+        <a href="#quiz"><span>8</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="subjects">
+            <h2>1. Subjects, <code>BehaviorSubject</code> &amp; <code>ReplaySubject</code></h2>
+            <p>
+              A plain Observable is unicast — each subscriber triggers its own independent execution.
+              A <strong>Subject</strong> is both an Observable and an Observer at once: it multicasts,
+              meaning every subscriber shares the same underlying execution and sees the same emitted
+              values.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">subject-basics.ts</div>
+              <pre><code>import { Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
+
+const plain = new Subject&lt;number&gt;();
+plain.subscribe((v) =&gt; console.log('A:', v));
+plain.next(1); // A: 1
+plain.subscribe((v) =&gt; console.log('B:', v)); // B never gets 1 -- it subscribed too late
+plain.next(2); // A: 2, B: 2
+
+const withInitial = new BehaviorSubject&lt;number&gt;(0);
+console.log(withInitial.value); // 0 -- always has a current value, readable synchronously
+withInitial.subscribe((v) =&gt; console.log('C:', v)); // C: 0 -- gets the CURRENT value immediately
+
+const replay = new ReplaySubject&lt;number&gt;(2); // remembers the last 2 values
+replay.next(1);
+replay.next(2);
+replay.next(3);
+replay.subscribe((v) =&gt; console.log('D:', v)); // D: 2, D: 3 -- the last two, not the first
+</code></pre>
+            </div>
+
+            <p>
+              <code>BehaviorSubject</code> is the one you'll reach for most — it's exactly what a
+              signal-based state service (Week 17) is conceptually built on: something that always has
+              a current value, and notifies subscribers when it changes.
+            </p>
+          </section>
+
+          <section id="flattening">
+            <h2>2. Core Flattening Operators</h2>
+            <p>
+              These four operators all solve the same shape of problem — you have a stream of
+              "outer" events, and each one needs to trigger a new "inner" Observable (usually an HTTP
+              call). They differ entirely in how they handle overlap between an in-flight inner
+              Observable and a new outer emission.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">switchMap — cancel and switch</div>
+              <pre><code>searchTerm$.pipe(
+  switchMap((term) =&gt; this.http.get&lt;Result[]&gt;(`/api/search?q=${term}`))
+);
+// New search term arrives while a request is in flight?
+// The old request is CANCELLED. Only the latest term's result ever reaches you.
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">mergeMap — run everything concurrently</div>
+              <pre><code>fileIds$.pipe(
+  mergeMap((id) =&gt; this.http.post(`/api/files/${id}/process`, {}))
+);
+// Every inner Observable runs to completion, all in parallel, in whatever order they finish.
+// Right for independent work; wrong when order or "only the latest" matters.
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">concatMap — queue, run in order</div>
+              <pre><code>saveQueue$.pipe(
+  concatMap((edit) =&gt; this.http.patch('/api/document', edit))
+);
+// Each save waits for the PREVIOUS save to finish before starting.
+// Right whenever order matters -- out-of-order writes could corrupt the document.
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">exhaustMap — ignore new emissions while busy</div>
+              <pre><code>submitClicks$.pipe(
+  exhaustMap(() =&gt; this.http.post('/api/orders', this.orderPayload()))
+);
+// A second click while the first request is still in flight is IGNORED entirely.
+// Right for submit buttons -- prevents accidental double-submission by design,
+// not just by disabling the button (belt and suspenders).
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Choosing between them</strong>
+                <p>Ask what should happen to an in-flight request when a new trigger arrives: cancel it and start fresh (<code>switchMap</code>), let both run (<code>mergeMap</code>), queue behind it (<code>concatMap</code>), or ignore the new trigger entirely (<code>exhaustMap</code>). Picking the wrong one is a real, common source of subtle bugs — a search box using <code>mergeMap</code> can show stale results if an earlier request happens to resolve after a later one.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="combining">
+            <h2>3. Combining Streams</h2>
+            <p>
+              Three more operators, for a different problem: combining <em>multiple independent
+              streams</em> into one, rather than chaining one stream into another.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">combineLatest — filters + sort, always current</div>
+              <pre><code>combineLatest([this.searchTerm$, this.sortOrder$]).pipe(
+  switchMap(([term, sort]) =&gt; this.productsService.search(term, sort))
+);
+// Re-emits whenever EITHER source emits, using the latest value from both.
+// Requires every source to have emitted at least once before combineLatest emits anything.
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">forkJoin — parallel requests, wait for all</div>
+              <pre><code>forkJoin({
+  user: this.http.get&lt;User&gt;('/api/me'),
+  settings: this.http.get&lt;Settings&gt;('/api/settings'),
+}).subscribe(({ user, settings }) =&gt; {
+  // Runs once, only after BOTH requests complete -- like Promise.all
+});
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">withLatestFrom — read a value without reacting to it</div>
+              <pre><code>this.submitClicks$.pipe(
+  withLatestFrom(this.formValue$),
+  map(([, formValue]) =&gt; formValue)
+).subscribe((formValue) =&gt; this.save(formValue));
+// Only emits when submitClicks$ emits -- formValue$ changing alone does NOT trigger anything.
+// It just supplies "whatever the form's latest value happens to be" at click time.
+</code></pre>
+            </div>
+
+            <p>
+              <code>withLatestFrom</code> is the one that trips people up first: it's easy to expect it
+              to behave like <code>combineLatest</code>, but the secondary stream is purely a value
+              source here — only the primary stream's emissions actually drive the output.
+            </p>
+          </section>
+
+          <section id="error-handling">
+            <h2>4. Error Handling — Placement Matters</h2>
+            <p>
+              You used <code>catchError</code> and <code>retry</code> in Week 14 already — the one
+              gotcha worth knowing now: <strong>where</strong> in the pipe <code>catchError</code> sits
+              changes what it actually protects.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">catchError inside switchMap — the usual mistake</div>
+              <pre><code>searchTerm$.pipe(
+  switchMap((term) =&gt;
+    this.http.get(`/api/search?q=${term}`).pipe(
+      catchError(() =&gt; of([])) // catches the INNER Observable's error
+    )
+  )
+).subscribe((results) =&gt; this.results.set(results));
+
+// One failed search -&gt; that emission becomes []. The OUTER stream keeps living --
+// the user can keep typing and future searches still work. This is usually what you want.
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">catchError outside switchMap — kills the whole stream</div>
+              <pre><code>searchTerm$.pipe(
+  switchMap((term) =&gt; this.http.get(`/api/search?q=${term}`)),
+  catchError(() =&gt; of([])) // catches errors from the WHOLE outer pipeline
+).subscribe((results) =&gt; this.results.set(results));
+
+// One failed search -&gt; catchError fires, but the OUTER Observable completes right after.
+// The subscription is now dead -- typing more into the search box does nothing at all.
+</code></pre>
+            </div>
+
+            <p>
+              As a rule: catch errors <strong>inside</strong> the inner Observable whenever the outer
+              stream represents an ongoing sequence of independent events (search terms, clicks) that
+              should keep working after one failure.
+            </p>
+          </section>
+
+          <section id="subscriptions">
+            <h2>5. Subscription Management &amp; Memory Leaks</h2>
+            <p>
+              Every manual <code>.subscribe()</code> needs a matching unsubscribe, or the subscription
+              — and anything it's holding onto — lives for the lifetime of the app, not the
+              component. Three approaches, from least to most automatic:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">manual — easy to forget</div>
+              <pre><code>export class SearchBox implements OnDestroy {
+  private sub = this.results$.subscribe((r) =&gt; this.render(r));
+
+  ngOnDestroy() {
+    this.sub.unsubscribe(); // miss this, and the subscription outlives the component
+  }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">takeUntilDestroyed() — automatic, still a subscription</div>
+              <pre><code>import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+export class SearchBox {
+  constructor() {
+    this.results$.pipe(takeUntilDestroyed()).subscribe((r) =&gt; this.render(r));
+  }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Best of all, avoid manual subscription entirely — the <code>async</code> pipe in a
+              template subscribes on render and unsubscribes automatically on destroy, and
+              <code>toSignal()</code> (which you'll use constantly starting Week 16) does the same
+              internally:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">async pipe — no subscription code at all</div>
+              <pre><code>results$ = this.searchTerm$.pipe(switchMap((term) =&gt; this.search(term)));
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">search-box.html</div>
+              <pre><code>@for (result of results$ | async; track result.id) {
+  &lt;li&gt;{{ result.name }}&lt;/li&gt;
+}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="typeahead">
+            <h2>6. Building a Typeahead Search</h2>
+            <p>
+              Putting it all together — a search-as-you-type feature that doesn't spam the server on
+              every keystroke, doesn't show stale results, and cleans itself up automatically.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">typeahead-search.ts</div>
+              <pre><code>import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, of } from 'rxjs';
+
+@Component({
+  selector: 'app-typeahead-search',
+  templateUrl: './typeahead-search.html',
+})
+export class TypeaheadSearch {
+  private http = inject(HttpClient);
+  private searchTerm$ = new Subject&lt;string&gt;();
+
+  results = toSignal(
+    this.searchTerm$.pipe(
+      debounceTime(300),           // wait for a pause in typing
+      distinctUntilChanged(),      // skip re-searching an unchanged term
+      switchMap((term) =&gt;
+        term.length &lt; 2
+          ? of([])                 // don't search on 0-1 characters
+          : this.search(term).pipe(catchError(() =&gt; of([])))
+      )
+    ),
+    { initialValue: [] }
+  );
+
+  onInput(value: string) {
+    this.searchTerm$.next(value);
+  }
+
+  private search(term: string) {
+    return this.http.get&lt;Result[]&gt;(`/api/search?q=${term}`);
+  }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Every technique from this lesson shows up here: a <code>Subject</code> as the event
+              source, <code>debounceTime</code> + <code>distinctUntilChanged</code> to cut down
+              requests, <code>switchMap</code> to cancel stale in-flight searches,
+              <code>catchError</code> placed <em>inside</em> the inner pipe so one failed search
+              doesn't kill the whole feature, and <code>toSignal()</code> so there's no manual
+              subscription to clean up at all.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a live search feature with proper cancellation</h3>
+              <p>Extend Section 6's typeahead into a fully working, visibly correct search UI.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>A search input wired to a <code>Subject</code>, piped through <code>debounceTime(300)</code>, <code>distinctUntilChanged()</code>, and <code>switchMap</code> into a (real or mocked) search request.</li>
+                <li>A visible "searching…" indicator that appears the moment a request starts and disappears when results (or an empty array) arrive — track this with a separate signal set inside the pipe, not just inferred from the results themselves.</li>
+                <li>Artificially delay your mock search by a random 200–1500ms, and type quickly through several search terms. Confirm — by logging each request's term — that a slower, earlier request's result never overwrites a faster, later one's.</li>
+                <li>Add a <code>catchError</code> positioned correctly so that if one simulated search fails, typing a new term still works afterward.</li>
+                <li>Use <code>toSignal()</code> for the results — no manual <code>.subscribe()</code> anywhere in the component.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>If stale results ever do show up, double-check you're using <code>switchMap</code> and not <code>mergeMap</code> — this is the single most common cause of a "flickers back to old results" bug in a search box.</p>
+                </div>
+              </div>
+
+              <h3>Part 2: <code>combineLatest</code>, <code>forkJoin</code>, and <code>exhaustMap</code></h3>
+              <p>Part 1 only ever used <code>switchMap</code> — Section 2's other three flattening operators and all of Section 3's combining operators went untouched.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li><strong><code>combineLatest</code> (Section 3):</strong> add a category filter alongside the search term, as its own <code>Subject</code>/signal-backed stream. Combine both with <code>combineLatest([searchTerm$, category$])</code> before feeding into the same <code>switchMap</code>, so changing either one triggers a fresh search using both current values.</li>
+                <li><strong><code>forkJoin</code> (Section 3):</strong> add a "view details" action that, when clicked, fires two parallel requests (e.g. item details and related items) with <code>forkJoin</code>, rendering nothing until both resolve together.</li>
+                <li><strong><code>exhaustMap</code> (Section 2):</strong> add a "Save search" button wired through <code>exhaustMap</code> instead of <code>switchMap</code>, and confirm — by clicking rapidly several times — that a click while a save is still in flight is silently ignored rather than firing a second request.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p><code>combineLatest</code> won't emit at all until every source stream has emitted at least once — seed <code>category$</code> with a <code>BehaviorSubject</code> or an initial value so the combined stream fires immediately, not just after the user manually picks a category.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>8. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>A new subscriber subscribes to a <code>BehaviorSubject</code> that already has values flowing through it. What do they receive first?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The current value, immediately — that's the defining feature of <code>BehaviorSubject</code> over a plain <code>Subject</code>. A plain <code>Subject</code> gives a late subscriber nothing until the next <code>.next()</code> call; <code>BehaviorSubject</code> always has a "current" value readable synchronously via <code>.value</code>, and hands it to any new subscriber right away.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>A search box uses <code>mergeMap</code> instead of <code>switchMap</code>. Under what circumstance would a user see the wrong results?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>If an earlier search's request happens to resolve <em>after</em> a later search's request — plausible with variable network latency — <code>mergeMap</code> lets both complete and the later, stale response can overwrite the newer, correct one, since nothing cancels the earlier request. <code>switchMap</code> avoids this entirely by cancelling the earlier request the moment a new term arrives.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why does <code>withLatestFrom(this.formValue$)</code> not trigger an emission every time <code>formValue$</code> changes?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>withLatestFrom</code>'s secondary stream is purely a value source, not a trigger — only the primary stream's own emissions cause the combined Observable to emit. <code>formValue$</code> updating just changes what value is available to be read <em>the next time</em> the primary stream emits; it doesn't cause an emission on its own the way <code>combineLatest</code> would.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why does placing <code>catchError</code> outside a <code>switchMap</code> (rather than inside the inner Observable) break a search box after the first failed request?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An operator like <code>catchError</code> placed after <code>switchMap</code> catches errors from the whole outer pipeline — and once it handles one, the outer Observable completes. Since the outer stream represents "every future search term the user types," completing it means the subscription is now finished; nothing the user types afterward does anything. Catching the error inside the inner Observable (per request) means only that one request's failure is absorbed, and the outer stream — still listening for new search terms — stays alive.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-14.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 14: HttpClient, Interceptors &amp; API Integration</span>
+          </a>
+          <a href="week-16.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 16: Bridging Signals &amp; Observables →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>
+
+

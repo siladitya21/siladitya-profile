@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 13: Error Boundaries &amp; Suspense — CodeVerse Creatives</title>
+<meta name="description" content="Week 13 of the React curriculum: error boundaries, the react-error-boundary library, Suspense fallback UI, and Suspense for data fetching with TanStack Query." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="react">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../react/index.html">React Syllabus</a>
+        <span>/</span>
+        <a href="../react/index.html#timeline">Module 8 · Architecture</a>
+        <span>/</span>
+        <span aria-current="page">Week 13</span>
+      </div>
+
+      <h1>Week 13: Error Boundaries &amp; Suspense</h1>
+      <p class="lesson-header__lede">
+        A single component throwing during render can, by default, take down your entire app —
+        no error boundary means a blank white screen. This week covers containing failure to the
+        part of the tree that actually broke, and Suspense: a declarative way to say "this part of
+        the tree isn't ready yet" that Week 8's TanStack Query can plug directly into.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 8 of 17</span>
+        <span class="chip">Week 13 of 28</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Contain a rendering error to one part of the tree with an error boundary</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Show fallback UI for a not-yet-ready subtree with Suspense</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Combine both around a data-fetching component correctly</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#why-boundaries"><span>1</span> Why Errors Need Boundaries</a>
+        <a href="#error-boundary"><span>2</span> Building an Error Boundary</a>
+        <a href="#suspense-basics"><span>3</span> Suspense Basics</a>
+        <a href="#suspense-query"><span>4</span> Suspense Data &amp; use()</a>
+        <a href="#combining"><span>5</span> Combining Both, Correctly</a>
+        <a href="#activity"><span>6</span> The Activity Component</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+        <a href="#quiz"><span>8</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="why-boundaries">
+            <h2>1. Why Errors Need Boundaries</h2>
+            <p>
+              A JavaScript error thrown during render — a null reference, a failed
+              <code>.map()</code> on <code>undefined</code> — by default unmounts the entire React
+              tree it occurred in. Without anything catching it, one broken widget on a page can
+              blank the whole application, not just itself.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">the problem</div>
+              <pre><code>function UserBadge({ user }: { user: User | null }) {
+  return &lt;span&gt;{user.name}&lt;/span&gt;; // throws if user is null -- crashes everything above it too
+}
+</code></pre>
+            </div>
+
+            <p>
+              A regular <code>try/catch</code> doesn't help here — it can't catch errors thrown
+              during React's own render process. The tool that can is an <strong>error boundary</strong>:
+              a component that catches errors thrown by its children during rendering and shows
+              fallback UI instead of letting the crash propagate further up the tree.
+            </p>
+          </section>
+
+          <section id="error-boundary">
+            <h2>2. Building an Error Boundary</h2>
+            <p>
+              Error boundaries are the one place in modern React that still requires a class
+              component — there is currently no hook-based equivalent to
+              <code>componentDidCatch</code>. In practice, almost nobody hand-writes one; the
+              standard approach is the <code>react-error-boundary</code> library, which wraps this
+              class-component requirement behind a normal component API.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>npm install react-error-boundary
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">App.tsx</div>
+              <pre><code>import { ErrorBoundary } from 'react-error-boundary';
+
+function ErrorFallback({ error, resetErrorBoundary }: {
+  error: Error;
+  resetErrorBoundary: () =&gt; void;
+}) {
+  return (
+    &lt;div role="alert"&gt;
+      &lt;p&gt;Something went wrong: {error.message}&lt;/p&gt;
+      &lt;button onClick={resetErrorBoundary}&gt;Try again&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;ErrorBoundary FallbackComponent={ErrorFallback}&gt;
+      &lt;UserBadge user={null} /&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              When <code>UserBadge</code> throws, <code>ErrorBoundary</code> catches it and renders
+              <code>ErrorFallback</code> instead — the rest of the app outside the boundary keeps
+              working normally. <code>resetErrorBoundary</code> lets the fallback UI offer a retry,
+              re-rendering the boundary's children fresh.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Where to place boundaries</strong>
+                <p>One boundary around your whole app is a reasonable last resort, but placing smaller boundaries around independent, risky sections (a third-party widget, a chart, anything doing complex data transformation) means one broken feature doesn't take the rest of the page down with it — the same "contain the blast radius" thinking behind Week 7's route-level <code>errorElement</code>.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="suspense-basics">
+            <h2>3. Suspense Basics</h2>
+            <p>
+              <code>Suspense</code> lets a part of the tree declare "I'm not ready yet" and shows a
+              <code>fallback</code> until it is — most commonly used today for code-splitting
+              (next week's topic) and, as this week covers, data fetching.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">basic shape</div>
+              <pre><code>import { Suspense } from 'react';
+
+function App() {
+  return (
+    &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+      &lt;ProfileSection /&gt;
+    &lt;/Suspense&gt;
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              A component "suspends" by throwing a special kind of promise during render — you
+              won't write that mechanism by hand; it's built into the tools that support Suspense
+              (like <code>React.lazy</code>, or TanStack Query's Suspense-enabled hooks below).
+              React catches that thrown promise, shows the nearest <code>Suspense</code>
+              boundary's <code>fallback</code>, and swaps back to the real content once the promise
+              resolves.
+            </p>
+          </section>
+
+          <section id="suspense-query">
+            <h2>4. Suspense for Data Fetching &amp; the <code>use()</code> API</h2>
+            <p>
+              TanStack Query has a Suspense-enabled variant of <code>useQuery</code>:
+              <code>useSuspenseQuery</code>. Instead of returning <code>isPending</code>/
+              <code>data</code> and letting you branch on it (Week 8's pattern), it suspends the
+              component until data is ready — the component's render code can assume the data
+              already exists.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">before — Week 8's useQuery</div>
+              <pre><code>function UserProfile({ userId }: { userId: number }) {
+  const { data: user, isPending, isError } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () =&gt; fetchUser(userId),
+  });
+
+  if (isPending) return &lt;p&gt;Loading...&lt;/p&gt;;
+  if (isError) return &lt;p&gt;Error loading user.&lt;/p&gt;;
+  return &lt;p&gt;{user.name}&lt;/p&gt;;
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">after — useSuspenseQuery</div>
+              <pre><code>import { useSuspenseQuery } from '@tanstack/react-query';
+
+function UserProfile({ userId }: { userId: number }) {
+  const { data: user } = useSuspenseQuery({
+    queryKey: ['user', userId],
+    queryFn: () =&gt; fetchUser(userId),
+  });
+
+  return &lt;p&gt;{user.name}&lt;/p&gt;; // user is guaranteed to exist here -- no loading branch needed
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">usage — loading state lives at the boundary, not the component</div>
+              <pre><code>&lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+  &lt;UserProfile userId={5} /&gt;
+&lt;/Suspense&gt;
+</code></pre>
+            </div>
+
+            <p>
+              This shifts loading UI out of every individual data-fetching component and up to
+              wherever you place the <code>Suspense</code> boundary — one boundary can cover
+              several suspending components at once, showing a single unified loading state
+              instead of several independent spinners popping in one at a time as each request
+              resolves.
+            </p>
+
+            <h3>React's built-in version: the <code>use()</code> API</h3>
+            <p>
+              <code>useSuspenseQuery</code> is TanStack Query's take on suspending. React 19 also has
+              a built-in, library-free way to do it: <code>use()</code>. Pass it a
+              <strong>promise</strong>, and the component suspends until the promise resolves, then
+              receives the value. If the promise rejects, the nearest Error Boundary from Section 2
+              catches it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">use() with a promise</div>
+              <pre><code>import { Suspense, use } from 'react';
+
+function Comments({ commentsPromise }: { commentsPromise: Promise&lt;Comment[]&gt; }) {
+  const comments = use(commentsPromise); // suspends until resolved
+  return (
+    &lt;ul&gt;
+      {comments.map(c =&gt; &lt;li key={c.id}&gt;{c.text}&lt;/li&gt;)}
+    &lt;/ul&gt;
+  );
+}
+
+// The promise is created ONCE, outside the component that reads it:
+// in a Server Component (Week 18), a route loader (Week 7), or a cache.
+export default async function PostPage({ postId }: { postId: string }) {
+  const post = await getPost(postId);          // needed right away: await it
+  const commentsPromise = getComments(postId); // not urgent: pass the promise down, don't await
+
+  return (
+    &lt;article&gt;
+      &lt;h1&gt;{post.title}&lt;/h1&gt;
+      &lt;ErrorBoundary fallback={&lt;p&gt;Couldn't load comments.&lt;/p&gt;}&gt;
+        &lt;Suspense fallback={&lt;p&gt;Loading comments…&lt;/p&gt;}&gt;
+          &lt;Comments commentsPromise={commentsPromise} /&gt;
+        &lt;/Suspense&gt;
+      &lt;/ErrorBoundary&gt;
+    &lt;/article&gt;
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              This pattern streams the page: the post renders immediately, and the comments slot in
+              when their promise resolves. Week 19's streaming lesson builds on it.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Don't create the promise during render</strong>
+                <p>Writing <code>use(fetch('/api/comments'))</code> inside a Client Component creates a <em>new</em> promise on every render: the component suspends, re-renders, creates another promise, and suspends again, forever. The promise must come from somewhere stable: a Server Component, a loader, or a cache. That's why, in a client-only SPA, a library like TanStack Query (which manages that cache for you) is still the practical choice.</p>
+              </div>
+            </div>
+
+            <p>
+              <code>use()</code> also reads <strong>context</strong>: <code>use(ThemeContext)</code>
+              works like <code>useContext(ThemeContext)</code>. Unlike every hook you've met, though,
+              <code>use()</code> can be called <strong>inside conditions and loops</strong>, for
+              example <code>if (!showTheme) return null; const theme = use(ThemeContext);</code>. It's
+              the one exception to Week 4's Rules of Hooks, which is why it's named
+              <code>use</code> rather than <code>useSomething</code>.
+            </p>
+          </section>
+
+          <section id="combining">
+            <h2>5. Combining Both, Correctly</h2>
+            <p>
+              <code>useSuspenseQuery</code> handles the loading state by suspending, but it still
+              <em>throws</em> on error rather than returning an <code>isError</code> flag — because
+              there's no error branch to check anymore, the error needs to be caught the same way
+              an error boundary catches any other thrown error. The standard combination:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">ProfilePage.tsx</div>
+              <pre><code>import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+function ProfilePage({ userId }: { userId: number }) {
+  return (
+    &lt;ErrorBoundary FallbackComponent={ErrorFallback}&gt;
+      &lt;Suspense fallback={&lt;Skeleton /&gt;}&gt;
+        &lt;UserProfile userId={userId} /&gt;
+      &lt;/Suspense&gt;
+    &lt;/ErrorBoundary&gt;
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>ErrorBoundary</code> wraps <code>Suspense</code>, not the other way around —
+              this way it can catch both a genuine render error <em>and</em> a rejected query
+              (which <code>useSuspenseQuery</code> re-throws as a real error once the underlying
+              promise rejects), while <code>Suspense</code> independently handles the pending
+              state. Together, <code>UserProfile</code>'s own code only needs to handle the
+              "success" case — every other outcome is handled declaratively by what wraps it.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>You'll see this exact shape again in Week 19</strong>
+                <p>Next.js's App Router builds its entire data-fetching and streaming model on <code>Suspense</code> and error boundaries used almost exactly this way — what you're learning here as a manual pattern becomes largely automatic once a framework wires it up for you.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="activity">
+            <h2>6. The <code>Activity</code> Component: Hiding UI Without Losing State</h2>
+            <p>
+              Everything so far assumes hiding something means unmounting it — a conditionally
+              rendered tab panel, a hidden route. Unmounting destroys the component's state and
+              effects entirely: a half-filled form clears, scroll position is lost, and a
+              <code>useSuspenseQuery</code> that already resolved once refetches from scratch the
+              next time it mounts. <code>Activity</code> (stable since React 19.2) lets a subtree
+              stay mounted — state and effects intact — while visually hidden and deprioritized,
+              so switching back to it is instant with nothing lost.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Tabs.tsx — tab content survives being switched away from</div>
+              <pre><code>import { Activity, useState } from 'react';
+
+function Tabs() {
+  const [activeTab, setActiveTab] = useState('profile');
+
+  return (
+    &lt;&gt;
+      &lt;nav&gt;
+        &lt;button onClick={() =&gt; setActiveTab('profile')}&gt;Profile&lt;/button&gt;
+        &lt;button onClick={() =&gt; setActiveTab('settings')}&gt;Settings&lt;/button&gt;
+      &lt;/nav&gt;
+
+      &lt;Activity mode={activeTab === 'profile' ? 'visible' : 'hidden'}&gt;
+        &lt;ProfileForm /&gt; {/* stays mounted, state intact, even while hidden */}
+      &lt;/Activity&gt;
+      &lt;Activity mode={activeTab === 'settings' ? 'visible' : 'hidden'}&gt;
+        &lt;SettingsForm /&gt;
+      &lt;/Activity&gt;
+    &lt;/&gt;
+  );
+}
+</code></pre>
+            </div>
+
+            <p>
+              Switch to Settings, half-fill out a field on the Profile tab first, then switch back:
+              with the old "conditionally render only the active tab" approach, that field would be
+              empty again. With <code>Activity</code>, it's exactly as you left it — the hidden tab
+              never unmounted, it just stopped being visible and had its effects deprioritized in
+              the background. A <code>Suspense</code> boundary inside a hidden <code>Activity</code>
+              behaves correctly too: its data stays cached, so flipping back to a tab that already
+              loaded doesn't re-trigger the loading fallback from Section 3.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>This isn't just <code>display: none</code></strong>
+                <p>A plain CSS toggle keeps the component mounted too, but its effects keep running at full priority even while invisible — a background tab's interval or subscription fires just as often as a visible one. <code>Activity</code> genuinely deprioritizes hidden content's rendering work, closer to how a browser tab you've switched away from behaves, while still being instantly available the moment it's shown again.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Convert a data-fetching page to Suspense, then keep a tab's state alive with Activity</h3>
+              <p>Take a page from an earlier week and rebuild its loading/error handling using this week's declarative approach, then use Activity to stop losing state on tab switches.</p>
+
+              <p><strong>Part 1 — Suspense and error containment:</strong></p>
+              <ol>
+                <li>Take Week 8's product detail page (or rebuild a similar one) and convert its data fetching from <code>useQuery</code> to <code>useSuspenseQuery</code>.</li>
+                <li>Wrap it in an <code>ErrorBoundary</code> + <code>Suspense</code> pair, correctly nested per Section 5, with a skeleton fallback and a fallback component showing the error message plus a "Try again" button using <code>resetErrorBoundary</code>.</li>
+                <li>Make your simulated fetch function randomly throw for an invalid product ID, and confirm the error boundary — not a blank screen — catches it.</li>
+                <li>Add a second, independent Suspense boundary around a sibling component (e.g. a "related products" section using its own <code>useSuspenseQuery</code>) and confirm the two load independently — one resolving doesn't wait for the other.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p><code>react-error-boundary</code>'s <code>ErrorBoundary</code> accepts an <code>onReset</code> prop — if your error was caused by a query that's now cached in a failed state, you may also need to call <code>queryClient.resetQueries()</code> there so "Try again" actually retries the fetch instead of immediately re-throwing the same cached error.</p>
+                </div>
+              </div>
+
+              <p><strong>Part 2 — Tabs that don't forget:</strong></p>
+              <ol>
+                <li>Build a two-tab layout ("Details" / "Reviews") around your Part 1 page: the Details tab is the Suspense-wrapped product detail; add a Reviews tab with its own <code>useSuspenseQuery</code>-backed content and a plain text input for "your review" (state-only, no need to actually submit anywhere).</li>
+                <li>First implement tab switching the ordinary way — conditionally render only the active tab's content — and confirm that typing in the Reviews draft input, switching to Details, then back to Reviews, loses whatever you typed.</li>
+                <li>Replace the conditional rendering with two <code>Activity</code> wrappers (Section 6), one per tab, toggling <code>mode="visible"</code>/<code>"hidden"</code> based on the active tab instead of mounting/unmounting.</li>
+                <li>Repeat the same typing test — confirm the draft review now survives switching tabs and back, and that revisiting the Details tab doesn't replay its Suspense fallback a second time.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Both <code>Activity</code> blocks render on the very first paint now (one visible, one hidden) instead of only the active tab — if your fallback skeletons flash for both tabs at once on initial load, that's expected; it's the price of keeping both subtrees genuinely mounted from the start.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>8. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why can't a normal <code>try/catch</code> in a parent component catch an error thrown while rendering a child?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>React's rendering process doesn't run inside a single synchronous call a parent's <code>try/catch</code> could wrap — child components are rendered by React's own internal mechanism, not called directly by the parent's code. Error boundaries exist specifically because catching errors during React's render process requires hooking into React's own component lifecycle, which only a component (currently, a class component) can do.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What does a component "suspending" actually mean mechanically?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It throws a special promise during render. React catches that thrown promise, shows the nearest <code>Suspense</code> boundary's <code>fallback</code> in its place, and re-renders the real content once the promise resolves — you don't throw this promise yourself; it's built into Suspense-aware tools like <code>useSuspenseQuery</code>.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>With <code>useSuspenseQuery</code>, why does a failed request need an <code>ErrorBoundary</code> instead of an <code>isError</code> check inside the component?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>useSuspenseQuery</code> doesn't return an error state to branch on the way <code>useQuery</code> does — its whole design assumption is that a successful render always has real data. When the underlying request fails, it re-throws the error during render instead, which only an error boundary (not a plain <code>if</code> check) is able to catch.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why does <code>ErrorBoundary</code> wrap <code>Suspense</code>, rather than the other way around?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The error boundary needs to be positioned to catch anything thrown by its descendants, including a rejected suspense promise re-thrown as a real error — if <code>Suspense</code> were on the outside, an error from inside it wouldn't have an enclosing boundary to be caught by. Putting <code>ErrorBoundary</code> outermost ensures both the pending state (handled by <code>Suspense</code>) and the failure state (handled by the boundary) are covered correctly.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-12.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 12: Component Architecture &amp; Composition Patterns</span>
+          </a>
+          <a href="week-14.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 14: Unit Testing React Apps →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

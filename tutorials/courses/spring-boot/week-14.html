@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 14: Reactive Programming with WebFlux — CodeVerse Creatives</title>
+<meta name="description" content="Week 14 of the Java &amp; Spring Boot curriculum: Project Reactor's Mono and Flux, building reactive REST controllers, reactive data access with R2DBC, backpressure, and choosing WebFlux over Spring MVC." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="spring-boot">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../spring-boot/index.html">Spring Boot Syllabus</a>
+        <span>/</span>
+        <a href="../spring-boot/index.html#timeline">Module 11 · Reactive Programming with WebFlux</a>
+        <span>/</span>
+        <span aria-current="page">Week 14</span>
+      </div>
+
+      <h1>Week 14: Reactive Programming with WebFlux</h1>
+      <p class="lesson-header__lede">
+        Everything through Week 13 has used Spring MVC's blocking, one-thread-per-request model —
+        and that's the right default for most APIs. This week introduces Spring's alternative
+        non-blocking, reactive stack, which you already got a brief taste of back in Week 9's
+        <code>WebClient</code>. You'll see when the added complexity is actually worth it, and what
+        it looks like to build a fully reactive endpoint end to end.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 11 of 22</span>
+        <span class="chip">Week 14 of 26</span>
+        <span class="chip">~4–5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Understand Project Reactor's <code>Mono</code> and <code>Flux</code> and the reactive programming model behind them</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a reactive REST controller and access data reactively with R2DBC</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Know when WebFlux is actually worth choosing over Spring MVC — and when it isn't</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#why-reactive"><span>1</span> Why Reactive &amp; Project Reactor</a>
+        <a href="#mono-flux"><span>2</span> Mono &amp; Flux</a>
+        <a href="#reactive-controllers"><span>3</span> Reactive REST Controllers</a>
+        <a href="#r2dbc"><span>4</span> Reactive Data Access with R2DBC</a>
+        <a href="#backpressure"><span>5</span> Backpressure</a>
+        <a href="#webflux-vs-mvc"><span>6</span> WebFlux vs. Spring MVC</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+        <a href="#quiz"><span>8</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="why-reactive">
+            <h2>1. Why Reactive &amp; Project Reactor Basics</h2>
+            <p>
+              Spring MVC's default model is <strong>thread-per-request</strong>: every incoming
+              HTTP request is handed a thread from a pool, and that thread stays occupied — blocked
+              — for the entire duration of the request, including any time spent waiting on a
+              database query, a downstream HTTP call, or disk I/O. For typical CRUD workloads this
+              is fine: threads are cheap enough, and requests finish quickly. It stops being fine
+              when a service handles a very large number of <em>concurrent, slow, I/O-bound</em>
+              requests — imagine thousands of clients each waiting on a chain of downstream calls
+              that each take a few hundred milliseconds. Thread-per-request either exhausts the
+              thread pool or forces it so large that context-switching overhead eats the gains.
+            </p>
+            <p>
+              Reactive programming solves this by making I/O <strong>non-blocking</strong>: instead
+              of a thread sitting idle while waiting for a result, it's released back to a small,
+              fixed pool and reused for other work. When the result eventually arrives, a callback
+              resumes the original logic — potentially on a different thread. This lets a handful
+              of threads service a very large number of concurrent connections, at the cost of
+              writing code declaratively rather than as a straight top-to-bottom sequence of
+              statements.
+            </p>
+            <p>
+              <strong>Project Reactor</strong> is the reactive library Spring builds on (it
+              implements the <a href="https://www.reactive-streams.org/" target="_blank" rel="noopener">Reactive Streams</a>
+              specification, the same interop contract used by RxJava and Akka Streams). Rather than
+              writing imperative code — "do this, then do that" — you build a pipeline of
+              <strong>operators</strong> that describe what should happen to data as it becomes
+              available, and Reactor drives that pipeline for you:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">imperative vs. reactive — same idea</div>
+              <pre><code>// Imperative (Spring MVC) -- runs top to bottom, blocking on findById
+Task task = taskRepository.findById(id);        // thread blocks here
+TaskResponse response = toResponse(task);        // thread resumes, then runs this
+return response;
+
+// Reactive (Reactor) -- describes a pipeline, doesn't run anything yet
+Mono&lt;TaskResponse&gt; response = taskRepository.findById(id)
+    .map(this::toResponse);
+// Nothing has executed. The pipeline runs only once something subscribes to it.
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>You've already used Reactor once</strong>
+                <p>Week 9's <code>WebClient</code> was your first taste of this model — every call
+                returned a <code>Mono&lt;T&gt;</code> that you chained with <code>.map()</code> and
+                <code>.flatMap()</code> instead of blocking for a result. Everything below is that
+                same operator style, applied to an entire application instead of just one HTTP
+                client.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="mono-flux">
+            <h2>2. Mono &amp; Flux</h2>
+            <p>
+              Reactor's whole API is built around two publisher types. <code>Mono&lt;T&gt;</code>
+              represents <strong>zero or one</strong> value, arriving asynchronously — the reactive
+              equivalent of <code>Optional&lt;T&gt;</code>. <code>Flux&lt;T&gt;</code> represents
+              <strong>zero to many</strong> values, arriving over time — the reactive equivalent of
+              <code>List&lt;T&gt;</code>. The comparison is useful for building intuition, but it
+              only goes so far: an <code>Optional</code> or <code>List</code> already holds its
+              value the moment you have a reference to it, while a <code>Mono</code> or
+              <code>Flux</code> is a <em>description</em> of a value (or stream of values) that
+              doesn't exist yet and won't be computed at all unless something subscribes to it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Mono &amp; Flux basics</div>
+              <pre><code>Mono&lt;TaskResponse&gt; one = Mono.just(new TaskResponse(1L, "Ship reactive lesson", false));
+
+Flux&lt;TaskResponse&gt; many = Flux.just(
+    new TaskResponse(1L, "Write proposal", false),
+    new TaskResponse(2L, "Review PR", true),
+    new TaskResponse(3L, "Deploy service", false)
+);
+</code></pre>
+            </div>
+
+            <p>
+              The core operators mirror what you'd expect from <code>Stream</code>, with one crucial
+              difference for <code>flatMap</code>:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">core operators</div>
+              <pre><code>Flux&lt;String&gt; titles = many
+    .filter(task -&gt; !task.completed())              // keep only incomplete tasks
+    .map(task -&gt; task.title().toUpperCase());        // synchronous transform, 1-to-1
+
+Flux&lt;TaskResponse&gt; enriched = many
+    .flatMap(task -&gt; enrichmentClient.fetchTags(task.id())   // returns Mono&lt;List&lt;String&gt;&gt;
+        .map(tags -&gt; task.withTags(tags)));                   // async transform, may reorder
+</code></pre>
+            </div>
+
+            <p>
+              Use <code>map</code> when the transformation is a plain synchronous function. Use
+              <code>flatMap</code> when the transformation itself returns another
+              <code>Mono</code> or <code>Flux</code> — typically because it involves another
+              asynchronous call, like a downstream HTTP request or a reactive repository lookup.
+              Reaching for <code>map</code> on something that returns a publisher gives you a
+              <code>Flux&lt;Mono&lt;X&gt;&gt;</code>, which is almost never what you want.
+            </p>
+
+            <h3>Subscribing</h3>
+            <p>
+              A <code>Mono</code> or <code>Flux</code> does nothing until it's <strong>subscribed
+              to</strong> — that's what actually triggers the pipeline to run. In standalone code
+              you'd call <code>.subscribe()</code> yourself; in a Spring WebFlux controller, the
+              framework subscribes on your behalf once you return the publisher, then streams the
+              result back to the HTTP client as it arrives. That's exactly why controller methods
+              return <code>Mono&lt;TaskResponse&gt;</code> or <code>Flux&lt;TaskResponse&gt;</code>
+              instead of calling <code>.block()</code> and returning a plain <code>TaskResponse</code>.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Never call <code>.block()</code> in a reactive chain</strong>
+                <p><code>Mono</code> and <code>Flux</code> both expose a <code>.block()</code> method
+                that waits synchronously for the result — and calling it anywhere inside a reactive
+                pipeline defeats the entire point. It ties up one of Reactor's small, shared event
+                loop threads while it waits, which can stall every other request being processed by
+                that same thread. Reactive code has to be non-blocking <em>all the way down</em>, or
+                it isn't reactive at all.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="reactive-controllers">
+            <h2>3. Reactive REST Controllers</h2>
+            <p>
+              To build reactive endpoints, swap <code>spring-boot-starter-web</code> for
+              <code>spring-boot-starter-webflux</code> (or add both if the app needs to serve some
+              blocking endpoints alongside reactive ones — though mixing them in the same
+              application is unusual outside a migration). WebFlux replaces the embedded Tomcat
+              servlet container with a non-blocking server, Netty by default.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-webflux&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <p>
+              A reactive controller looks almost identical to the Week 3 MVC one — same annotations,
+              same routes — except the method signatures return <code>Mono&lt;T&gt;</code> or
+              <code>Flux&lt;T&gt;</code> instead of the object directly:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Week 3, Spring MVC (blocking)</div>
+              <pre><code>@RestController
+@RequestMapping("/api/tasks")
+class TaskController {
+
+    private final TaskRepository taskRepository;
+
+    TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    @GetMapping
+    List&lt;TaskResponse&gt; listTasks() {
+        return taskRepository.findAll().stream()   // blocks until the query returns
+            .map(this::toResponse)
+            .toList();
+    }
+
+    @GetMapping("/{id}")
+    TaskResponse getTask(@PathVariable Long id) {
+        return toResponse(taskRepository.findById(id)
+            .orElseThrow(TaskNotFoundException::new));  // blocks
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">Week 14, Spring WebFlux (non-blocking)</div>
+              <pre><code>package com.codeverse.week14;
+
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping("/api/tasks")
+class TaskController {
+
+    private final TaskRepository taskRepository;
+
+    TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    @GetMapping
+    Flux&lt;TaskResponse&gt; listTasks() {
+        return taskRepository.findAll()
+            .map(this::toResponse);            // no .stream(), no blocking -- just a pipeline
+    }
+
+    @GetMapping("/{id}")
+    Mono&lt;TaskResponse&gt; getTask(@PathVariable Long id) {
+        return taskRepository.findById(id)
+            .map(this::toResponse)
+            .switchIfEmpty(Mono.error(new TaskNotFoundException(id)));
+    }
+
+    private TaskResponse toResponse(Task task) {
+        return new TaskResponse(task.id(), task.title(), task.completed());
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Route mapping, path variables and exception handling with
+              <code>@ControllerAdvice</code> all still work the same way you learned in Week 3 —
+              WebFlux reuses most of Spring MVC's annotation model. What's different is entirely
+              inside the method bodies: no <code>.stream()</code>, no <code>.orElseThrow()</code>
+              on an <code>Optional</code> that's already been fetched, no thread sitting blocked
+              while the database responds.
+            </p>
+          </section>
+
+          <section id="r2dbc">
+            <h2>4. Reactive Data Access with R2DBC</h2>
+            <p>
+              There's a catch with the controller above: <code>taskRepository.findAll()</code> only
+              returns a <code>Flux&lt;Task&gt;</code> if the repository underneath is reactive.
+              The Spring Data JPA repositories you built in Weeks 4 and 5 are fundamentally
+              <strong>blocking</strong> — JDBC, the driver protocol JPA sits on, was designed around
+              synchronous, blocking calls, and there's no way to make a JPA
+              <code>CrudRepository</code> method return a <code>Mono</code> or <code>Flux</code>
+              that behaves non-blockingly. Calling a JPA repository from inside a WebFlux controller
+              still works syntactically, but it blocks one of Reactor's small pool of event-loop
+              threads for the duration of the query — silently reintroducing the exact problem
+              reactive programming exists to avoid.
+            </p>
+
+            <p>
+              <strong>R2DBC</strong> (Reactive Relational Database Connectivity) is a separate
+              driver specification built for non-blocking database access from the ground up, with
+              its own driver per database (<code>r2dbc-postgresql</code>, <code>r2dbc-mysql</code>,
+              and so on). Spring Data R2DBC gives you a <code>ReactiveCrudRepository</code>
+              interface that's the reactive counterpart to the <code>CrudRepository</code> you've
+              used since Week 4:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-data-r2dbc&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+    &lt;artifactId&gt;r2dbc-postgresql&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">Task.java — R2DBC entity</div>
+              <pre><code>package com.codeverse.week14;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+@Table("task")
+record Task(@Id Long id, String title, boolean completed) {}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskRepository.java</div>
+              <pre><code>package com.codeverse.week14;
+
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
+
+interface TaskRepository extends ReactiveCrudRepository&lt;Task, Long&gt; {
+
+    Flux&lt;Task&gt; findByCompletedFalse();
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>findAll()</code>, <code>findById()</code> and derived query methods work almost
+              identically to their JPA equivalents — the difference is entirely in the return
+              types: <code>Mono&lt;Task&gt;</code> and <code>Flux&lt;Task&gt;</code> instead of
+              <code>Optional&lt;Task&gt;</code> and <code>List&lt;Task&gt;</code>. What R2DBC
+              intentionally does <em>not</em> give you is a JPA-style persistence context: no
+              lazy-loaded associations, no automatic dirty checking, no first-level cache. Every
+              relationship has to be fetched explicitly and mapped by hand — R2DBC trades away that
+              convenience specifically because a persistence context relies on tracking object state
+              in ways that don't translate to a non-blocking model.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>JPA and R2DBC don't mix</strong>
+                <p>The <code>TaskRepository extends JpaRepository&lt;Task, Long&gt;</code> from Weeks
+                4 and 5 and the <code>TaskRepository extends ReactiveCrudRepository&lt;Task, Long&gt;</code>
+                above are two entirely separate stacks talking to the same table over two different
+                drivers (JDBC vs. R2DBC). A reactive application has to pick R2DBC end to end for
+                anything on the request path — bolting a JPA call onto a reactive controller doesn't
+                partially work, it quietly blocks.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="backpressure">
+            <h2>5. Backpressure</h2>
+            <p>
+              A <code>Flux</code> can produce values faster than its consumer can process them —
+              a database returning thousands of rows per second into a handler that writes each one
+              to a slow downstream API, for instance. Without a way to slow the producer down, the
+              consumer either falls behind indefinitely, buffering values in memory until it runs
+              out, or values get dropped.
+            </p>
+            <p>
+              <strong>Backpressure</strong> is the mechanism the Reactive Streams specification
+              builds in to prevent exactly this: rather than a producer pushing values as fast as it
+              can, the consumer (the <code>Subscriber</code>) explicitly <strong>requests</strong> a
+              number of elements at a time via <code>Subscription.request(n)</code>, and the producer
+              (the <code>Publisher</code>) is required to send no more than that. It's not an
+              add-on feature — it's a first-class part of the contract every Reactive Streams
+              publisher and subscriber must honor, which is exactly what makes it safe to build
+              reactive pipelines without every consumer needing its own manual throttling logic.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a consumer pulling elements at its own pace</div>
+              <pre><code>package com.codeverse.week14;
+
+import org.reactivestreams.Subscription;
+import reactor.core.publisher.BaseSubscriber;
+import reactor.core.publisher.Flux;
+
+class SlowConsumerDemo {
+
+    void run() {
+        Flux.range(1, 1_000)
+            .doOnRequest(n -&gt; System.out.println("Producer: " + n + " requested"))
+            .subscribe(new BaseSubscriber&lt;Integer&gt;() {
+
+                @Override
+                protected void hookOnSubscribe(Subscription subscription) {
+                    request(10);   // ask for only the first 10 elements
+                }
+
+                @Override
+                protected void hookOnNext(Integer value) {
+                    writeToSlowDownstream(value);
+                    if (value % 10 == 0) {
+                        request(10);   // ask for the next batch once this one is handled
+                    }
+                }
+
+                private void writeToSlowDownstream(Integer value) {
+                    System.out.println("Consumer: processing " + value);
+                }
+            });
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Most application code never touches <code>request(n)</code> directly — operators like
+              <code>.buffer()</code>, <code>.limitRate()</code>, and the default prefetch behavior
+              of <code>flatMap</code> handle it for you. What matters is knowing the mechanism
+              exists: it's the reason a reactive pipeline reading a huge result set doesn't need to
+              be manually rate-limited to avoid running the application out of memory the way an
+              unbounded producer/consumer setup would.
+            </p>
+          </section>
+
+          <section id="webflux-vs-mvc">
+            <h2>6. WebFlux vs. Spring MVC — Choosing</h2>
+            <p>
+              WebFlux earns its added complexity under a specific profile:
+              <strong>high-concurrency, I/O-bound workloads</strong> — a service fielding a large
+              number of simultaneous requests, most of which spend their time waiting on slow
+              downstream calls, rather than doing CPU-heavy work. Think of the service-to-service
+              patterns from Week 9 and the message-driven systems from Week 10: a gateway
+              fanning out to several slow APIs per request, or a service consuming a high-throughput
+              stream, benefits from a stack that's non-blocking <strong>top to bottom</strong> —
+              controller, service layer, and data access all reactive.
+            </p>
+            <p>
+              That last part is the catch. WebFlux only pays off when nothing in the request path
+              blocks — the moment a reactive controller calls into a blocking JPA repository (as
+              Section 4 covered), you've paid for the extra complexity of reactive code without
+              getting the non-blocking benefit it exists for. For the typical CRUD API this course
+              has spent thirteen weeks building — moderate concurrency, request handling dominated
+              by a single database round-trip, a team more comfortable reading straight-line code —
+              <strong>Spring MVC remains the right default</strong>, especially once Spring Data JPA
+              is already in the mix, since JPA's persistence-context conveniences (lazy loading,
+              dirty checking) have no reactive equivalent to fall back on.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why this course defaults to Spring MVC</strong>
+                <p>Every other week in this curriculum builds on Spring MVC and Spring Data JPA on
+                purpose — it's the stack most Spring Boot teams actually run, and it's simpler to
+                reason about, test, and debug. WebFlux is a specialized tool for a specific class of
+                problem, not a strictly "more modern" replacement for MVC. Reach for it when you can
+                point to a concrete concurrency or I/O bottleneck MVC is actually causing — not by
+                default.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a reactive task feed — and deliberately break it first</h3>
+              <p>Stand up a small, read-only WebFlux service over the same task table from Weeks 4
+              and 5, enrich each task with a reactive downstream call, then intentionally reintroduce
+              a blocking call so you can see — and fix — exactly what Section 4 warned about.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Create a new module with <code>spring-boot-starter-webflux</code> and
+                <code>spring-boot-starter-data-r2dbc</code>, pointed at the same <code>task</code>
+                table used in Weeks 4 and 5. Define the R2DBC <code>Task</code> record and a
+                <code>TaskRepository extends ReactiveCrudRepository&lt;Task, Long&gt;</code>.</li>
+                <li>Build a <code>GET /api/tasks/feed</code> endpoint returning
+                <code>Flux&lt;TaskResponse&gt;</code> that streams every task from the repository,
+                mapped to a response DTO.</li>
+                <li>Add a mocked downstream "enrichment" service exposing a
+                <code>Mono&lt;List&lt;String&gt;&gt; fetchTags(Long taskId)</code> method (an
+                in-memory stub is fine — no real HTTP call required), and use
+                <code>WebClient</code>-style reactive chaining with <code>flatMap</code> to attach
+                its tags to each task before it's returned from the feed.</li>
+                <li>Deliberately break it: inside the <code>flatMap</code> (or the controller
+                method), call a blocking JDBC/JPA repository method — for example, a leftover
+                <code>JpaTaskRepository.findById(id)</code> from Week 4 — instead of the reactive one,
+                and confirm it still compiles and "works." Note in a comment why this quietly
+                defeats the point of using WebFlux at all, per Section 4.</li>
+                <li>Fix it: replace the blocking call with the reactive
+                <code>TaskRepository</code>/enrichment-service equivalent so the entire chain, from
+                controller to database, is non-blocking end to end.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>You won't easily <em>see</em> the blocking call fail — it'll still return
+                  correct data. The point of step 4 is to notice, by inspection, exactly where a
+                  thread would stall, not to wait for a crash. If you want to prove it to yourself,
+                  try firing several concurrent requests at the broken version versus the fixed
+                  version and compare response latency under load.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>8. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Beyond "the reactive version of," what's the core difference between <code>Mono</code>/<code>Flux</code> and <code>Optional</code>/<code>List</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An <code>Optional</code> or <code>List</code> already holds its value (or
+                    values) at the moment you have a reference to it — the work to produce that data
+                    already happened. A <code>Mono</code> or <code>Flux</code> is a <em>description</em>
+                    of a value, or stream of values, that hasn't been computed yet and won't be
+                    computed at all unless something subscribes to it. That's why chaining
+                    <code>.map()</code> onto a <code>Mono</code> doesn't run anything immediately —
+                    it just builds up the pipeline that will run later, once subscribed, potentially
+                    asynchronously and on a different thread than the one that built it.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why does calling a blocking Spring Data JPA repository inside a reactive chain defeat the point of using WebFlux?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>WebFlux's entire performance case rests on serving a large number of
+                    concurrent requests from a small, fixed pool of event-loop threads by never
+                    letting those threads sit idle waiting on I/O. JPA runs over JDBC, a synchronous,
+                    blocking driver protocol — calling it from inside a reactive pipeline ties up one
+                    of those scarce event-loop threads for the full duration of the query, exactly
+                    the way Spring MVC's thread-per-request model would. It compiles and returns
+                    correct data, but it silently reintroduces the blocking behavior WebFlux was
+                    adopted to avoid, while still paying reactive code's added complexity cost.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>What does backpressure mean in Reactive Streams, and why does it matter?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Backpressure is the mechanism by which a consumer (<code>Subscriber</code>)
+                    explicitly requests a bounded number of elements at a time from a producer
+                    (<code>Publisher</code>) via <code>Subscription.request(n)</code>, rather than
+                    the producer pushing values as fast as it can generate them. It matters because
+                    without it, a fast producer feeding a slow consumer — a database streaming rows
+                    faster than a handler can write them downstream, for example — would either
+                    buffer unboundedly until memory runs out or start dropping values. Because
+                    backpressure is a required part of the Reactive Streams contract rather than an
+                    opt-in feature, every conforming publisher and subscriber cooperates on it
+                    automatically, which is why most application code never has to implement rate
+                    limiting by hand.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>What concrete signals in a real project would justify choosing WebFlux over Spring MVC?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The strongest signal is high concurrency combined with I/O-bound request
+                    handling — a service fielding a large number of simultaneous requests where each
+                    request spends most of its time waiting on slow downstream calls (multiple
+                    chained service-to-service calls, a high-throughput message stream, or many
+                    external APIs per request) rather than doing CPU-bound work. Just as important is
+                    whether the <em>entire</em> request path can realistically be made non-blocking —
+                    data access included, via R2DBC instead of JPA — since a reactive controller
+                    sitting on top of a blocking repository gets none of the benefit while still
+                    paying the complexity cost. Absent both of those, a typical CRUD API with
+                    moderate concurrency and JPA already in place is better served by sticking with
+                    Spring MVC.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-13.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 13: Containerization &amp; Deployment</span>
+          </a>
+          <a href="week-15.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 15: Advanced Spring Data — Specifications, Projections &amp; Query Optimization →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

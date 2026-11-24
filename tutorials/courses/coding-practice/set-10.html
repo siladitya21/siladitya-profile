@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 10: Promises (JS) &amp; Asyncio (Python) — CodeVerse Creatives</title>
+<meta name="description" content="Module 10 of Coding Practice: 10 async problems pairing JavaScript Promises against Python asyncio — sleep, sequential vs parallel execution, Promise.all/race/allSettled equivalents, timeouts, retries and concurrency limits — fully commented." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="coding-practice">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+<main>
+<!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../coding-practice/index.html">Coding Practice</a>
+        <span>/</span>
+        <a href="../coding-practice/index.html#modules">Module 10 · Promises &amp; Asyncio</a>
+        <span>/</span>
+        <span aria-current="page">Problems 91–100</span>
+      </div>
+
+      <h1>Module 10: Promises (JS) &amp; Asyncio (Python)</h1>
+      <p class="lesson-header__lede">
+        This is the one module where the two languages genuinely diverge in
+        mechanics, not just syntax — but the underlying ideas (a value that
+        arrives later, waiting for one or many of them, racing, timing out,
+        limiting how many run at once) are identical. JavaScript's
+        <code>Promise</code>/<code>async</code>/<code>await</code> is matched here against
+        Python's <code>asyncio</code>, function for function.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 10 of 12</span>
+        <span class="chip">Problems 91–100</span>
+        <span class="chip">JS + Python</span>
+        <span class="chip">~60 Min</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this module, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain why <code>Promise.all</code>/<code>asyncio.gather</code> is faster than awaiting tasks one at a time</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Match every major <code>Promise</code> static method to its closest <code>asyncio</code> equivalent</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Add a timeout and a concurrency limit to a batch of async operations in either language</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#problems"><span>1</span> Problems 91–100</a>
+        <a href="#recap"><span>2</span> Key Takeaways</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="problems">
+            <h2>1. Problems 91–100</h2>
+            <p>
+              Same format as the previous modules: expand a problem to see the approach and both
+              commented solutions. Several problems here reuse a shared helper —
+              a <code>task(id, duration)</code> function that waits, then returns a label — to keep
+              the timing comparisons easy to follow.
+            </p>
+
+            <div class="quiz-list">
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P91</span>
+                  <div class="week-item__heading">
+                    <h4>Sleep / Delay</h4>
+                    <p>Wait 2 seconds, then continue.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> JavaScript has no built-in sleep — wrap <code>setTimeout</code> in a Promise that resolves once the timer fires, then <code>await</code> it. Python's <code>asyncio</code> ships <code>sleep()</code> directly.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">sleep.js</div>
+                      <pre><code>// A Promise that resolves after a timeout is the standard way to "await" time
+// passing in JavaScript -- there's no built-in sleep() function.
+function sleep(ms) {
+  return new Promise((resolve) =&gt; setTimeout(resolve, ms));
+}
+
+async function demo() {
+  console.log("Waiting...");
+  await sleep(2000);
+  console.log("Executed after 2 seconds");
+}
+
+demo();</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">sleep.py</div>
+                      <pre><code>import asyncio
+
+async def demo():
+    print("Waiting...")
+    await asyncio.sleep(2)  # Python's asyncio ships sleep() directly -- no wrapper needed
+    print("Executed after 2 seconds")
+
+asyncio.run(demo())</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P92</span>
+                  <div class="week-item__heading">
+                    <h4>Create and Resolve a Promise Manually</h4>
+                    <p>Reject on an invalid ID, resolve with a name otherwise.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> a <code>new Promise(executor)</code> runs its executor immediately; calling <code>resolve()</code> or <code>reject()</code> settles it. A Python coroutine is the closest equivalent — defining it doesn't run it, awaiting it does, and raising an exception is how it "rejects."</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">fetch-user-name.js</div>
+                      <pre><code>// The executor function runs immediately; calling resolve() or reject() settles
+// the Promise, which .then()/await can react to afterward.
+function fetchUserName(userId) {
+  return new Promise((resolve, reject) =&gt; {
+    if (userId &lt;= 0) {
+      reject(new Error("Invalid user ID"));
+    } else {
+      resolve(`User${userId}`);
+    }
+  });
+}
+
+async function demo() {
+  const name = await fetchUserName(42);
+  console.log(name); // "User42"
+}
+
+demo();</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">fetch_user_name.py</div>
+                      <pre><code>import asyncio
+
+async def fetch_user_name(user_id: int) -&gt; str:
+    """A coroutine is Python's Promise equivalent -- calling it doesn't run it yet;
+    awaiting it does, and raising an exception is how it "rejects"."""
+    if user_id &lt;= 0:
+        raise ValueError("Invalid user ID")
+    return f"User{user_id}"
+
+async def demo():
+    name = await fetch_user_name(42)
+    print(name)  # "User42"
+
+asyncio.run(demo())</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P93</span>
+                  <div class="week-item__heading">
+                    <h4>Run Async Tasks Sequentially</h4>
+                    <p>Three 300ms tasks, one after another, take ~900ms total.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> awaiting each call before starting the next means the second task doesn't even begin until the first has fully finished — their durations simply add up.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">run-sequentially.js</div>
+                      <pre><code>// Awaiting each call before starting the next means task 2 doesn't begin until
+// task 1 has fully finished -- their delays add up.
+async function task(id, ms) {
+  await sleep(ms);
+  return `Task ${id} done`;
+}
+
+async function runSequentially() {
+  const results = [];
+  results.push(await task(1, 300));
+  results.push(await task(2, 300));
+  results.push(await task(3, 300));
+  return results; // takes roughly 900ms total
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">run_sequentially.py</div>
+                      <pre><code>import asyncio
+
+async def task(task_id: int, seconds: float) -&gt; str:
+    await asyncio.sleep(seconds)
+    return f"Task {task_id} done"
+
+async def run_sequentially() -&gt; list:
+    results = []
+    results.append(await task(1, 0.3))
+    results.append(await task(2, 0.3))
+    results.append(await task(3, 0.3))
+    return results  # takes roughly 0.9s total</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P94</span>
+                  <div class="week-item__heading">
+                    <h4>Run Async Tasks in Parallel</h4>
+                    <p>The same three tasks, started together, take ~300ms total.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> <code>Promise.all</code>/<code>asyncio.gather</code> start every task immediately instead of one at a time, then wait for all of them together — the total time becomes roughly the <em>slowest</em> single task, not the sum of all of them.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">run-in-parallel.js</div>
+                      <pre><code>// Promise.all() starts every task immediately and waits for all of them --
+// the total time is roughly the SLOWEST task, not the sum of all of them.
+async function runInParallel() {
+  const results = await Promise.all([
+    task(1, 300),
+    task(2, 300),
+    task(3, 300),
+  ]);
+  return results; // takes roughly 300ms total, not 900ms
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">run_in_parallel.py</div>
+                      <pre><code>import asyncio
+
+async def run_in_parallel() -&gt; list:
+    """asyncio.gather() is Python's Promise.all() -- run everything concurrently,
+    wait for all of it, and get results back in the original order."""
+    results = await asyncio.gather(
+        task(1, 0.3),
+        task(2, 0.3),
+        task(3, 0.3),
+    )
+    return results  # takes roughly 0.3s total, not 0.9s</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P95</span>
+                  <div class="week-item__heading">
+                    <h4>Race Multiple Tasks, Take Whichever Finishes First</h4>
+                    <p>A 500ms task and a 100ms task race — the fast one wins.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> <code>Promise.race</code> settles the instant the <em>first</em> promise settles, win or lose — the rest keep running in the background but their results are ignored. <code>asyncio</code> needs one extra step: cancelling the losing tasks yourself.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">race-example.js</div>
+                      <pre><code>// Promise.race() settles as soon as the FIRST promise settles -- the others
+// keep running in the background but their results are ignored.
+async function raceExample() {
+  const winner = await Promise.race([
+    task("slow", 500),
+    task("fast", 100),
+  ]);
+  return winner; // "Task fast done"
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">race_example.py</div>
+                      <pre><code>import asyncio
+
+async def race_example() -&gt; str:
+    """asyncio.wait(..., return_when=FIRST_COMPLETED) is the closest match to
+    Promise.race() -- it also leaves you to cancel the losers yourself."""
+    tasks = [asyncio.create_task(task("slow", 0.5)), asyncio.create_task(task("fast", 0.1))]
+    done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+    for p in pending:
+        p.cancel()  # Promise.race() doesn't cancel losers automatically -- asyncio does need this
+    return done.pop().result()  # "Task fast done"</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P96</span>
+                  <div class="week-item__heading">
+                    <h4>Handle Multiple Failures Without Stopping Early</h4>
+                    <p>One task fails, two succeed — report all three outcomes.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> <code>Promise.all</code>/plain <code>gather()</code> abort the moment any one task fails. <code>Promise.allSettled</code> waits for every task regardless and reports each one's individual outcome — Python's version is <code>gather(return_exceptions=True)</code>, which returns failures as exception objects instead of raising.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">settle-all.js</div>
+                      <pre><code>// Promise.all() rejects immediately if ANY promise rejects. Promise.allSettled()
+// instead waits for every promise and reports each one's outcome individually.
+async function settleAll() {
+  const results = await Promise.allSettled([
+    Promise.resolve("ok"),
+    Promise.reject(new Error("failed")),
+    Promise.resolve("ok too"),
+  ]);
+  return results.map((r) =&gt; r.status); // ["fulfilled", "rejected", "fulfilled"]
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">settle_all.py</div>
+                      <pre><code>import asyncio
+
+async def _ok():
+    return "ok"
+
+async def _fails():
+    raise ValueError("failed")
+
+async def settle_all() -&gt; list:
+    """return_exceptions=True turns gather() into allSettled(): failures come back
+    as exception objects in the results list instead of raising immediately."""
+    results = await asyncio.gather(_ok(), _fails(), _ok(), return_exceptions=True)
+    return ["rejected" if isinstance(r, Exception) else "fulfilled" for r in results]
+    # ["fulfilled", "rejected", "fulfilled"]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P97</span>
+                  <div class="week-item__heading">
+                    <h4>Add a Timeout to an Async Operation</h4>
+                    <p>Give up on a 2-second task if it hasn't finished in 500ms.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> JavaScript builds a timeout by racing the real operation against a Promise that rejects after a deadline — whichever settles first wins. Python's <code>asyncio.wait_for()</code> bakes that exact pattern in as a single call.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">with-timeout.js</div>
+                      <pre><code>// Race the real operation against a Promise that rejects after a deadline --
+// whichever settles first wins.
+function withTimeout(promise, ms) {
+  const timeout = new Promise((_, reject) =&gt;
+    setTimeout(() =&gt; reject(new Error("Timed out")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+async function demo() {
+  try {
+    const result = await withTimeout(task("slow", 2000), 500);
+    console.log(result);
+  } catch (err) {
+    console.log(err.message); // "Timed out"
+  }
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">with_timeout.py</div>
+                      <pre><code>import asyncio
+
+async def demo():
+    try:
+        # asyncio.wait_for() bakes the race-against-a-deadline pattern in directly.
+        result = await asyncio.wait_for(task("slow", 2), timeout=0.5)
+        print(result)
+    except asyncio.TimeoutError:
+        print("Timed out")
+
+asyncio.run(demo())</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P98</span>
+                  <div class="week-item__heading">
+                    <h4>Retry a Failing Async Operation</h4>
+                    <p>Module 9's retry(), rewritten for an async task.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> identical structure to Module 9's synchronous <code>retry()</code>, but each attempt is awaited, since the operation being retried is itself asynchronous.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">retry-async.js</div>
+                      <pre><code>// Same idea as the synchronous retry() from Module 9, but every attempt is
+// awaited since the operation itself is asynchronous.
+async function retryAsync(fn, maxAttempts) {
+  for (let attempt = 1; attempt &lt;= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt === maxAttempts) throw err;
+      console.log(`Attempt ${attempt} failed, retrying...`);
+    }
+  }
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">retry_async.py</div>
+                      <pre><code>async def retry_async(fn, max_attempts: int):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return await fn()
+        except Exception:
+            if attempt == max_attempts:
+                raise
+            print(f"Attempt {attempt} failed, retrying...")</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P99</span>
+                  <div class="week-item__heading">
+                    <h4>Limit Concurrency (Promise Pool)</h4>
+                    <p>Run 100 tasks, but never more than 5 at the same time.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> instead of starting every task at once, cap how many run concurrently — each finished task frees a slot for the next one to start. Python's <code>asyncio.Semaphore</code> implements exactly this limiter as a reusable primitive.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">promise-pool.js</div>
+                      <pre><code>// Instead of starting every task at once, cap how many run at the same time --
+// each finished task pulls the next one off the queue.
+async function promisePool(tasks, limit) {
+  const results = [];
+  const executing = new Set();
+  for (const [index, taskFn] of tasks.entries()) {
+    const p = taskFn().then((result) =&gt; { results[index] = result; executing.delete(p); });
+    executing.add(p);
+    if (executing.size &gt;= limit) {
+      await Promise.race(executing); // wait for a slot to free up before adding more
+    }
+  }
+  await Promise.all(executing);
+  return results;
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">promise_pool.py</div>
+                      <pre><code>import asyncio
+
+async def promise_pool(task_fns: list, limit: int) -&gt; list:
+    """A Semaphore is Python's built-in concurrency limiter: acquire() blocks once
+    `limit` tasks are already running, and release() lets the next one through."""
+    semaphore = asyncio.Semaphore(limit)
+
+    async def run_with_limit(task_fn):
+        async with semaphore:
+            return await task_fn()
+
+    return await asyncio.gather(*(run_with_limit(fn) for fn in task_fns))</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P100</span>
+                  <div class="week-item__heading">
+                    <h4>Async Queue — Process Items One at a Time</h4>
+                    <p>A worker loop that handles one queued item after another.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> a simple worker loop — pull the next item off the front of the queue and await its handler before moving on to the one after it. This is concurrency limit 1 as a special case of problem 99.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">process-queue.js</div>
+                      <pre><code>// A simple worker loop: pull items off the front of the queue and await each
+// one's processing before moving to the next.
+async function processQueue(items, handler) {
+  const results = [];
+  const queue = [...items];
+  while (queue.length &gt; 0) {
+    const item = queue.shift(); // take the next item off the front
+    results.push(await handler(item));
+  }
+  return results;
+}</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">process_queue.py</div>
+                      <pre><code>import asyncio
+
+async def process_queue(items: list, handler) -&gt; list:
+    """collections.deque would be more efficient than a list for repeated pop(0),
+    but the shape of the algorithm is identical either way."""
+    results = []
+    queue = list(items)
+    while queue:
+        item = queue.pop(0)  # take the next item off the front
+        results.append(await handler(item))
+    return results</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+          </section>
+
+          <section id="recap">
+            <h2>2. Key Takeaways</h2>
+            <ul>
+              <li>Sequential vs. parallel is the single biggest lever on total runtime: <code>await</code>-ing tasks one at a time adds their durations; <code>Promise.all</code>/<code>asyncio.gather</code> runs them concurrently and takes roughly the slowest one.</li>
+              <li>Every <code>Promise</code> static method has a direct <code>asyncio</code> counterpart: <code>all</code>→<code>gather</code>, <code>race</code>→<code>wait(FIRST_COMPLETED)</code>, <code>allSettled</code>→<code>gather(return_exceptions=True)</code> — the concepts transfer even though the APIs look different.</li>
+              <li>A concurrency limit (Semaphore/pool) exists to protect a downstream resource — a rate-limited API, a database connection pool — from being hit by every task at once, even when nothing stops you from launching them all simultaneously.</li>
+            </ul>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="set-09.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Module 9: Closures &amp; Function Composition</span>
+          </a>
+          <a href="set-11.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Module 11: Array-Method Polyfills</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 13: Observability &amp; Production Readiness — CodeVerse Creatives</title>
+<meta name="description" content="Week 13 of the Node.js & Express curriculum: structured JSON logging with request-correlation IDs via AsyncLocalStorage, liveness vs. readiness health checks, and basic metrics instrumentation." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="node-express">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../node-express/index.html">Node.js &amp; Express Syllabus</a>
+        <span>/</span>
+        <a href="../node-express/index.html#timeline">Module 10 · Observability &amp; Production Readiness</a>
+        <span>/</span>
+        <span aria-current="page">Week 13</span>
+      </div>
+
+      <h1>Week 13: Observability &amp; Production Readiness</h1>
+      <p class="lesson-header__lede">
+        Week 12 split your system into an API process and one or more worker processes — which
+        means "what happened to this request" is no longer answerable by reading one process's
+        console output top to bottom. This week gives you the tools to answer it anyway: structured
+        JSON logs tagged with a request-correlation ID that follows a request across middleware,
+        route handlers and queued jobs; liveness and readiness endpoints an orchestrator can poll to
+        know whether your app is alive and able to serve traffic; and basic timing metrics. Week
+        14's deployment onto a container orchestrator assumes exactly these health-check endpoints
+        already exist.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 10 of 22</span>
+        <span class="chip">Week 13 of 26</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Emit structured JSON logs tagged with a per-request correlation ID using <code>AsyncLocalStorage</code></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Implement separate liveness and readiness health-check endpoints and explain when each matters</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Instrument request latency as a Prometheus-compatible metric</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#structured-logging"><span>1</span> Structured JSON Logging</a>
+        <a href="#correlation-ids"><span>2</span> Request Correlation IDs with AsyncLocalStorage</a>
+        <a href="#health-checks"><span>3</span> Liveness &amp; Readiness Health Checks</a>
+        <a href="#metrics"><span>4</span> Metrics &amp; Timing Instrumentation</a>
+        <a href="#tracing"><span>5</span> Tracing with OpenTelemetry</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="structured-logging">
+            <h2>1. Structured JSON Logging</h2>
+            <p>
+              <code>console.log</code> is fine for local development and a genuine liability in
+              production: it produces free-text lines that a log aggregator (Datadog, CloudWatch,
+              Loki) can't reliably filter or query on fields like status code or user ID.
+              <strong>Structured logging</strong> emits each log line as a JSON object instead, so
+              every field is queryable. <code>pino</code> is the standard choice for Node — it's
+              fast and JSON-first by default.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>npm install pino
+npm install -D pino-pretty
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/lib/logger.ts</div>
+              <pre><code>import pino from "pino";
+
+const isDev = process.env.NODE_ENV !== "production";
+
+export const logger = pino({
+  level: process.env.LOG_LEVEL ?? "info",
+  // In dev, pretty-print for humans reading a terminal. In production,
+  // emit raw JSON -- that's what the log aggregator actually wants.
+  transport: isDev ? { target: "pino-pretty" } : undefined,
+  redact: ["req.headers.authorization", "req.headers.cookie", "*.password"],
+});
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">a production log line, unformatted</div>
+              <pre><code>{"level":30,"time":1735682400123,"msg":"user created","userId":"usr_9f2","route":"/signup"}
+</code></pre>
+            </div>
+
+            <p>
+              Every field in that object is now something a log platform can filter, group, and
+              alert on — "show me every log line where <code>route</code> is <code>/signup</code>
+              and <code>level</code> is 50 (error)" is a query, not a manual grep through
+              free-text output.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Redact secrets at the logger, not per call site</strong>
+                <p>The <code>redact</code> option strips sensitive fields (authorization headers, cookies, password fields) from every log line automatically, regardless of which route or middleware logged it. Relying on every individual <code>logger.info(...)</code> call to remember to omit secrets is exactly the kind of thing that eventually gets missed once.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="correlation-ids">
+            <h2>2. Request Correlation IDs with AsyncLocalStorage</h2>
+            <p>
+              A single user action can touch multiple log lines across middleware, a route handler,
+              and — as of Week 12 — a queued job processed by a completely different worker
+              process. A <strong>correlation ID</strong> (or request ID) is a unique value generated
+              once per request and attached to every log line produced while handling it, so you can
+              filter your log aggregator to that one ID and see the entire story.
+            </p>
+            <p>
+              Threading that ID through every function call as an extra parameter is invasive and
+              easy to forget. Node's built-in <code>AsyncLocalStorage</code> solves this properly:
+              it's a store that's automatically available to any code running "underneath" an async
+              call, without passing it explicitly.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">src/lib/request-context.ts</div>
+              <pre><code>import { AsyncLocalStorage } from "node:async_hooks";
+
+type RequestContext = { requestId: string };
+
+export const requestContext = new AsyncLocalStorage&lt;RequestContext&gt;();
+
+export function getRequestId(): string {
+  return requestContext.getStore()?.requestId ?? "no-request-context";
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/middleware/request-id.ts</div>
+              <pre><code>import { randomUUID } from "node:crypto";
+import type { Request, Response, NextFunction } from "express";
+import { requestContext } from "../lib/request-context.js";
+
+export function requestIdMiddleware(req: Request, res: Response, next: NextFunction): void {
+  // Reuse an upstream ID (e.g. from a load balancer or gateway) if present,
+  // so a request's ID stays the same across every hop, not just inside this service.
+  const requestId = (req.headers["x-request-id"] as string | undefined) ?? randomUUID();
+  res.setHeader("x-request-id", requestId);
+
+  requestContext.run({ requestId }, () =&gt; {
+    next();
+  });
+}
+</code></pre>
+            </div>
+
+            <p>
+              Mount it as the very first middleware, before anything else runs, then have your
+              logger automatically pull the ID out of the store on every call:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">src/lib/logger.ts (extended)</div>
+              <pre><code>import pino from "pino";
+import { getRequestId } from "./request-context.js";
+
+const base = pino({ level: process.env.LOG_LEVEL ?? "info" });
+
+export const logger = {
+  info: (obj: Record&lt;string, unknown&gt;, msg: string) =&gt;
+    base.info({ ...obj, requestId: getRequestId() }, msg),
+  error: (obj: Record&lt;string, unknown&gt;, msg: string) =&gt;
+    base.error({ ...obj, requestId: getRequestId() }, msg),
+};
+</code></pre>
+            </div>
+
+            <p>
+              Now any code deep inside a route handler, a service function, or an error handler can
+              call <code>logger.info(...)</code> and the correlation ID appears automatically —
+              nothing had to pass it down manually. Extend the same job payload in Week 12's queue
+              to carry the originating <code>requestId</code>, and the worker's logs can be
+              correlated back to the request that enqueued them too.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Mount request-ID middleware before everything else</strong>
+                <p>Register it as the first item in your middleware chain, ahead of body parsing, the timing middleware from Week 11, and your routers. Any middleware or route that runs before it won't have a request ID available in its own log lines.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="health-checks">
+            <h2>3. Liveness &amp; Readiness Health Checks</h2>
+            <p>
+              Container orchestrators like Kubernetes (and the platform you'll deploy to in Week 14)
+              need a way to ask your app two genuinely different questions, and conflating them
+              causes real production incidents:
+            </p>
+            <ul>
+              <li><strong>Liveness</strong> — "is this process still running and not deadlocked?" A failing liveness check tells the orchestrator to kill and restart the container.</li>
+              <li><strong>Readiness</strong> — "is this instance currently able to serve real traffic?" A failing readiness check tells the orchestrator to stop routing new requests here, without restarting anything.</li>
+            </ul>
+            <p>
+              A liveness check should be cheap and dependency-free — it answers "is the Node
+              process itself responsive," nothing more:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">src/routes/health.ts</div>
+              <pre><code>import { Router } from "express";
+import { prisma } from "../lib/prisma.js";
+import { redis } from "../lib/redis.js";
+
+export const healthRouter = Router();
+
+// Liveness: just confirm the process can respond at all. No dependency checks --
+// if the database is down but the process is fine, restarting the container
+// would NOT fix the database and would just add a pointless restart loop.
+healthRouter.get("/healthz", (_req, res) =&gt; {
+  res.status(200).json({ status: "ok" });
+});
+
+// Readiness: confirm this instance can actually serve a real request right now.
+healthRouter.get("/readyz", async (_req, res) =&gt; {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    await redis.ping();
+    res.status(200).json({ status: "ready" });
+  } catch (err) {
+    res.status(503).json({ status: "not ready", error: (err as Error).message });
+  }
+});
+</code></pre>
+            </div>
+
+            <p>
+              The difference matters most exactly when a dependency is briefly unavailable: if a
+              database connection blip made <code>/healthz</code> fail too, the orchestrator would
+              restart every instance of your app in response to a problem a restart can't fix, while
+              genuinely making things worse (a burst of container restarts under a database outage,
+              instead of instances simply pausing traffic until the database recovers).
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Keep liveness dependency-free, always</strong>
+                <p>It's tempting to add a database ping to <code>/healthz</code> "just to be thorough." Resist it — that single check is the one your orchestrator uses to decide whether to kill your container, and you never want an external dependency's downtime to trigger unnecessary restarts of a perfectly healthy process.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="metrics">
+            <h2>4. Metrics &amp; Timing Instrumentation</h2>
+            <p>
+              Logs answer "what happened on this one request." Metrics answer "how is the system
+              behaving in aggregate, right now" — request rate, error rate, and latency
+              distribution. <code>prom-client</code> is the standard Node library for exposing
+              metrics in the Prometheus format most monitoring stacks (Prometheus, Grafana, Datadog)
+              can scrape directly.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>npm install prom-client
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/lib/metrics.ts</div>
+              <pre><code>import client from "prom-client";
+
+client.collectDefaultMetrics(); // process CPU, memory, event loop lag, etc.
+
+export const httpRequestDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "HTTP request duration in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5],
+});
+
+export const registry = client.register;
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/middleware/metrics.ts</div>
+              <pre><code>import type { Request, Response, NextFunction } from "express";
+import { httpRequestDuration } from "../lib/metrics.js";
+
+export function metricsMiddleware(req: Request, res: Response, next: NextFunction): void {
+  const end = httpRequestDuration.startTimer();
+
+  res.on("finish", () =&gt; {
+    end({
+      method: req.method,
+      // req.route.path is the pattern ("/products/:id"), not the literal URL --
+      // using the literal URL would create a separate metric series per product ID.
+      route: req.route?.path ?? "unmatched",
+      status_code: res.statusCode,
+    });
+  });
+
+  next();
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/routes/metrics.ts</div>
+              <pre><code>import { Router } from "express";
+import { registry } from "../lib/metrics.js";
+
+export const metricsRouter = Router();
+
+metricsRouter.get("/metrics", async (_req, res) =&gt; {
+  res.set("Content-Type", registry.contentType);
+  res.send(await registry.metrics());
+});
+</code></pre>
+            </div>
+
+            <p>
+              A <strong>histogram</strong> (rather than a running average) is the right shape for
+              latency: it buckets observations so you can compute percentiles like p50, p95 and p99
+              after the fact. An average of 80ms can hide a p99 of 4 seconds affecting one in a
+              hundred users; a histogram makes that tail visible instead of averaging it away.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Watch cardinality on labels</strong>
+                <p>Every unique combination of label values (<code>method</code>, <code>route</code>, <code>status_code</code>) creates a new time series in Prometheus. Using the route <em>pattern</em> instead of the raw URL is what keeps that number bounded — a raw URL label would create one series per unique product ID ever requested, which can silently overwhelm a metrics backend.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="tracing">
+            <h2>5. Distributed Tracing with OpenTelemetry</h2>
+            <p>
+              Logs tell you <em>what</em> happened, metrics tell you <em>how often and how slow</em>.
+              Neither tells you <em>where the time went</em> inside one slow request: was it the
+              Postgres query, the Redis lookup, or the call to another service? A <strong>trace</strong>
+              answers that. It's a tree of timed <strong>spans</strong>, one per operation, sharing a
+              trace ID. That ID even travels across service boundaries in a <code>traceparent</code>
+              header, so a request through Week 17's gRPC services shows up as one trace.
+            </p>
+            <p>
+              <strong>OpenTelemetry</strong> (OTel) is the vendor-neutral standard for this. You
+              instrument once, and the same data can go to Jaeger, Grafana Tempo, Honeycomb, Datadog,
+              or any other backend.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — zero-code instrumentation</div>
+              <pre><code>npm install @opentelemetry/api @opentelemetry/auto-instrumentations-node
+
+# A local trace viewer: Jaeger UI on :16686, receiving OTLP on :4318
+docker run --rm -p 16686:16686 -p 4318:4318 jaegertracing/jaeger:latest
+
+# Start the API with instrumentation loaded BEFORE any app code
+OTEL_SERVICE_NAME=blog-api \
+OTEL_TRACES_EXPORTER=otlp \
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 \
+node --import @opentelemetry/auto-instrumentations-node/register dist/main.js
+</code></pre>
+            </div>
+
+            <p>
+              With no code changes, every incoming Express request, outgoing <code>fetch</code>/HTTP
+              call, Postgres query, and Redis command now becomes a span. Open
+              <code>http://localhost:16686</code>, pick <code>blog-api</code>, and you'll see the
+              waterfall for each request. (For Prisma's own query spans, add
+              <code>@prisma/instrumentation</code>.) The pino instrumentation also adds
+              <code>trace_id</code> and <code>span_id</code> to every log line, so you can jump from a
+              log line to its trace. That's Section 2's correlation idea, standardised across services.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why <code>--import</code>, and why first</strong>
+                <p>Auto-instrumentation works by patching libraries like <code>express</code> and <code>pg</code> as they're loaded. If your app imports them before OTel starts, they're never patched and you get no spans. That's why it's loaded with <code>--import</code> on the command line rather than imported somewhere in <code>main.ts</code>. Exact setup for ES modules has changed between OTel releases, so check the OpenTelemetry JS docs for your version if spans don't appear.</p>
+              </div>
+            </div>
+
+            <p>Auto-instrumentation covers I/O. For your own expensive logic, add a span by hand:</p>
+
+            <div class="code-block">
+              <div class="code-block__label">src/services/report.ts — a custom span</div>
+              <pre><code>import { trace, SpanStatusCode } from "@opentelemetry/api";
+
+const tracer = trace.getTracer("blog-api");
+
+export async function buildMonthlyReport(userId: string) {
+  return tracer.startActiveSpan("buildMonthlyReport", async (span) =&gt; {
+    span.setAttribute("user.id", userId);
+    try {
+      const posts = await loadPosts(userId);     // auto-instrumented DB span nests under this one
+      span.setAttribute("report.post_count", posts.length);
+      return summarise(posts);
+    } catch (err) {
+      span.recordException(err as Error);
+      span.setStatus({ code: SpanStatusCode.ERROR });
+      throw err;
+    } finally {
+      span.end();                                // always end the span, or it never gets exported
+    }
+  });
+}
+</code></pre>
+            </div>
+
+            <p>
+              In production you'd usually send data to an <strong>OpenTelemetry Collector</strong>
+              rather than straight to a vendor. The Collector batches and samples the data (for
+              example, keeping every error trace but only 10% of successful ones) and forwards it, so
+              switching vendors is a config change rather than a code change. OTel can carry your
+              metrics too. <code>prom-client</code> from Section 4 is still perfectly fine, and many
+              teams run both.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Make your API observable end to end</h3>
+              <p>Wire up structured logging, correlation IDs, both health-check endpoints, and a latency metric on a real app, then prove each one works.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Add <code>pino</code> logging and replace every <code>console.log</code>/<code>console.error</code> in your route handlers with the structured logger.</li>
+                <li>Add the request-ID middleware and <code>AsyncLocalStorage</code> context from Section 2, mounted first, and confirm the same <code>requestId</code> appears in every log line for a single request, including one logged from a helper function two calls deep.</li>
+                <li>Add <code>/healthz</code> and <code>/readyz</code> exactly as in Section 3. Manually stop your Redis or Postgres container and confirm <code>/readyz</code> returns 503 while <code>/healthz</code> still returns 200.</li>
+                <li>Add the metrics middleware and <code>/metrics</code> endpoint, hit a few routes a handful of times, and confirm <code>http_request_duration_seconds</code> shows up with per-route buckets when you curl <code>/metrics</code>.</li>
+                <li>Deliberately trigger an error in one route and confirm the resulting error log line includes the <code>requestId</code>, so you could trace it back to the exact request that caused it.</li>
+                <li>Add OpenTelemetry per Section 5, run Jaeger locally, and find the trace for a request that hits both Postgres and Redis. Then wrap one piece of your own logic in a custom span, add an artificial 300&nbsp;ms delay inside it, and confirm the Jaeger waterfall shows exactly where the time went.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Use <code>docker stop</code> (or pause the container) on Redis or Postgres rather than uninstalling it, so you can bring it right back with <code>docker start</code> once you've confirmed <code>/readyz</code> reacted correctly — this makes the exercise fast to repeat.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Five quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>What goes wrong if your liveness check also verifies the database connection, and the database has a brief outage?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The orchestrator interprets a failing liveness check as "this process is broken, kill and restart it" -- but restarting a perfectly healthy Node process does nothing to fix a database that's down, so every instance of your app gets needlessly killed and restarted, possibly in a repeating loop, while the real problem (the database) is completely unaffected. Readiness exists precisely to express "temporarily can't serve traffic" without triggering a pointless restart.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why does <code>AsyncLocalStorage</code> let a deeply nested helper function access the request ID without it being passed as a parameter?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>AsyncLocalStorage.run(store, callback)</code> makes that store implicitly available to the callback and to every async operation that gets scheduled underneath it -- Node tracks and propagates that context automatically across <code>await</code> boundaries and callbacks, similar to how a thread-local variable works in a threaded language. Any code executing as part of that same asynchronous chain can call <code>getStore()</code> and retrieve it, with no explicit parameter threading required.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why use the route pattern (<code>/products/:id</code>) rather than the literal request URL as a metric label?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Prometheus creates a separate time series for every unique combination of label values it sees. The literal URL contains a different product ID per request, so using it as a label would create one time series per product ever requested -- a number that grows without bound and can overwhelm the metrics backend. The route pattern is the same for every request to that endpoint regardless of which ID was in the URL, keeping the label's cardinality small and fixed.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why can an average latency of 80ms hide a serious performance problem that a histogram-based p99 would reveal?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An average blends every request into a single number, so a small fraction of very slow requests (say, 1% taking 4 seconds) can be completely diluted by the other 99% being fast, leaving the average looking healthy. A histogram preserves the distribution of individual observations, so you can compute a percentile like p99 that specifically surfaces "how slow is the request at the unlucky end of the distribution" -- which is exactly the experience a meaningful slice of real users are actually having.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q5</span>
+                  <div class="week-item__heading">
+                    <h4>Your p99 latency metric jumped to 3 seconds. Why is a trace more useful than the metric or the logs for finding the cause?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The metric tells you <em>that</em> some requests are slow, and logs tell you what each request did, but neither shows how those 3 seconds were divided up. A trace of one slow request breaks it into timed spans (Express handler, each Postgres query, each Redis call, each downstream HTTP or gRPC call), so you can see immediately that, say, 2.8 seconds went to one unindexed query. Metrics show that a problem exists; traces locate it.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-12.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 12: Background Jobs &amp; Queues</span>
+          </a>
+          <a href="week-14.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 14: Containerization &amp; Deployment →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

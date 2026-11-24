@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 11: Kubernetes Fundamentals — CodeVerse Creatives</title>
+<meta name="description" content="Week 11 of the DevOps &amp; Cloud curriculum: Pods, Deployments and Services, the Kubernetes control plane vs. worker nodes, kubectl and declarative YAML manifests, ConfigMaps and Secrets, and running a local cluster with kind or minikube." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="devops-cloud">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../devops-cloud/index.html">DevOps &amp; Cloud Syllabus</a>
+        <span>/</span>
+        <a href="../devops-cloud/index.html#timeline">Module 8 · Kubernetes Fundamentals</a>
+        <span>/</span>
+        <span aria-current="page">Week 11</span>
+      </div>
+
+      <h1>Week 11: Kubernetes Fundamentals</h1>
+      <p class="lesson-header__lede">
+        You've spent the last two weeks writing Terraform to declare AWS infrastructure and
+        letting a control loop reconcile reality to match it — Kubernetes applies that exact same
+        idea one layer up, inside a cluster of machines, to keep your containers running. The
+        <code>kubeconfig</code> and service account tokens you'll use here follow the same
+        keypair-trust model as the SSH keys from Week 1 and the AWS access keys from Week 8. This
+        week gets you from zero to a running app on a local cluster: Pods, Deployments and
+        Services, the control plane/worker node split, declarative YAML with <code>kubectl</code>,
+        and ConfigMaps and Secrets — the foundation Week 12 builds on for Ingress, autoscaling and
+        Helm.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 8 of 22</span>
+        <span class="chip">Week 11 of 26</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain what Pods, Deployments and Services are for, and how labels wire them together</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Describe the control plane vs. worker node split and write declarative YAML manifests</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Configure ConfigMaps and Secrets, and run a real app on a local <code>kind</code> cluster</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#workloads"><span>1</span> Pods, Deployments &amp; Services</a>
+        <a href="#control-plane"><span>2</span> Control Plane vs. Worker Nodes</a>
+        <a href="#kubectl-yaml"><span>3</span> kubectl &amp; Declarative YAML</a>
+        <a href="#configmaps-secrets"><span>4</span> ConfigMaps &amp; Secrets</a>
+        <a href="#local-clusters"><span>5</span> Local Clusters: kind &amp; minikube</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="workloads">
+            <h2>1. Pods, Deployments &amp; Services</h2>
+            <p>
+              A <strong>Pod</strong> is the smallest deployable unit in Kubernetes — not a
+              container. A Pod wraps one or more containers that share a network namespace (one
+              IP address, one <code>localhost</code>) and can share storage volumes. In practice
+              you'll run one container per Pod almost always, with a second "sidecar" container
+              only for things tightly coupled to the main one, like a log shipper.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pod.yaml</div>
+              <pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: web-single
+  labels:
+    app: web
+spec:
+  containers:
+    - name: web
+      image: ghcr.io/acme/web-app:1.4.0
+      ports:
+        - containerPort: 8080
+</code></pre>
+            </div>
+
+            <p>
+              You'll almost never create a bare Pod, though — Pods are ephemeral and Kubernetes
+              won't reschedule one that dies on its own. A <strong>Deployment</strong> wraps Pods
+              in a desired-state description: how many replicas, which container image, how to
+              roll out updates. Under the hood a Deployment manages a <strong>ReplicaSet</strong>,
+              which manages the Pods themselves — you'll interact with the Deployment and rarely
+              touch the ReplicaSet directly.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">deployment.yaml</div>
+              <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/acme/web-app:1.4.0
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+</code></pre>
+            </div>
+
+            <p>
+              Pods get new IP addresses every time they're rescheduled, so nothing should ever
+              talk to a Pod IP directly. A <strong>Service</strong> gives a stable virtual IP and
+              DNS name that load-balances across every Pod matching its label selector — Pods come
+              and go, the Service address doesn't move.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">service.yaml</div>
+              <pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: web-app
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: 8080
+</code></pre>
+            </div>
+
+            <p>
+              The <code>selector: app: web</code> here is the entire mechanism — the Service
+              doesn't know about the Deployment at all, it just watches for any Pod whose labels
+              match and routes traffic to it. This is how you'll swap a Deployment's Pods out from
+              under a Service with zero downtime during a rolling update in Week 12.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Labels are the whole game</strong>
+                <p>Kubernetes has almost no concept of "this Deployment owns that Service." Everything is wired together loosely through label selectors. When something isn't receiving traffic, the first thing to check is always whether the Service's <code>selector</code> actually matches the Pod's <code>labels</code> — a typo here is one of the most common real-world Kubernetes outages.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="control-plane">
+            <h2>2. Control Plane vs. Worker Nodes</h2>
+            <p>
+              A Kubernetes cluster is a set of machines split into two roles. The
+              <strong>control plane</strong> makes decisions; <strong>worker nodes</strong> run
+              your containers. In a managed service like EKS or GKE you never see the control
+              plane machines directly, but understanding what runs there explains almost every
+              piece of <code>kubectl</code> behavior.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">control plane components</div>
+              <pre><code>kube-apiserver     # the front door -- every kubectl command talks to this over HTTPS
+etcd               # distributed key-value store holding all cluster state
+kube-scheduler     # decides which worker node a new Pod should run on
+kube-controller-manager  # runs the reconciliation loops (Deployment, ReplicaSet, ...)
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">worker node components</div>
+              <pre><code>kubelet            # agent that talks to the API server and runs Pods on this node
+kube-proxy         # programs network rules so Services route traffic correctly
+container runtime  # containerd (or CRI-O) -- actually pulls images and runs containers
+</code></pre>
+            </div>
+
+            <p>
+              The reconciliation model is the same idea as Terraform's <code>plan</code>/
+              <code>apply</code> loop, just running continuously instead of on demand. You declare
+              "3 replicas of <code>web-app</code>" in a Deployment; the controller manager
+              compares that desired state against etcd's record of actual state every few
+              seconds, and if a Pod has died it creates a replacement without you doing anything.
+              That's the mechanism behind Kubernetes "self-healing" — there's no magic, just a
+              loop that never stops running.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Desired state, not commands</strong>
+                <p>You never tell Kubernetes "start a Pod" the way you'd tell Docker "run a container." You tell it what the end state should look like, and every controller's entire job is closing the gap between that and reality. This mental model is why <code>kubectl delete pod</code> on a Pod owned by a Deployment doesn't actually remove it for long — a new one appears within seconds, because the desired replica count hasn't changed.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="kubectl-yaml">
+            <h2>3. kubectl &amp; Declarative YAML</h2>
+            <p>
+              <code>kubectl</code> is your one interface to the API server, and it reads its
+              connection details — cluster address, credentials, default namespace — from a
+              <strong><code>kubeconfig</code></strong> file, usually <code>~/.kube/config</code>.
+              You'll switch between clusters (a local <code>kind</code> cluster, a staging EKS
+              cluster) by switching <strong>contexts</strong>.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>kubectl config get-contexts        # list every cluster/user combo kubectl knows about
+kubectl config use-context kind-devops   # switch the active context
+kubectl config set-context --current --namespace=web-app  # default namespace for this context
+</code></pre>
+            </div>
+
+            <p>
+              Almost everything you'll do falls into one of two styles: <strong>imperative</strong>
+              commands that mutate the cluster directly, and <strong>declarative</strong>
+              manifests applied with <code>kubectl apply</code>. This course uses declarative YAML
+              almost exclusively, for the same reason it uses Terraform instead of clicking
+              through the AWS console: the file is the source of truth, it's reviewable in a pull
+              request, and it's the exact same mechanism CI will use to deploy in later weeks.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>kubectl apply -f deployment.yaml -f service.yaml
+kubectl get deployments
+kubectl get pods -o wide
+kubectl describe pod web-app-7d9f6c5b8-x2k4p   # events, restarts, resource usage
+kubectl logs web-app-7d9f6c5b8-x2k4p            # container stdout/stderr
+kubectl logs -f web-app-7d9f6c5b8-x2k4p         # follow, like tail -f
+kubectl exec -it web-app-7d9f6c5b8-x2k4p -- sh  # shell into a running container
+kubectl delete -f deployment.yaml -f service.yaml
+</code></pre>
+            </div>
+
+            <p>
+              Pod names get a random suffix appended by the ReplicaSet, so you'll rarely type them
+              from memory — copy them from <code>kubectl get pods</code>, or use
+              <code>kubectl logs deployment/web-app</code> to target the Deployment directly and
+              let Kubernetes pick a Pod for you.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Generate YAML instead of memorizing it</strong>
+                <p><code>kubectl create deployment web-app --image=ghcr.io/acme/web-app:1.4.0 --dry-run=client -o yaml</code> prints a valid Deployment manifest without touching the cluster. Real Kubernetes engineers scaffold manifests this way constantly and edit the result — nobody writes every field from memory.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="configmaps-secrets">
+            <h2>4. ConfigMaps &amp; Secrets</h2>
+            <p>
+              Baking configuration into a container image means rebuilding the image every time a
+              setting changes — the exact problem environment variables solved for
+              <code>docker run</code> back in Week 3. Kubernetes has two objects for this:
+              <strong>ConfigMaps</strong> for ordinary configuration, and <strong>Secrets</strong>
+              for anything sensitive.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">configmap.yaml</div>
+              <pre><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-app-config
+data:
+  LOG_LEVEL: "info"
+  FEATURE_NEW_CHECKOUT: "true"
+  API_TIMEOUT_MS: "3000"
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — create a Secret from literals</div>
+              <pre><code>kubectl create secret generic web-app-db \
+  --from-literal=DB_USER=app_svc \
+  --from-literal=DB_PASSWORD='S7!kq2vLpR' \
+  --dry-run=client -o yaml > db-secret.yaml
+</code></pre>
+            </div>
+
+            <p>
+              Both get consumed the same way — as environment variables or as mounted files —
+              which is why the split exists at all: it's purely about who's allowed to read the
+              value and how it's stored, not how the app accesses it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">deployment.yaml — consuming both</div>
+              <pre><code>spec:
+  containers:
+    - name: web
+      image: ghcr.io/acme/web-app:1.4.0
+      envFrom:
+        - configMapRef:
+            name: web-app-config
+      env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: web-app-db
+              key: DB_PASSWORD
+</code></pre>
+            </div>
+
+            <p>
+              Critically: a Kubernetes Secret is <strong>base64-encoded, not encrypted</strong>, by
+              default. <code>kubectl get secret web-app-db -o jsonpath='{.data.DB_PASSWORD}' | base64
+              -d</code> reveals the plaintext to anyone with read access to that namespace. That's
+              enough to keep credentials out of your YAML in Git, but it is not a substitute for a
+              real secrets manager — Week 14 covers encrypting Secrets at rest and integrating an
+              external vault.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Never commit a raw Secret manifest</strong>
+                <p>Treat a <code>Secret</code> YAML file exactly like a plaintext password file, because that's effectively what it is. Generate it with <code>kubectl create secret ... --dry-run=client -o yaml</code> into a file that's in <code>.gitignore</code>, or better, use a tool like Sealed Secrets or an external secrets operator so only an encrypted version ever reaches your repository.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="local-clusters">
+            <h2>5. Running a Local Cluster with kind or minikube</h2>
+            <p>
+              You don't need a cloud account to learn Kubernetes. <strong>kind</strong>
+              ("Kubernetes in Docker") runs an entire cluster as Docker containers on your laptop,
+              and is fast enough to spin up and tear down as part of a CI job — which is exactly
+              how you'll use it starting in Week 12.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — install &amp; create a cluster</div>
+              <pre><code># macOS
+brew install kind kubectl
+
+# Linux
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+chmod +x ./kind && sudo mv ./kind /usr/local/bin/kind
+
+kind create cluster --name devops
+kubectl cluster-info --context kind-devops
+</code></pre>
+            </div>
+
+            <p>
+              For a multi-node cluster that more closely mirrors production, give <code>kind</code>
+              a config file instead of relying on the single-node default:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">kind-config.yaml</div>
+              <pre><code>kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>kind create cluster --name devops --config kind-config.yaml
+kubectl get nodes
+# NAME                     STATUS   ROLES           AGE   VERSION
+# devops-control-plane     Ready    control-plane   45s   v1.30.0
+# devops-worker            Ready    &lt;none&gt;          30s   v1.30.0
+# devops-worker2           Ready    &lt;none&gt;          30s   v1.30.0
+</code></pre>
+            </div>
+
+            <p>
+              <strong>minikube</strong> is the older, single-node-by-default alternative and is
+              still common in tutorials — <code>minikube start</code> gets you a similar result,
+              with a built-in dashboard (<code>minikube dashboard</code>) that's handy while
+              you're still building a mental model of the objects involved. Either tool is fine
+              for this course; examples assume <code>kind</code> because it starts faster and
+              matches what you'll use in a GitHub Actions job later.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Loading local images into kind</strong>
+                <p>A <code>kind</code> cluster can't see images sitting in your local Docker daemon by default — <code>docker build -t web-app:dev .</code> followed by <code>kind load docker-image web-app:dev --name devops</code> copies it into the cluster's nodes. Forgetting this step is the single most common reason a fresh <code>kind</code> deployment sits in <code>ErrImageNeverPull</code>.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Deploy a configurable app to a local kind cluster</h3>
+              <p>Put a Deployment, Service, and ConfigMap together into a real running app you can scale and inspect.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Install <code>kind</code> and <code>kubectl</code>, then create a two-worker cluster named <code>devops</code> using a <code>kind-config.yaml</code> like the one above.</li>
+                <li>Write a <code>ConfigMap</code> named <code>web-app-config</code> with at least two keys, and a <code>Deployment</code> for a small container image (e.g. <code>nginxdemos/hello</code>) that consumes it via <code>envFrom</code>.</li>
+                <li>Write a <code>ClusterIP</code> Service in front of the Deployment, matching its Pod labels with a selector.</li>
+                <li>Apply all three manifests with a single <code>kubectl apply -f</code> command, then confirm three Pods are <code>Running</code> with <code>kubectl get pods -o wide</code>.</li>
+                <li>Scale the Deployment to 5 replicas with <code>kubectl scale deployment web-app --replicas=5</code> and confirm the Service still balances across all of them using <code>kubectl port-forward svc/web-app 8080:80</code> plus a few <code>curl localhost:8080</code> calls.</li>
+                <li>Delete one Pod by name with <code>kubectl delete pod &lt;name&gt;</code> and confirm a replacement appears within seconds — capture the before/after output of <code>kubectl get pods</code>.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>If a Pod stays in <code>Pending</code>, run <code>kubectl describe pod &lt;name&gt;</code> and read the <code>Events</code> section at the bottom first — it's almost always a scheduling reason (insufficient resources, an image pull failure) spelled out in plain English, and it's the fastest debugging tool you have in Kubernetes.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why does a Service sit in front of Pods instead of clients addressing Pod IPs directly?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Pod IPs are not stable — a Pod that crashes or is rescheduled gets a brand-new IP address, and a Deployment can add or remove Pods at any time during scaling or a rollout. A Service provides one fixed virtual IP and DNS name, and load-balances across whichever Pods currently match its label selector, so clients never need to track individual Pod addresses.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>You run <code>kubectl delete pod</code> on a Pod owned by a Deployment with <code>replicas: 3</code>. What happens, and why?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A new Pod appears within seconds. The Deployment's desired state still says 3 replicas; deleting a Pod only changes actual state, and the controller manager's reconciliation loop notices the mismatch and asks the scheduler to place a replacement. To actually reduce the count you have to change the desired state itself, e.g. <code>kubectl scale --replicas=2</code> or editing the manifest.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why is a Kubernetes Secret not sufficient on its own to keep credentials secure?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>By default a Secret's values are only base64-encoded, which is trivially reversible and not encryption — anyone with API read access to that namespace, or access to an unencrypted etcd backup, can recover the plaintext. It keeps secrets out of plain YAML committed to Git, but production clusters need encryption at rest for etcd and, usually, an external secrets manager as the actual source of truth.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>You deploy an image to a fresh <code>kind</code> cluster and every Pod sits in <code>ErrImageNeverPull</code>. What's the most likely cause?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The image was built locally with <code>docker build</code> but never loaded into the kind cluster's nodes, and the manifest's image pull policy prevents it from trying to fetch the tag from a remote registry. Running <code>kind load docker-image &lt;tag&gt; --name &lt;cluster&gt;</code> copies the image into every node so the kubelet can find it without a registry pull.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-10.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 10: Terraform Modules &amp; Remote State</span>
+          </a>
+          <a href="week-12.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 12: Kubernetes in Production →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

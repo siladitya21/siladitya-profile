@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Module 12: Advanced Array &amp; String Algorithms (JS &amp; Python) — CodeVerse Creatives</title>
+<meta name="description" content="Module 12 of Coding Practice: 10 classic interview algorithms — Two Sum, Three Sum, Kadane's maximum subarray, product except self, merge intervals, longest substring without repeats, group anagrams and container with most water — commented in both JavaScript and Python." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="coding-practice">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+
+<main>
+<!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../coding-practice/index.html">Coding Practice</a>
+        <span>/</span>
+        <a href="../coding-practice/index.html#modules">Module 12 · Advanced Algorithms</a>
+        <span>/</span>
+        <span aria-current="page">Problems 111–120</span>
+      </div>
+
+      <h1>Module 12: Advanced Array &amp; String Algorithms</h1>
+      <p class="lesson-header__lede">
+        The closing set: ten classic interview problems, each one built from
+        techniques earned in earlier modules — hash maps for O(n) lookups,
+        two pointers, sliding windows, and sorting as a setup step. These are the
+        problems that show up, close to verbatim, in real technical interviews.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 12 of 12</span>
+        <span class="chip">Problems 111–120</span>
+        <span class="chip">JS + Python</span>
+        <span class="chip">~60 Min</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this module, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Reach for a hash map to turn an O(n²) brute-force search into a single O(n) pass</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Recognize when a sliding window fits (contiguous substrings/subarrays with a running constraint)</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use two pointers moving inward from both ends to avoid an O(n²) nested loop</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#problems"><span>1</span> Problems 111–120</a>
+        <a href="#recap"><span>2</span> Key Takeaways</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="problems">
+            <h2>1. Problems 111–120</h2>
+            <p>
+              Same format as the previous modules: expand a problem to see the approach and both
+              commented solutions. This is the last set — <strong>problem 120 closes out all
+              120 problems</strong> across the full Coding Practice series.
+            </p>
+
+            <div class="quiz-list">
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P111</span>
+                  <div class="week-item__heading">
+                    <h4>Two Sum</h4>
+                    <p>[2,7,11,15], target 9 → indices [0, 1] (2 + 7 = 9).</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> for each number, compute what its partner would need to be (<code>target - number</code>) and check a hash map of numbers already seen. If the partner's there, done — this turns an O(n²) "check every pair" brute force into a single O(n) pass.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">two-sum.js</div>
+                      <pre><code>// A hash map remembers "what number would complete a pair with the number I've
+// already seen" -- turning an O(n^2) brute force into a single O(n) pass.
+function twoSum(nums, target) {
+  const seen = new Map(); // value -&gt; index
+  for (let i = 0; i &lt; nums.length; i++) {
+    const complement = target - nums[i];
+    if (seen.has(complement)) return [seen.get(complement), i];
+    seen.set(nums[i], i);
+  }
+  return [];
+}
+
+console.log(twoSum([2, 7, 11, 15], 9)); // [0, 1] (2 + 7 = 9)</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">two_sum.py</div>
+                      <pre><code>def two_sum(nums: list, target: int) -&gt; list:
+    seen = {}  # value -&gt; index
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []
+
+print(two_sum([2, 7, 11, 15], 9))  # [0, 1] (2 + 7 = 9)</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P112</span>
+                  <div class="week-item__heading">
+                    <h4>Three Sum</h4>
+                    <p>Find every triplet in a list that sums to zero.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> sort first, then fix one number at a time and two-pointer-search the rest of the array for a pair that completes the sum to zero — skipping past duplicate values so the same triplet doesn't get reported twice.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">three-sum.js</div>
+                      <pre><code>// Sort first, fix one number, then two-pointer-search the rest for a pair
+// that completes the target sum of zero -- skipping duplicates along the way.
+function threeSum(nums) {
+  const sorted = [...nums].sort((a, b) =&gt; a - b);
+  const result = [];
+  for (let i = 0; i &lt; sorted.length - 2; i++) {
+    if (i &gt; 0 &amp;&amp; sorted[i] === sorted[i - 1]) continue; // skip duplicate first numbers
+    let left = i + 1, right = sorted.length - 1;
+    while (left &lt; right) {
+      const sum = sorted[i] + sorted[left] + sorted[right];
+      if (sum === 0) {
+        result.push([sorted[i], sorted[left], sorted[right]]);
+        while (left &lt; right &amp;&amp; sorted[left] === sorted[left + 1]) left++; // skip duplicates
+        while (left &lt; right &amp;&amp; sorted[right] === sorted[right - 1]) right--;
+        left++; right--;
+      } else if (sum &lt; 0) {
+        left++;
+      } else {
+        right--;
+      }
+    }
+  }
+  return result;
+}
+
+console.log(threeSum([-1, 0, 1, 2, -1, -4])); // [[-1, -1, 2], [-1, 0, 1]]</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">three_sum.py</div>
+                      <pre><code>def three_sum(nums: list) -&gt; list:
+    sorted_nums = sorted(nums)
+    result = []
+    for i in range(len(sorted_nums) - 2):
+        if i &gt; 0 and sorted_nums[i] == sorted_nums[i - 1]:
+            continue  # skip duplicate first numbers
+        left, right = i + 1, len(sorted_nums) - 1
+        while left &lt; right:
+            total = sorted_nums[i] + sorted_nums[left] + sorted_nums[right]
+            if total == 0:
+                result.append([sorted_nums[i], sorted_nums[left], sorted_nums[right]])
+                while left &lt; right and sorted_nums[left] == sorted_nums[left + 1]:
+                    left += 1  # skip duplicates
+                while left &lt; right and sorted_nums[right] == sorted_nums[right - 1]:
+                    right -= 1
+                left += 1
+                right -= 1
+            elif total &lt; 0:
+                left += 1
+            else:
+                right -= 1
+    return result
+
+print(three_sum([-1, 0, 1, 2, -1, -4]))  # [[-1, -1, 2], [-1, 0, 1]]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P113</span>
+                  <div class="week-item__heading">
+                    <h4>Maximum Subarray (Kadane's Algorithm)</h4>
+                    <p>The best contiguous run inside a list of positive and negative numbers.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> at each position, decide: extend the running subarray, or abandon it and start fresh here? Extending only helps once the running sum has gone negative — a negative running sum can only ever drag a future subarray down.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">max-sub-array.js</div>
+                      <pre><code>// At each position, decide: extend the previous subarray, or start fresh here?
+// Extending only helps if the running sum is still positive.
+function maxSubArray(nums) {
+  let maxSoFar = nums[0];
+  let currentSum = nums[0];
+  for (let i = 1; i &lt; nums.length; i++) {
+    currentSum = Math.max(nums[i], currentSum + nums[i]); // extend or restart
+    maxSoFar = Math.max(maxSoFar, currentSum);
+  }
+  return maxSoFar;
+}
+
+console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4])); // 6 ([4, -1, 2, 1])</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">max_sub_array.py</div>
+                      <pre><code>def max_sub_array(nums: list) -&gt; int:
+    max_so_far = nums[0]
+    current_sum = nums[0]
+    for i in range(1, len(nums)):
+        current_sum = max(nums[i], current_sum + nums[i])  # extend or restart
+        max_so_far = max(max_so_far, current_sum)
+    return max_so_far
+
+print(max_sub_array([-2, 1, -3, 4, -1, 2, 1, -5, 4]))  # 6 ([4, -1, 2, 1])</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P114</span>
+                  <div class="week-item__heading">
+                    <h4>Product of Array Except Self</h4>
+                    <p>[1,2,3,4] → [24,12,8,6], without ever dividing.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> the obvious solution (multiply everything, then divide out each element) breaks the moment a zero appears. Instead, do it in two passes: for each index, the answer is "everything to its left" multiplied by "everything to its right" — a running product built up from each direction separately.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">product-except-self.js</div>
+                      <pre><code>// Without division: for each index, multiply everything to its left by
+// everything to its right, computed in two passes.
+function productExceptSelf(nums) {
+  const n = nums.length;
+  const result = new Array(n).fill(1);
+  let leftProduct = 1;
+  for (let i = 0; i &lt; n; i++) {
+    result[i] = leftProduct; // product of everything to the left of i
+    leftProduct *= nums[i];
+  }
+  let rightProduct = 1;
+  for (let i = n - 1; i &gt;= 0; i--) {
+    result[i] *= rightProduct; // multiply in the product of everything to the right
+    rightProduct *= nums[i];
+  }
+  return result;
+}
+
+console.log(productExceptSelf([1, 2, 3, 4])); // [24, 12, 8, 6]</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">product_except_self.py</div>
+                      <pre><code>def product_except_self(nums: list) -&gt; list:
+    n = len(nums)
+    result = [1] * n
+    left_product = 1
+    for i in range(n):
+        result[i] = left_product  # product of everything to the left of i
+        left_product *= nums[i]
+    right_product = 1
+    for i in range(n - 1, -1, -1):
+        result[i] *= right_product  # multiply in the product of everything to the right
+        right_product *= nums[i]
+    return result
+
+print(product_except_self([1, 2, 3, 4]))  # [24, 12, 8, 6]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P115</span>
+                  <div class="week-item__heading">
+                    <h4>Merge Overlapping Intervals</h4>
+                    <p>[[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]].</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> sort by start time first — once sorted, any interval that overlaps the current merged one is guaranteed to appear immediately after it, so a single left-to-right pass is enough.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">merge-intervals.js</div>
+                      <pre><code>// Sort by start time first -- once sorted, any interval that overlaps the
+// current merged one must come immediately after it.
+function mergeIntervals(intervals) {
+  const sorted = [...intervals].sort((a, b) =&gt; a[0] - b[0]);
+  const merged = [sorted[0]];
+  for (let i = 1; i &lt; sorted.length; i++) {
+    const last = merged[merged.length - 1];
+    const current = sorted[i];
+    if (current[0] &lt;= last[1]) { // overlaps -- extend the last merged interval
+      last[1] = Math.max(last[1], current[1]);
+    } else {
+      merged.push(current); // no overlap -- start a new interval
+    }
+  }
+  return merged;
+}
+
+console.log(mergeIntervals([[1, 3], [2, 6], [8, 10], [15, 18]]));
+// [[1, 6], [8, 10], [15, 18]]</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">merge_intervals.py</div>
+                      <pre><code>def merge_intervals(intervals: list) -&gt; list:
+    sorted_intervals = sorted(intervals, key=lambda pair: pair[0])
+    merged = [sorted_intervals[0]]
+    for current in sorted_intervals[1:]:
+        last = merged[-1]
+        if current[0] &lt;= last[1]:  # overlaps -- extend the last merged interval
+            last[1] = max(last[1], current[1])
+        else:
+            merged.append(current)  # no overlap -- start a new interval
+    return merged
+
+print(merge_intervals([[1, 3], [2, 6], [8, 10], [15, 18]]))
+# [[1, 6], [8, 10], [15, 18]]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P116</span>
+                  <div class="week-item__heading">
+                    <h4>Longest Substring Without Repeating Characters</h4>
+                    <p>"abcabcbb" → 3, the length of "abc".</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> a sliding window. Grow the window's right edge one character at a time; the moment a repeat shows up, jump the window's left edge past that character's earlier occurrence instead of resetting all the way back to the start.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">length-of-longest-substring.js</div>
+                      <pre><code>// A sliding window: grow the right edge; whenever a repeat is seen, shrink
+// the left edge past the previous occurrence of that character.
+function lengthOfLongestSubstring(s) {
+  const lastSeen = new Map();
+  let start = 0, maxLength = 0;
+  for (let end = 0; end &lt; s.length; end++) {
+    const ch = s[end];
+    if (lastSeen.has(ch) &amp;&amp; lastSeen.get(ch) &gt;= start) {
+      start = lastSeen.get(ch) + 1; // jump the window past the earlier duplicate
+    }
+    lastSeen.set(ch, end);
+    maxLength = Math.max(maxLength, end - start + 1);
+  }
+  return maxLength;
+}
+
+console.log(lengthOfLongestSubstring("abcabcbb")); // 3 ("abc")</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">length_of_longest_substring.py</div>
+                      <pre><code>def length_of_longest_substring(s: str) -&gt; int:
+    last_seen = {}
+    start = 0
+    max_length = 0
+    for end, ch in enumerate(s):
+        if ch in last_seen and last_seen[ch] &gt;= start:
+            start = last_seen[ch] + 1  # jump the window past the earlier duplicate
+        last_seen[ch] = end
+        max_length = max(max_length, end - start + 1)
+    return max_length
+
+print(length_of_longest_substring("abcabcbb"))  # 3 ("abc")</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P117</span>
+                  <div class="week-item__heading">
+                    <h4>Group Anagrams</h4>
+                    <p>["eat","tea","tan","ate","nat","bat"] → three groups.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> every anagram of a word shares the same "signature" once its letters are sorted — group words by that signature (Module 7's <code>groupBy</code>, with the sorted letters as the key) and each resulting group is a full set of anagrams.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">group-anagrams.js</div>
+                      <pre><code>// Every anagram of a word shares the same sorted-letters "signature" -- group
+// words by that signature and each group is a set of anagrams.
+function groupAnagrams(words) {
+  const groups = new Map();
+  for (const word of words) {
+    const signature = word.split("").sort().join(""); // same letters -&gt; same signature
+    if (!groups.has(signature)) groups.set(signature, []);
+    groups.get(signature).push(word);
+  }
+  return [...groups.values()];
+}
+
+console.log(groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"]));
+// [["eat","tea","ate"], ["tan","nat"], ["bat"]]</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">group_anagrams.py</div>
+                      <pre><code>def group_anagrams(words: list) -&gt; list:
+    groups = {}
+    for word in words:
+        signature = "".join(sorted(word))  # same letters -&gt; same signature
+        if signature not in groups:
+            groups[signature] = []
+        groups[signature].append(word)
+    return list(groups.values())
+
+print(group_anagrams(["eat", "tea", "tan", "ate", "nat", "bat"]))
+# [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P118</span>
+                  <div class="week-item__heading">
+                    <h4>Longest Common Prefix</h4>
+                    <p>["flower","flow","flight"] → "fl".</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> start by assuming the whole first word is the prefix, then check it against every other word — the instant one doesn't start with the current prefix, shrink the prefix by one character from the end and check again.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">longest-common-prefix.js</div>
+                      <pre><code>// Compare the first string against every other, shrinking the candidate
+// prefix character by character the moment a mismatch is found.
+function longestCommonPrefix(words) {
+  if (words.length === 0) return "";
+  let prefix = words[0];
+  for (let i = 1; i &lt; words.length; i++) {
+    while (!words[i].startsWith(prefix)) {
+      prefix = prefix.slice(0, -1); // shrink by one character and try again
+      if (prefix === "") return "";
+    }
+  }
+  return prefix;
+}
+
+console.log(longestCommonPrefix(["flower", "flow", "flight"])); // "fl"</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">longest_common_prefix.py</div>
+                      <pre><code>def longest_common_prefix(words: list) -&gt; str:
+    if len(words) == 0:
+        return ""
+    prefix = words[0]
+    for word in words[1:]:
+        while not word.startswith(prefix):
+            prefix = prefix[:-1]  # shrink by one character and try again
+            if prefix == "":
+                return ""
+    return prefix
+
+print(longest_common_prefix(["flower", "flow", "flight"]))  # "fl"</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P119</span>
+                  <div class="week-item__heading">
+                    <h4>Container With Most Water</h4>
+                    <p>Which two walls trap the largest volume of water between them?</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> two pointers start at the widest possible container (both ends) and move inward. Always move the <em>shorter</em> wall — the taller one can never become the bottleneck for any wider container later, so keeping it in place never loses a better answer.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">max-area.js</div>
+                      <pre><code>// Two pointers start at the widest possible container and move inward --
+// always move the SHORTER wall, since the taller one can never be the
+// bottleneck for a wider container later.
+function maxArea(heights) {
+  let left = 0, right = heights.length - 1, best = 0;
+  while (left &lt; right) {
+    const width = right - left;
+    const height = Math.min(heights[left], heights[right]);
+    best = Math.max(best, width * height);
+    if (heights[left] &lt; heights[right]) left++; // the shorter wall is the bottleneck
+    else right--;
+  }
+  return best;
+}
+
+console.log(maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7])); // 49</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">max_area.py</div>
+                      <pre><code>def max_area(heights: list) -&gt; int:
+    left, right = 0, len(heights) - 1
+    best = 0
+    while left &lt; right:
+        width = right - left
+        height = min(heights[left], heights[right])
+        best = max(best, width * height)
+        if heights[left] &lt; heights[right]:  # the shorter wall is the bottleneck
+            left += 1
+        else:
+            right -= 1
+    return best
+
+print(max_area([1, 8, 6, 2, 5, 4, 8, 3, 7]))  # 49</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item">
+                <summary>
+                  <span class="week-item__badge">P120</span>
+                  <div class="week-item__heading">
+                    <h4>Move All Zeroes to the End</h4>
+                    <p>[0,1,0,3,12] → [1,3,12,0,0], in place, preserving order.</p>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--stacked">
+                  <p style="grid-column:1 / -1;"><strong>Approach:</strong> the last technique of the series — a "write pointer" tracks where the next non-zero value belongs. Walk once with a "read pointer"; every time a non-zero value is found, swap it into the write pointer's slot and advance both. Zeroes naturally end up shuffled to the back.</p>
+                  <div class="week-item__col">
+                    <h5>JavaScript</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">move-zeroes.js</div>
+                      <pre><code>// A "write pointer" tracks where the next non-zero value belongs; walk once
+// with a "read pointer", and every zero found gets shuffled toward the end.
+function moveZeroes(arr) {
+  let writeIndex = 0;
+  for (let readIndex = 0; readIndex &lt; arr.length; readIndex++) {
+    if (arr[readIndex] !== 0) {
+      [arr[writeIndex], arr[readIndex]] = [arr[readIndex], arr[writeIndex]];
+      writeIndex++;
+    }
+  }
+  return arr;
+}
+
+console.log(moveZeroes([0, 1, 0, 3, 12])); // [1, 3, 12, 0, 0]</code></pre>
+                    </div>
+                  </div>
+                  <div class="week-item__col">
+                    <h5>Python</h5>
+                    <div class="code-block">
+                      <div class="code-block__label">move_zeroes.py</div>
+                      <pre><code>def move_zeroes(items: list) -&gt; list:
+    write_index = 0
+    for read_index in range(len(items)):
+        if items[read_index] != 0:
+            items[write_index], items[read_index] = items[read_index], items[write_index]
+            write_index += 1
+    return items
+
+print(move_zeroes([0, 1, 0, 3, 12]))  # [1, 3, 12, 0, 0]</code></pre>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+          </section>
+
+          <section id="recap">
+            <h2>2. Key Takeaways</h2>
+            <ul>
+              <li>Three techniques cover almost this entire module: a hash map trading space for O(n) lookups (Two Sum, Group Anagrams), two pointers moving inward from both ends (Three Sum, Container With Most Water, Move Zeroes), and a sliding window for contiguous runs (Longest Substring, Maximum Subarray).</li>
+              <li>Sorting first is often the setup step that makes a two-pointer or interval technique possible at all — Three Sum and Merge Intervals both start there.</li>
+              <li>That's all 120 problems. Every technique here — frequency maps, two pointers, sliding windows, recursion, closures, async concurrency — first appeared in a simpler form somewhere back in Modules 1–11.</li>
+            </ul>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="set-11.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Module 11: Array-Method Polyfills</span>
+          </a>
+          <a href="index.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">All 120 done →</span>
+            <span class="lesson-pager__title">Back to the Full Problem Set</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

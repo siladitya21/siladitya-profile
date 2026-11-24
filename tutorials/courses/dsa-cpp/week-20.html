@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 20: Capstone — Build a Mini Expression Interpreter — CodeVerse Creatives</title>
+<meta name="description" content="The DSA in C++ capstone: build a mini expression interpreter combining a tokenizer, a recursive-descent parser producing an expression tree, a stack-based evaluation alternative, and a recursive evaluator with error handling." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="dsa-cpp">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../dsa-cpp/index.html">DSA in C++ Syllabus</a>
+        <span>/</span>
+        <a href="../dsa-cpp/index.html#timeline">Module 17 · Capstone</a>
+        <span>/</span>
+        <span aria-current="page">Week 20</span>
+      </div>
+
+      <h1>Week 20: Capstone — Build a Mini Expression Interpreter</h1>
+      <p class="lesson-header__lede">
+        This is the final week — no new algorithms, just three of them working together on one
+        real project. A calculator that evaluates <code>"3 + 4 * (2 - 1)"</code> correctly needs
+        exactly the tools this course spent nineteen weeks building: a linear scan through text
+        (Week 4's string handling), a stack to track structure and precedence (Week 7), and
+        recursion over a tree-shaped result (Weeks 8 through 10). You'll build a tokenizer, an
+        expression tree, a recursive-descent parser, a second stack-based evaluator as an
+        alternative implementation, and a recursive evaluator with real error handling — a
+        portfolio-ready project, not an isolated LeetCode problem.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 17 of 17</span>
+        <span class="chip">Week 20 of 20</span>
+        <span class="chip">~10–15 Hours</span>
+        <span class="chip">Capstone Project</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this capstone, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tokenize a raw string into a stream of typed tokens</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build an expression tree with a recursive-descent parser that respects operator precedence</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Evaluate the tree recursively and handle malformed input without crashing</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#scope"><span>1</span> Project Scope &amp; Grammar</a>
+        <a href="#tokenizer"><span>2</span> The Tokenizer</a>
+        <a href="#parser"><span>3</span> Expression Tree &amp; Recursive-Descent Parser</a>
+        <a href="#stack-parser"><span>4</span> An Alternative: Two-Stack Evaluation</a>
+        <a href="#evaluator"><span>5</span> Evaluating the Tree &amp; Handling Errors</a>
+        <a href="#project"><span>6</span> The Capstone Project</a>
+        <a href="#checklist"><span>7</span> Final Checklist</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="scope">
+            <h2>1. Project Scope &amp; Grammar</h2>
+            <p>
+              Before writing a tokenizer or a parser, write down exactly what your interpreter
+              accepts — an interpreter with an undefined grammar has no way to say a given input
+              is invalid, only ways to fail unpredictably on it. A well-scoped mini interpreter for
+              this capstone supports:
+            </p>
+            <ul>
+              <li>Integer and decimal number literals (<code>3</code>, <code>4.5</code>)</li>
+              <li>The four binary operators <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, with standard precedence (<code>*</code>/<code>/</code> bind tighter than <code>+</code>/<code>-</code>)</li>
+              <li>Parentheses for explicit grouping, e.g. <code>(2 + 3) * 4</code></li>
+              <li>Unary minus, e.g. <code>-(3 + 4)</code></li>
+            </ul>
+            <p>
+              Writing that grammar as a small set of production rules up front is what makes the
+              rest of the build mechanical instead of guesswork — every rule below maps directly
+              onto one function in Section 3's parser:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">grammar.txt</div>
+              <pre><code>expression := term (('+' | '-') term)*
+term       := factor (('*' | '/') factor)*
+factor     := NUMBER
+            | '(' expression ')'
+            | '-' factor
+</code></pre>
+            </div>
+            <p>
+              Notice the grammar is structured in layers — <code>expression</code> is built from
+              <code>term</code>s, and <code>term</code> is built from <code>factor</code>s. That
+              layering is precedence encoded directly into the grammar: because <code>term</code>
+              (multiplication/division) sits "closer" to the leaves than <code>expression</code>
+              (addition/subtraction), a recursive-descent parser built from these rules will always
+              group <code>*</code> and <code>/</code> tighter than <code>+</code> and <code>-</code>
+              without any extra precedence-tracking logic.
+            </p>
+          </section>
+
+          <section id="tokenizer">
+            <h2>2. The Tokenizer</h2>
+            <p>
+              The tokenizer's job is narrow on purpose: turn a raw <code>std::string</code> into a
+              flat sequence of typed tokens, and reject anything that isn't a number, operator, or
+              parenthesis. Nothing about precedence or grouping happens here — that's the parser's
+              job in Section 3. Keeping the tokenizer this dumb is what makes it easy to get
+              completely correct.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">token.hpp</div>
+              <pre><code>#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;stdexcept&gt;
+#include &lt;cctype&gt;
+using namespace std;
+
+enum class TokenType { NUMBER, PLUS, MINUS, STAR, SLASH, LPAREN, RPAREN, END };
+
+struct Token {
+    TokenType type;
+    double value;   // only meaningful when type == NUMBER
+};
+
+vector&lt;Token&gt; tokenize(const string&amp; src) {
+    vector&lt;Token&gt; tokens;
+    size_t i = 0;
+
+    while (i &lt; src.size()) {
+        char c = src[i];
+
+        if (isspace(static_cast&lt;unsigned char&gt;(c))) { i++; continue; }
+
+        if (isdigit(static_cast&lt;unsigned char&gt;(c)) || c == '.') {
+            size_t start = i;
+            while (i &lt; src.size() &amp;&amp;
+                   (isdigit(static_cast&lt;unsigned char&gt;(src[i])) || src[i] == '.')) i++;
+            tokens.push_back({TokenType::NUMBER, stod(src.substr(start, i - start))});
+            continue;
+        }
+
+        switch (c) {
+            case '+': tokens.push_back({TokenType::PLUS, 0});   break;
+            case '-': tokens.push_back({TokenType::MINUS, 0});  break;
+            case '*': tokens.push_back({TokenType::STAR, 0});   break;
+            case '/': tokens.push_back({TokenType::SLASH, 0});  break;
+            case '(': tokens.push_back({TokenType::LPAREN, 0}); break;
+            case ')': tokens.push_back({TokenType::RPAREN, 0}); break;
+            default:
+                throw runtime_error(string("Unexpected character: '") + c + "'");
+        }
+        i++;
+    }
+
+    tokens.push_back({TokenType::END, 0});   // sentinel -- lets the parser peek safely
+    return tokens;
+}
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why an <code>END</code> sentinel</strong>
+                <p>Without a terminating token, every "what's the next token?" check in the parser would need a separate bounds check against <code>tokens.size()</code>. Appending an explicit <code>END</code> token means the parser can always safely call <code>peek()</code> — the same trick as a sentinel node in a linked list, or the null terminator at the end of a C string.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="parser">
+            <h2>3. Expression Tree &amp; Recursive-Descent Parser</h2>
+            <p>
+              The expression tree is a binary tree exactly like the ones from Weeks 9–10: an
+              internal node holds an operator and two children, a leaf holds a number. Evaluating
+              <code>3 + 4 * 2</code> correctly means the tree must group <code>4 * 2</code> as one
+              subtree before it's added to <code>3</code> — which is exactly what the grammar from
+              Section 1 guarantees when translated directly into functions:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">ast.hpp</div>
+              <pre><code>#include &lt;memory&gt;
+using namespace std;
+
+struct Node {
+    TokenType op;                 // meaningful only for internal (non-leaf) nodes
+    double value = 0;             // meaningful only for leaf nodes
+    bool isLeaf = false;
+    unique_ptr&lt;Node&gt; left, right;
+};
+
+unique_ptr&lt;Node&gt; makeLeaf(double v) {
+    auto n = make_unique&lt;Node&gt;();
+    n-&gt;isLeaf = true;
+    n-&gt;value = v;
+    return n;
+}
+
+unique_ptr&lt;Node&gt; makeBinary(TokenType op, unique_ptr&lt;Node&gt; l, unique_ptr&lt;Node&gt; r) {
+    auto n = make_unique&lt;Node&gt;();
+    n-&gt;op = op;
+    n-&gt;left = move(l);
+    n-&gt;right = move(r);
+    return n;
+}
+</code></pre>
+            </div>
+            <p>
+              <code>unique_ptr</code> gives the tree the ownership semantics it needs for free —
+              each node owns its children outright, and the whole tree is freed automatically when
+              its root goes out of scope, with no manual <code>delete</code> anywhere in the parser
+              or evaluator.
+            </p>
+            <p>
+              The parser itself is <strong>recursive descent</strong>: one function per grammar
+              rule from Section 1, each calling the next one down and combining the result. This is
+              the same "trust the recursive call to solve the smaller problem" discipline from
+              Week 8 — <code>parseExpression</code> doesn't know how <code>parseTerm</code> handles
+              multiplication, it just trusts it to return a correct subtree:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">parser.hpp</div>
+              <pre><code>class Parser {
+public:
+    explicit Parser(vector&lt;Token&gt; toks) : tokens(move(toks)), pos(0) {}
+
+    unique_ptr&lt;Node&gt; parseExpression() {
+        auto node = parseTerm();
+        while (peek().type == TokenType::PLUS || peek().type == TokenType::MINUS) {
+            TokenType op = advance().type;
+            node = makeBinary(op, move(node), parseTerm());
+        }
+        return node;
+    }
+
+private:
+    vector&lt;Token&gt; tokens;
+    size_t pos;
+
+    const Token&amp; peek() const { return tokens[pos]; }
+    Token advance() { return tokens[pos++]; }
+
+    unique_ptr&lt;Node&gt; parseTerm() {
+        auto node = parseFactor();
+        while (peek().type == TokenType::STAR || peek().type == TokenType::SLASH) {
+            TokenType op = advance().type;
+            node = makeBinary(op, move(node), parseFactor());
+        }
+        return node;
+    }
+
+    unique_ptr&lt;Node&gt; parseFactor() {
+        if (peek().type == TokenType::NUMBER) {
+            return makeLeaf(advance().value);
+        }
+        if (peek().type == TokenType::MINUS) {          // unary minus
+            advance();
+            return makeBinary(TokenType::MINUS, makeLeaf(0), parseFactor());
+        }
+        if (peek().type == TokenType::LPAREN) {
+            advance();                                    // consume '('
+            auto node = parseExpression();
+            if (peek().type != TokenType::RPAREN)
+                throw runtime_error("Expected ')'");
+            advance();                                    // consume ')'
+            return node;
+        }
+        throw runtime_error("Unexpected token while parsing expression");
+    }
+};
+</code></pre>
+            </div>
+            <p>
+              Trace <code>3 + 4 * 2</code> through this: <code>parseExpression</code> calls
+              <code>parseTerm</code>, which calls <code>parseFactor</code> and returns the leaf
+              <code>3</code> (no <code>*</code>/<code>/</code> follows, so <code>parseTerm</code>
+              returns immediately). Back in <code>parseExpression</code>, the next token is
+              <code>+</code>, so it consumes it and calls <code>parseTerm</code> again — that call
+              parses <code>4</code>, sees <code>*</code>, and folds in <code>2</code> before
+              returning the <code>4 * 2</code> subtree. <code>parseExpression</code> then combines
+              <code>3</code> and that subtree under <code>+</code>, giving exactly the tree
+              <code>3 + (4 * 2)</code> that correct precedence requires.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The grammar layering IS the precedence</strong>
+                <p>Nowhere in this parser is there an if-statement checking "is <code>*</code> higher precedence than <code>+</code>?" The precedence is entirely a consequence of which function calls which: <code>parseTerm</code> is only ever called from inside <code>parseExpression</code> or by itself, so <code>*</code>/<code>/</code> subtrees are always fully built before a <code>+</code>/<code>-</code> node can wrap them.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="stack-parser">
+            <h2>4. An Alternative: Two-Stack Evaluation</h2>
+            <p>
+              Section 3's recursive-descent parser is the cleanest way to get a reusable expression
+              <em>tree</em>. But you can also evaluate an expression directly, without ever building
+              a tree, using two stacks — one for pending values, one for pending operators. This is
+              the same monotonic-stack instinct from Week 7 applied to arithmetic: keep popping and
+              resolving the stack as long as doing so is unambiguous, and push when it isn't yet.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">stack_eval.hpp</div>
+              <pre><code>#include &lt;stack&gt;
+using namespace std;
+
+int precedence(TokenType op) {
+    if (op == TokenType::PLUS || op == TokenType::MINUS) return 1;
+    if (op == TokenType::STAR || op == TokenType::SLASH) return 2;
+    return 0;
+}
+
+double applyOp(double a, double b, TokenType op) {
+    switch (op) {
+        case TokenType::PLUS:  return a + b;
+        case TokenType::MINUS: return a - b;
+        case TokenType::STAR:  return a * b;
+        case TokenType::SLASH:
+            if (b == 0) throw runtime_error("Division by zero");
+            return a / b;
+        default:
+            throw runtime_error("Unknown operator");
+    }
+}
+
+double evaluateWithStacks(const vector&lt;Token&gt;&amp; tokens) {
+    stack&lt;double&gt; values;
+    stack&lt;TokenType&gt; ops;
+
+    auto reduceOnce = [&amp;]() {
+        TokenType op = ops.top(); ops.pop();
+        double b = values.top(); values.pop();
+        double a = values.top(); values.pop();
+        values.push(applyOp(a, b, op));
+    };
+
+    for (const Token&amp; tok : tokens) {
+        if (tok.type == TokenType::NUMBER) {
+            values.push(tok.value);
+        } else if (tok.type == TokenType::LPAREN) {
+            ops.push(tok.type);
+        } else if (tok.type == TokenType::RPAREN) {
+            while (!ops.empty() &amp;&amp; ops.top() != TokenType::LPAREN) reduceOnce();
+            ops.pop();                          // discard the matching '('
+        } else if (tok.type == TokenType::END) {
+            break;
+        } else {                                 // PLUS, MINUS, STAR or SLASH
+            while (!ops.empty() &amp;&amp; ops.top() != TokenType::LPAREN &amp;&amp;
+                   precedence(ops.top()) &gt;= precedence(tok.type)) {
+                reduceOnce();
+            }
+            ops.push(tok.type);
+        }
+    }
+    while (!ops.empty()) reduceOnce();
+    return values.top();
+}
+</code></pre>
+            </div>
+            <p>
+              The key rule is the <code>while</code> loop before pushing a new operator: it reduces
+              every pending operator on the stack that has <em>equal or higher</em> precedence than
+              the incoming one before pushing. That's what makes <code>4 * 2 + 1</code> reduce
+              <code>4 * 2</code> the moment <code>+</code> arrives (lower precedence, so the
+              multiplication must resolve first), while <code>4 + 2 * 1</code> instead pushes both
+              operators and waits, because <code>*</code> has strictly higher precedence than the
+              <code>+</code> already on the stack.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Tree vs. direct evaluation — when to use which</strong>
+                <p>Direct stack evaluation is leaner when you only ever need the final number once. Building a tree costs more memory and code, but pays off the moment you need the expression more than once — evaluate it with different variable values, simplify it symbolically, or pretty-print it back out — because the tree is a reusable structure and a stack evaluation's result is just a number with no memory of how it was produced.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="evaluator">
+            <h2>5. Evaluating the Tree &amp; Handling Errors</h2>
+            <p>
+              Evaluating the expression tree from Section 3 is a two-line recursive function — the
+              same "solve the leaves, combine going back up" shape as every tree problem since
+              Week 9:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">evaluator.hpp</div>
+              <pre><code>double evaluate(const Node* node) {
+    if (node-&gt;isLeaf) return node-&gt;value;
+
+    double l = evaluate(node-&gt;left.get());
+    double r = evaluate(node-&gt;right.get());
+
+    switch (node-&gt;op) {
+        case TokenType::PLUS:  return l + r;
+        case TokenType::MINUS: return l - r;
+        case TokenType::STAR:  return l * r;
+        case TokenType::SLASH:
+            if (r == 0) throw runtime_error("Division by zero");
+            return l / r;
+        default:
+            throw runtime_error("Unknown operator in tree");
+    }
+}
+
+double interpret(const string&amp; src) {
+    auto tokens = tokenize(src);          // throws on an invalid character
+    Parser parser(tokens);
+    auto tree = parser.parseExpression(); // throws on a malformed expression
+    return evaluate(tree.get());          // throws on e.g. division by zero
+}
+</code></pre>
+            </div>
+            <p>
+              A mini interpreter is only as trustworthy as its error handling — an interpreter that
+              silently returns <code>0</code> on <code>"3 + / 4"</code> is far more dangerous than
+              one that throws, because a wrong-but-plausible answer is much harder to catch than a
+              loud failure. Each of the three stages throws a specific <code>runtime_error</code> at
+              the exact point it detects a problem: the tokenizer on an unrecognized character, the
+              parser on a token that doesn't fit the grammar (like a missing closing paren), and
+              the evaluator on a runtime failure like division by zero that no amount of valid
+              syntax could have prevented.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">main.cpp — driving it end to end</div>
+              <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    vector&lt;string&gt; tests = {
+        "3 + 4 * (2 - 1)",
+        "-(3 + 4) / 2",
+        "10 / 0",
+        "3 + / 4"
+    };
+
+    for (const string&amp; expr : tests) {
+        try {
+            cout &lt;&lt; expr &lt;&lt; " = " &lt;&lt; interpret(expr) &lt;&lt; "\n";
+        } catch (const exception&amp; e) {
+            cout &lt;&lt; expr &lt;&lt; " -&gt; error: " &lt;&lt; e.what() &lt;&lt; "\n";
+        }
+    }
+}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="project">
+            <h2>6. The Capstone Project</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Capstone
+              </span>
+              <h3>Build, test and extend a complete expression interpreter</h3>
+              <p>
+                Combine Sections 2–5 into one working program, then push past the minimum grammar
+                with at least one real extension of your own.
+              </p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Implement <code>tokenize</code>, the <code>Node</code>/expression-tree types, the recursive-descent <code>Parser</code>, and <code>evaluate</code> exactly as built in Sections 2, 3 and 5, in one buildable project.</li>
+                <li>Also implement <code>evaluateWithStacks</code> from Section 4, and write a small test harness that checks it agrees with the tree-based <code>evaluate</code> on at least 10 expressions, including nested parentheses.</li>
+                <li>Handle every error case explicitly with a test for each: an unknown character, a missing closing parenthesis, an expression ending mid-operator (e.g. <code>"3 +"</code>), and division by zero.</li>
+                <li>Pick <strong>one</strong> real extension and implement it fully: exponentiation (<code>^</code>, right-associative), named variables with a <code>string → double</code> environment map, or a modulo operator with integer-only semantics.</li>
+                <li>Write a short README explaining your grammar (updated for your extension), and note one input your interpreter still can't handle and why.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Why variables are the most instructive extension</strong>
+                  <p>Adding a variable lookup (<code>x</code> resolving to a value from an <code>unordered_map&lt;string, double&gt;</code>) forces the tokenizer to recognize identifiers alongside numbers, forces the grammar to add a new <code>factor</code> alternative, and forces the evaluator to take an environment argument — touching all three layers the way a real feature would in production code, which is exactly what makes it worth doing over a smaller change.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="checklist">
+            <h2>7. Final Checklist</h2>
+            <p>Before calling the capstone — and the course — done, confirm each of these honestly:</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">✓</span>
+                  <div class="week-item__heading">
+                    <h4>Was the grammar written down before the tokenizer and parser were built?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A grammar written after the parser exists just describes whatever the code happens to accept, including any accidental gaps. A grammar written first — like Section 1's production rules — gives you something independent to check the implementation against, and it's what let Section 3's parser be written mechanically, one function per rule, instead of guessed at.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">✓</span>
+                  <div class="week-item__heading">
+                    <h4>Do the tree-based evaluator and the two-stack evaluator agree on every test expression, including ones with nested parentheses?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Two independently-written implementations of the same grammar agreeing on every test is strong evidence both are correct, in the same way a brute-force solution cross-checked against an optimized one catches bugs that a single implementation's own tests would miss. If they disagree, nested parentheses and operator-precedence edge cases are the first place to look — they're where both implementations are most likely to have a subtle bug.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">✓</span>
+                  <div class="week-item__heading">
+                    <h4>Does every error case — bad character, unbalanced parens, trailing operator, division by zero — fail with a clear message instead of crashing or returning a wrong number?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An interpreter that segfaults or silently returns <code>0</code> on malformed input is broken in a way that's much harder to debug than one that throws a specific <code>runtime_error</code> naming exactly what went wrong and where. Section 5's explicit throw at each of the three stages — tokenizing, parsing, evaluating — is what makes every failure traceable to a specific cause instead of an undefined one.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">✓</span>
+                  <div class="week-item__heading">
+                    <h4>Was a real extension implemented fully, touching the tokenizer, grammar, and evaluator, rather than left as an idea in the README?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Building exactly the minimum from Sections 2–5 proves you can follow a spec; extending it — adding <code>^</code>, variables, or modulo, and getting the grammar, tokenizer and evaluator to agree on the new rule — proves you understand the three layers well enough to change them without breaking what already worked. That's the difference a reviewer is actually looking for in a capstone.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-19.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 19: Advanced Data Structures</span>
+          </a>
+          <a href="../dsa-cpp/index.html#timeline" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Finished!</span>
+            <span class="lesson-pager__title">Back to Full Syllabus →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 2: Spring Core &amp; Dependency Injection — CodeVerse Creatives</title>
+<meta name="description" content="Week 2 of the Java &amp; Spring Boot curriculum: the IoC container and bean lifecycle, constructor-based dependency injection, component scanning and stereotype annotations, and what auto-configuration and starters actually do." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="spring-boot">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../spring-boot/index.html">Spring Boot Syllabus</a>
+        <span>/</span>
+        <a href="../spring-boot/index.html#timeline">Module 2 · Spring Core &amp; Dependency Injection</a>
+        <span>/</span>
+        <span aria-current="page">Week 2</span>
+      </div>
+
+      <h1>Week 2: Spring Core &amp; Dependency Injection</h1>
+      <p class="lesson-header__lede">
+        Last week you put <code>@SpringBootApplication</code> on a class, ran it, and a working
+        web server appeared — without ever writing <code>new</code> for a single one of your own
+        components. This week pulls that curtain back. You'll learn what the IoC container
+        actually is, how it decides what beans to create and how to wire them together, why
+        constructor injection is the recommendation you'll see in every well-run Spring codebase,
+        and what "auto-configuration" and "starters" are really doing behind the scenes.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 2 of 22</span>
+        <span class="chip">Week 2 of 26</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Understand the IoC container and the bean lifecycle it manages</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use constructor injection and component scanning correctly by default</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain what auto-configuration and starters actually do under the hood</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#ioc-container"><span>1</span> The IoC Container &amp; Beans</a>
+        <a href="#bean-lifecycle"><span>2</span> Bean Lifecycle &amp; Scopes</a>
+        <a href="#injection-styles"><span>3</span> Dependency Injection Styles</a>
+        <a href="#component-scanning"><span>4</span> Component Scanning &amp; Stereotypes</a>
+        <a href="#configuration-beans"><span>5</span> @Configuration &amp; @Bean Methods</a>
+        <a href="#auto-configuration"><span>6</span> Auto-Configuration &amp; Starters</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+        <a href="#quiz"><span>8</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="ioc-container">
+            <h2>1. The IoC Container &amp; Beans</h2>
+            <p>
+              In ordinary Java, an object that needs a collaborator usually creates it directly —
+              <code>new OrderRepository()</code> inside <code>OrderService</code>, for example.
+              That means <code>OrderService</code> owns the decision of exactly which
+              implementation it depends on and exactly when it's constructed.
+              <strong>Inversion of Control (IoC)</strong> flips that: instead of your class
+              constructing its own dependencies, something external constructs them and hands
+              them to your class. That "something external" is the <strong>IoC container</strong>,
+              and in Spring it's represented at runtime by an <code>ApplicationContext</code>.
+            </p>
+            <p>
+              A <strong>bean</strong> is simply an object whose creation and lifecycle the
+              container manages, instead of you managing it with <code>new</code>. When
+              <code>SpringApplication.run()</code> executes, Spring builds an
+              <code>ApplicationContext</code>, figures out which classes should become beans,
+              works out the order they need to be created in based on what depends on what, and
+              wires the whole graph together — all before your first log line prints.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">GreetingService.java &amp; GreetingController.java</div>
+              <pre><code>package com.codeverse.week02;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class GreetingService {
+
+    public String greet(String name) {
+        return "Hello, " + name + "!";
+    }
+}
+
+package com.codeverse.week02;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class GreetingController {
+
+    private final GreetingService greetingService;
+
+    public GreetingController(GreetingService greetingService) {
+        this.greetingService = greetingService;
+    }
+
+    @GetMapping("/greet")
+    String greet(@RequestParam(defaultValue = "world") String name) {
+        return greetingService.greet(name);
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Nothing in this code ever calls <code>new GreetingService()</code> or
+              <code>new GreetingController(...)</code>. At startup, Spring sees
+              <code>@Service</code> on <code>GreetingService</code> and registers it as a bean.
+              It sees <code>@RestController</code> on <code>GreetingController</code>, notices its
+              constructor asks for a <code>GreetingService</code>, finds the
+              <code>GreetingService</code> bean it already created, and passes it in. That
+              resolution — "this bean needs that bean, so build that one first" — is the container
+              doing dependency injection for you.
+            </p>
+          </section>
+
+          <section id="bean-lifecycle">
+            <h2>2. Bean Lifecycle &amp; Scopes</h2>
+            <p>
+              A bean's life has more stages than "constructed, then used." The container
+              instantiates it, injects its dependencies, runs any initialization callbacks, hands
+              it out whenever something needs it, and — for beans it owns until the end — runs
+              cleanup callbacks when the application context shuts down.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">ConnectionPoolManager.java</div>
+              <pre><code>package com.codeverse.week02;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ConnectionPoolManager {
+
+    @PostConstruct
+    void warmUp() {
+        // Runs once, right after Spring has injected every dependency
+        // this bean needed -- a safe place to open connections, prime
+        // caches, or validate configuration.
+        System.out.println("ConnectionPoolManager: pool warmed up");
+    }
+
+    @PreDestroy
+    void shutdown() {
+        // Runs once, as the ApplicationContext closes -- release
+        // resources cleanly instead of leaking them.
+        System.out.println("ConnectionPoolManager: pool drained");
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>@PostConstruct</code> fires after the constructor and all dependency injection
+              are complete, so it's the right place for setup logic that depends on those injected
+              collaborators being present. <code>@PreDestroy</code> fires as the context shuts
+              down, useful for closing connections or flushing buffers.
+            </p>
+
+            <h3>Singleton vs. prototype scope</h3>
+            <p>
+              By default every bean is a <strong>singleton</strong> — the container creates
+              exactly one instance and hands out that same instance everywhere it's needed. This
+              is almost always what you want for services, repositories, and controllers, which
+              hold no per-request mutable state of their own.
+            </p>
+            <p>
+              A <strong>prototype</strong>-scoped bean gets a brand-new instance every time it's
+              requested from the container:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">ReportBuilder.java</div>
+              <pre><code>package com.codeverse.week02;
+
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class ReportBuilder {
+    // Accumulates mutable state across several method calls while one
+    // report is being assembled -- sharing a singleton instance of this
+    // across concurrent requests would corrupt that state.
+    private final StringBuilder buffer = new StringBuilder();
+
+    public ReportBuilder append(String line) {
+        buffer.append(line).append(System.lineSeparator());
+        return this;
+    }
+
+    public String build() {
+        return buffer.toString();
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              You'd reach for <code>prototype</code> scope specifically when a bean accumulates
+              mutable, per-use state that must not be shared across callers — a stateful builder
+              like the one above, for instance. It's the exception, not the default: reach for it
+              only when you notice a bean actually needs fresh state per use, not preemptively.
+            </p>
+          </section>
+
+          <section id="injection-styles">
+            <h2>3. Dependency Injection Styles</h2>
+            <p>
+              Spring supports three ways to get a dependency into a bean. All three work. Only one
+              of them should be your default.
+            </p>
+
+            <h3>Field injection — avoid</h3>
+            <div class="code-block">
+              <div class="code-block__label">field injection (avoid)</div>
+              <pre><code>@Service
+public class OrderService {
+
+    @Autowired
+    private PaymentClient paymentClient;   // injected by reflection, after construction
+}
+</code></pre>
+            </div>
+
+            <h3>Setter injection — for optional dependencies only</h3>
+            <div class="code-block">
+              <div class="code-block__label">setter injection</div>
+              <pre><code>@Service
+public class OrderService {
+
+    private NotificationClient notificationClient;
+
+    @Autowired(required = false)
+    public void setNotificationClient(NotificationClient notificationClient) {
+        this.notificationClient = notificationClient;
+    }
+}
+</code></pre>
+            </div>
+
+            <h3>Constructor injection — the default</h3>
+            <div class="code-block">
+              <div class="code-block__label">constructor injection (default choice)</div>
+              <pre><code>@Service
+public class OrderService {
+
+    private final PaymentClient paymentClient;
+    private final InventoryClient inventoryClient;
+
+    // With a single constructor, @Autowired is optional -- Spring uses
+    // it automatically. Keeping it explicit is still common practice.
+    public OrderService(PaymentClient paymentClient, InventoryClient inventoryClient) {
+        this.paymentClient = paymentClient;
+        this.inventoryClient = inventoryClient;
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Constructor injection wins on every axis that matters in practice:
+            </p>
+            <ul>
+              <li><strong>Immutability.</strong> Fields can be <code>final</code>, so once
+              <code>OrderService</code> is built, its dependencies can never silently change out
+              from under it.</li>
+              <li><strong>Testability without reflection.</strong> A unit test just calls
+              <code>new OrderService(fakePaymentClient, fakeInventoryClient)</code> — no Spring
+              context, no reflection tricks, no test-only annotations required to populate a
+              private field.</li>
+              <li><strong>Fail fast at startup.</strong> If a required dependency's bean doesn't
+              exist, the app refuses to start with a clear error, instead of deploying successfully
+              and throwing a <code>NullPointerException</code> the first time a request happens to
+              hit the missing field.</li>
+              <li><strong>Honesty about required vs. optional.</strong> A long constructor
+              parameter list is a visible signal that a class is doing too much — field injection
+              hides that signal because dependencies are scattered across the class body instead
+              of declared in one place.</li>
+            </ul>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>This pays off directly in Week 8</strong>
+                <p>Week 8's testing module leans on exactly the "no reflection required" point above. Every service you write with constructor injection this week can be unit-tested with a plain <code>new</code> call and hand-built fakes — no <code>@MockBean</code>, no Spring context startup, no slow tests.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="component-scanning">
+            <h2>4. Component Scanning &amp; Stereotypes</h2>
+            <p>
+              Spring doesn't scan your entire classpath looking for beans — it needs to be told
+              which classes are candidates. The <strong>stereotype annotations</strong> are how you
+              mark a class as one:
+            </p>
+            <ul>
+              <li><code>@Component</code> — the generic marker; "this class is a bean."</li>
+              <li><code>@Service</code> — a <code>@Component</code> specialization for business
+              logic; purely a naming convention that also documents intent.</li>
+              <li><code>@Repository</code> — a <code>@Component</code> specialization for data
+              access; additionally enables automatic translation of database exceptions into
+              Spring's unified <code>DataAccessException</code> hierarchy.</li>
+              <li><code>@Controller</code> / <code>@RestController</code> — a
+              <code>@Component</code> specialization for handling HTTP requests, which you already
+              used in Week 1.</li>
+            </ul>
+
+            <p>
+              <code>@SpringBootApplication</code> is itself a combination of three annotations,
+              one of which is <code>@ComponentScan</code>. With no arguments,
+              <code>@ComponentScan</code> scans the package containing the annotated class and
+              every sub-package beneath it:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">package layout that scanning relies on</div>
+              <pre><code>com.codeverse.week02
+├── Week02Application.java        ← @SpringBootApplication lives here
+├── GreetingController.java       ← found: same package
+├── service/
+│   ├── GreetingService.java      ← found: sub-package
+│   └── impl/
+│       └── FriendlyGreetingService.java   ← found: sub-sub-package
+└── other/
+    └── unrelated/
+        └── SomeClass.java        ← NOT found if this were outside
+                                     com.codeverse.week02 entirely
+</code></pre>
+            </div>
+
+            <p>
+              This is why every generated Spring Boot project puts its
+              <code>@SpringBootApplication</code> class at the <strong>root package</strong> — one
+              level above everything else. Put it in a leaf package by mistake, and any
+              <code>@Service</code> or <code>@Repository</code> class outside that package's
+              subtree simply never gets registered, with no error — the bean just silently doesn't
+              exist, and you find out when injection fails.
+            </p>
+          </section>
+
+          <section id="configuration-beans">
+            <h2>5. @Configuration Classes &amp; @Bean Methods</h2>
+            <p>
+              Stereotype annotations only work on classes you own and can edit. For a class from a
+              third-party library — or anything that needs to be built with logic rather than a
+              bare constructor call — you register it explicitly with a <code>@Configuration</code>
+              class and a <code>@Bean</code>-annotated method instead.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">AppConfig.java</div>
+              <pre><code>package com.codeverse.week02;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    // ObjectMapper is a third-party class -- you can't add @Component
+    // to it. This is the standard way to register a bean for something
+    // you don't own, built with whatever setup logic it needs.
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              The rule of thumb: reach for a stereotype annotation on your own classes by default;
+              reach for an explicit <code>@Bean</code> method when you're wiring up a class you
+              don't control, when construction needs conditional logic, or when you need more than
+              one bean of the same type configured differently (the second implementation you'll
+              add in this week's exercise is a good example of the latter).
+            </p>
+          </section>
+
+          <section id="auto-configuration">
+            <h2>6. Auto-Configuration &amp; Starters Explained</h2>
+            <p>
+              In Week 1, adding a single dependency — <code>spring-boot-starter-web</code> — to
+              <code>pom.xml</code> was enough for an embedded Tomcat server to appear and start
+              handling HTTP requests, with zero configuration written by you. That's
+              <strong>auto-configuration</strong>, the third piece bundled inside
+              <code>@SpringBootApplication</code> alongside component scanning.
+            </p>
+            <p>
+              A <strong>starter</strong> like <code>spring-boot-starter-web</code> is not magic —
+              it's just a Maven dependency that pulls in a curated set of libraries (Tomcat,
+              Spring MVC, Jackson for JSON) plus an auto-configuration module for each. Each
+              auto-configuration class is guarded by conditional annotations that decide whether it
+              should activate at all:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">conceptual shape of Spring's own TomcatAutoConfiguration</div>
+              <pre><code>@Configuration
+@ConditionalOnClass(Tomcat.class)
+public class TomcatWebServerAutoConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean(ServletWebServerFactory.class)
+    public ServletWebServerFactory servletWebServerFactory() {
+        return new TomcatServletWebServerFactory();
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>@ConditionalOnClass(Tomcat.class)</code> means "only register this
+              configuration if the Tomcat class is actually present on the classpath" — which it
+              is, because <code>spring-boot-starter-web</code> pulled it in as a transitive
+              dependency. Remove that starter, and this whole auto-configuration class quietly
+              never activates; no Tomcat classes, no Tomcat bean.
+              <code>@ConditionalOnMissingBean(ServletWebServerFactory.class)</code> means "only
+              register Spring's default Tomcat factory if <em>you</em> haven't already defined your
+              own bean of that type" — so any <code>@Bean</code> method you write yourself always
+              takes priority over Spring Boot's defaults, letting you override selectively instead
+              of all-or-nothing.
+            </p>
+
+            <p>
+              You can see exactly which auto-configuration classes activated — and, just as
+              usefully, which ones Spring considered and rejected, and why — by running your app
+              with the <code>--debug</code> flag:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>./mvnw spring-boot:run -Dspring-boot.run.arguments=--debug
+
+# Look for the "CONDITIONS EVALUATION REPORT" near the top of the log:
+#
+# Positive matches:
+# -----------------
+#    DispatcherServletAutoConfiguration matched:
+#       - @ConditionalOnClass found required class 'jakarta.servlet.Servlet' ...
+#
+# Negative matches:
+# -----------------
+#    DataSourceAutoConfiguration:
+#       Did not match:
+#          - @ConditionalOnClass did not find required class
+#            'javax.sql.DataSource' ...
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Tying back to Week 1's pom.xml</strong>
+                <p>That single <code>spring-boot-starter-web</code> dependency you added in Week 1 is the entire reason Tomcat, Spring MVC and Jackson auto-configured themselves. When Week 3 has you add <code>spring-boot-starter-validation</code> or a database starter, the same mechanism — starter on the classpath, matching <code>@ConditionalOnClass</code> auto-configuration activates — is what wires the new capability in.</p>
+              </div>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Looking ahead to Week 3</strong>
+                <p>Understanding that a controller is "just a bean, injected like any other" is what makes Week 3's REST controllers feel unsurprising rather than magical — the routing annotations change, but the constructor-injection pattern you practice this week doesn't.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Layer Week 1's Greeting service behind an interface</h3>
+              <p>Take the greeting endpoint you built in Week 1 and turn it into a small, properly-layered example of everything covered this week: an interface-backed bean, constructor injection, two competing implementations, and a lifecycle callback you can watch fire.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Define a <code>GreetingService</code> interface with one method, <code>String greet(String name)</code>.</li>
+                <li>Create a <code>FriendlyGreetingService</code> implementation annotated <code>@Service</code> and <code>@Primary</code>, returning something like <code>"Hey there, " + name + "!"</code>.</li>
+                <li>Create a second implementation, <code>FormalGreetingService</code>, annotated <code>@Service("formalGreetingService")</code>, returning <code>"Good day, " + name + "."</code> — do not mark it <code>@Primary</code>.</li>
+                <li>Update <code>GreetingController</code> to depend on the <code>GreetingService</code> interface (not a concrete class) via constructor injection. Add a second constructor parameter using <code>@Qualifier("formalGreetingService")</code> to also inject the formal variant, and expose it on a second endpoint, e.g. <code>GET /greet/formal</code>, so both implementations are demonstrably wired into the same controller at once.</li>
+                <li>Add a <code>@PostConstruct</code> method to <code>FriendlyGreetingService</code> that logs a line proving the bean was constructed (e.g. <code>"FriendlyGreetingService bean created"</code>), and confirm it prints once at startup — not once per request.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>If you inject a bare <code>GreetingService</code> parameter with no <code>@Qualifier</code> and both implementations exist, Spring uses whichever one is marked <code>@Primary</code> to resolve the ambiguity. <code>@Qualifier("beanName")</code> is how you deliberately ask for the non-primary one instead — you'll need both approaches in the same controller for this exercise.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>8. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why is constructor injection preferred over field injection (<code>@Autowired</code> on a private field) in idiomatic Spring code?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Constructor injection lets dependency fields be declared <code>final</code>, so once the object exists its collaborators can never be silently swapped or left null after construction. It also means unit tests can build the class with a plain <code>new</code> call and hand-written fakes, with no Spring container or reflection involved, which keeps tests fast and simple. And because the constructor demands every required dependency up front, a missing bean causes the application to fail immediately at startup with a clear error, rather than deploying successfully and throwing a <code>NullPointerException</code> the first time a request happens to touch the unset field. Field injection hides all of these problems: it works via reflection after construction, so an object can exist in a half-wired, untestable state, and tests need a running Spring context or special test hooks just to populate a private field.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What does <code>@ConditionalOnClass</code> do in an auto-configuration class, and why does it matter for how starters work?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>@ConditionalOnClass</code> tells Spring Boot to only register a particular auto-configuration class if a specified class is actually present on the classpath at runtime. This is what makes starters work as an all-or-nothing bundle: <code>spring-boot-starter-web</code> pulls in the Tomcat and Spring MVC jars as transitive dependencies, and because those classes are now on the classpath, the matching auto-configuration classes (guarded by <code>@ConditionalOnClass(Tomcat.class)</code> and similar) activate automatically and register beans like the embedded servlet container. If that starter were removed, those classes would no longer be present, the condition would fail, and the auto-configuration would silently skip itself instead of registering beans for a library that isn't even on the classpath — no error, just quietly not wiring in a capability you didn't ask for.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>What's the practical difference between singleton and prototype bean scope, and when would you actually reach for prototype?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A singleton bean, the default, is created once by the container and that same instance is handed out every time it's needed anywhere in the application — appropriate for the vast majority of beans, like services and repositories, that hold no per-use mutable state of their own. A prototype-scoped bean gets a brand-new instance constructed every single time it's requested from the container, so no state leaks between different callers. You'd reach for prototype specifically when a bean accumulates mutable state across a sequence of method calls that must not be shared or corrupted by concurrent use, such as a stateful builder object being filled in over several steps. Reaching for prototype scope by default, rather than only when a bean genuinely needs fresh per-use state, is a common mistake — most beans should stay singleton.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why does it matter which package your <code>@SpringBootApplication</code> class lives in, relative to your <code>@Service</code> and <code>@Repository</code> classes?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>@SpringBootApplication</code> includes <code>@ComponentScan</code>, which by default only scans the package containing the annotated class and every sub-package beneath it — it does not scan sibling packages or anything above it. That's why every generated Spring Boot project places its application class at the root package, one level above every other package in the project: it guarantees every <code>@Service</code>, <code>@Repository</code>, and <code>@Component</code> class anywhere in the codebase sits inside that scanned subtree. If the application class were moved into a leaf package instead, any stereotype-annotated class outside that leaf's subtree would simply never be registered as a bean, with no error raised — the failure would only surface later as a confusing "no qualifying bean" exception wherever something tried to inject it.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-01.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Week 1: Java Foundations &amp; Environment Setup</span>
+          </a>
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 3: Building REST APIs</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

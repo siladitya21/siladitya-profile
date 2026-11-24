@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 4: Data Persistence with Spring Data JPA (Part 1) — CodeVerse Creatives</title>
+<meta name="description" content="Week 4 of the Java &amp; Spring Boot curriculum: JPA and Hibernate fundamentals, mapping Java classes to relational tables with entity annotations, building Spring Data repositories, writing derived query methods and JPQL, and paginating and sorting query results." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="spring-boot">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../spring-boot/index.html">Spring Boot Syllabus</a>
+        <span>/</span>
+        <a href="../spring-boot/index.html#timeline">Module 4 · Data Persistence with Spring Data JPA</a>
+        <span>/</span>
+        <span aria-current="page">Week 4</span>
+      </div>
+
+      <h1>Week 4: Data Persistence with Spring Data JPA (Part 1)</h1>
+      <p class="lesson-header__lede">
+        Week 3 stored tasks in a plain in-memory list — fine for learning REST, but it forgets
+        everything on restart and can't survive more than one running instance. This two-week
+        module replaces it with a real relational database. This first week covers JPA and
+        Hibernate fundamentals, mapping Java classes to database tables, and writing Spring Data
+        repositories; Week 5 covers entity relationships, transactions, and schema migrations
+        with Flyway.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 4 of 22</span>
+        <span class="chip">Week 4 of 26</span>
+        <span class="chip">~4–5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Understand how JPA and Hibernate map Java objects to relational tables</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write Spring Data repositories using derived query methods and JPQL</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Page and sort query results instead of returning entire tables at once</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#jpa-hibernate"><span>1</span> JPA &amp; Hibernate Basics</a>
+        <a href="#entity-mapping"><span>2</span> Mapping Entities</a>
+        <a href="#spring-data-repos"><span>3</span> Spring Data Repositories</a>
+        <a href="#derived-queries"><span>4</span> Derived Queries &amp; JPQL</a>
+        <a href="#pagination"><span>5</span> Pagination &amp; Sorting</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="jpa-hibernate">
+            <h2>1. JPA &amp; Hibernate Basics</h2>
+            <p>
+              An <strong>ORM</strong> (Object-Relational Mapper) translates between two worlds
+              that don't naturally agree: Java objects, with fields, references, and inheritance;
+              and relational tables, with rows, columns, and foreign keys. Instead of hand-writing
+              <code>SELECT</code> and <code>INSERT</code> statements and manually copying result
+              set columns into object fields, you describe the mapping once with annotations, and
+              the ORM generates the SQL for you.
+            </p>
+
+            <p>
+              <strong>JPA</strong> (Jakarta Persistence API) is the specification — a set of
+              interfaces and annotations like <code>@Entity</code> and <code>EntityManager</code>
+              that define what an ORM for Java must support. <strong>Hibernate</strong> is the
+              implementation: the actual library that reads those annotations, generates SQL,
+              talks to the JDBC driver, and executes queries against the database. Spring Boot
+              uses Hibernate as its default JPA provider — when you write JPA annotations in this
+              course, Hibernate is what's doing the work underneath.
+            </p>
+
+            <h3>The persistence context</h3>
+            <p>
+              At the center of how JPA works is the <strong>persistence context</strong> — a
+              first-level cache of managed entities tied to the current
+              <code>EntityManager</code> (Spring wires one per transaction for you). When you
+              load an entity by ID, JPA keeps a reference to it in the persistence context. Load
+              the same row again within the same transaction and JPA returns the identical
+              in-memory object without hitting the database a second time. Change a field on a
+              managed entity, and JPA detects that change and writes it back at the end of the
+              transaction — a mechanism called <strong>dirty checking</strong> — without you ever
+              calling an explicit "update" method.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml — new dependencies for this module</div>
+              <pre><code>&lt;dependencies&gt;
+    &lt;!-- Spring Data JPA + Hibernate, pulled in as one starter --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- PostgreSQL JDBC driver, used at runtime only --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;scope&gt;runtime&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+            </div>
+
+            <p>
+              <code>spring-boot-starter-data-jpa</code> is itself a bundle: Hibernate, the
+              Spring Data JPA repository abstraction you'll use in Section 3, the JPA API
+              annotations, and Spring's transaction management, all pinned to compatible versions
+              by <code>spring-boot-starter-parent</code>.
+            </p>
+          </section>
+
+          <section id="entity-mapping">
+            <h2>2. Mapping Entities</h2>
+            <p>
+              An <strong>entity</strong> is a plain Java class annotated <code>@Entity</code> that
+              Hibernate maps to a database table — one instance per row. Take the <code>Task</code>
+              class from Week 3's in-memory exercise and turn it into a real entity:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Task.java</div>
+              <pre><code>package com.codeverse.week04;
+
+import jakarta.persistence.*;
+import java.time.Instant;
+
+@Entity
+@Table(name = "tasks")
+public class Task {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 200)
+    private String title;
+
+    @Column(length = 2000)
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TaskStatus status;
+
+    /** 1 (low) through 5 (urgent). */
+    @Column(nullable = false)
+    private int priority;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt = Instant.now();
+
+    protected Task() {
+        // JPA requires a no-arg constructor -- it uses reflection to build
+        // instances before populating fields from the result set.
+    }
+
+    public Task(String title, String description, TaskStatus status, int priority) {
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.priority = priority;
+    }
+
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public TaskStatus getStatus() { return status; }
+    public int getPriority() { return priority; }
+    public Instant getCreatedAt() { return createdAt; }
+
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setStatus(TaskStatus status) { this.status = status; }
+    public void setPriority(int priority) { this.priority = priority; }
+}
+
+enum TaskStatus { TODO, IN_PROGRESS, DONE }
+</code></pre>
+            </div>
+
+            <p>
+              <code>@Id</code> marks the primary key field; <code>@GeneratedValue(strategy =
+              GenerationType.IDENTITY)</code> delegates ID generation to the database's own
+              auto-increment column, which is the natural fit for PostgreSQL's
+              <code>SERIAL</code>/<code>IDENTITY</code> columns. <code>@Column</code> is optional
+              — Hibernate infers a column from the field name and type by default — but it lets
+              you set constraints like <code>nullable</code> and <code>length</code> that become
+              part of the generated <code>CREATE TABLE</code> DDL. <code>@Enumerated(EnumType.STRING)</code>
+              stores the enum's name (<code>"TODO"</code>) rather than its ordinal position, which
+              is what you want: reordering the enum's constants later won't silently corrupt
+              existing rows.
+            </p>
+
+            <h3>Pointing Spring Boot at PostgreSQL</h3>
+            <p>
+              With Docker running a local PostgreSQL instance (<code>docker run -d -p 5432:5432
+              -e POSTGRES_PASSWORD=postgres postgres:16</code> is enough for development), point
+              <code>application.properties</code> at it:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">application.properties</div>
+              <pre><code>spring.datasource.url=jdbc:postgresql://localhost:5432/taskdb
+spring.datasource.username=task_app
+spring.datasource.password=change-me
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+</code></pre>
+            </div>
+
+            <p>
+              <code>spring.jpa.hibernate.ddl-auto=update</code> tells Hibernate to inspect your
+              entities on startup and alter the schema to match — create the <code>tasks</code>
+              table if it's missing, add columns it doesn't recognize. It's convenient for local
+              development because you never hand-write a <code>CREATE TABLE</code> statement, but
+              it is not a real schema management strategy: it can't rename or drop columns
+              safely, it has no history of what changed and when, and running it against a
+              production database is how tables quietly diverge from what your code expects.
+              Week 5 replaces it with Flyway, versioned SQL migration files that are the actual
+              answer for any project beyond a local sandbox.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>ddl-auto is a development convenience, not a migration tool</strong>
+                <p>Keep <code>ddl-auto=update</code> for this week's local exercise so you're not blocked on schema tooling before you've even seen an entity work. In Week 5, once you've felt how fragile it is, you'll switch to Flyway-managed migration scripts — the approach every production Spring Boot service in this course's later modules actually uses.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="spring-data-repos">
+            <h2>3. Spring Data Repositories</h2>
+            <p>
+              Writing an <code>EntityManager</code> query by hand for every basic operation —
+              save this, find that by ID, delete this — is repetitive enough that Spring Data
+              eliminates it entirely. Declare an interface extending <code>JpaRepository&lt;T,
+              ID&gt;</code>, and Spring generates a working implementation at startup. No class
+              body required:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskRepository.java</div>
+              <pre><code>package com.codeverse.week04;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TaskRepository extends JpaRepository&lt;Task, Long&gt; {
+    // Everything below is inherited -- nothing else needed yet.
+}
+</code></pre>
+            </div>
+
+            <p>
+              That single line hands you a working set of persistence operations for free,
+              generated and proxied in by Spring at application startup:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">what JpaRepository&lt;Task, Long&gt; gives you</div>
+              <pre><code>Task save(Task task);                       // INSERT or UPDATE
+Optional&lt;Task&gt; findById(Long id);            // SELECT ... WHERE id = ?
+List&lt;Task&gt; findAll();                        // SELECT * FROM tasks
+boolean existsById(Long id);
+long count();
+void deleteById(Long id);
+void delete(Task task);
+// ...plus batch variants: saveAll, findAllById, deleteAll
+</code></pre>
+            </div>
+
+            <p>
+              Compare that to Week 3's in-memory version, which needed a hand-rolled
+              <code>Map</code> or <code>List</code>, manual ID generation, and explicit
+              synchronization if you cared about thread safety. <code>TaskRepository</code>
+              replaces all of it with an interface Spring implements at runtime by generating a
+              proxy class — you never write the implementation, and it talks to a real,
+              durable, shared database instead of a field in one JVM's memory.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Keep returning Week 3's DTOs, not the entity</strong>
+                <p>It's tempting now that <code>Task</code> is a real, richer class to just return it straight from your <code>@RestController</code> methods. Don't -- keep the <code>TaskResponse</code> record-based DTO shape from Week 3's controllers and map <code>Task</code> entities into it before serializing. Returning entities directly risks leaking lazy-loaded fields, Hibernate proxy internals, and JPA-specific JSON quirks into your public API contract.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="derived-queries">
+            <h2>4. Derived Query Methods &amp; JPQL</h2>
+            <p>
+              Beyond the free CRUD methods, Spring Data can generate query implementations from a
+              method's <em>name</em> alone. Name a method following its keyword conventions, and
+              Spring Data parses it into a query at startup:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskRepository.java — derived queries</div>
+              <pre><code>public interface TaskRepository extends JpaRepository&lt;Task, Long&gt; {
+
+    List&lt;Task&gt; findByStatus(TaskStatus status);
+
+    List&lt;Task&gt; findByStatusAndPriorityGreaterThan(TaskStatus status, int priority);
+
+    List&lt;Task&gt; findByTitleContainingIgnoreCase(String keyword);
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>findByStatusAndPriorityGreaterThan(status, priority)</code> becomes, roughly,
+              <code>SELECT * FROM tasks WHERE status = ? AND priority &gt; ?</code> — Spring Data
+              parses <code>And</code>, <code>GreaterThan</code>, <code>ContainingIgnoreCase</code>
+              and dozens of other keywords directly out of the method name and builds the
+              matching query. It's genuinely convenient for simple lookups, but it doesn't scale
+              past two or three conditions: a method like
+              <code>findByStatusAndPriorityGreaterThanAndCreatedAtBeforeOrderByPriorityDesc</code>
+              is technically valid and technically works, but nobody can read it at a glance, and
+              a typo in the middle silently produces a different query — or a startup failure —
+              rather than a compile error.
+            </p>
+
+            <h3>Switching to @Query and JPQL</h3>
+            <p>
+              Once a query needs a join, an aggregate, or just more conditions than a method name
+              can stay readable with, write it explicitly with <code>@Query</code> using
+              <strong>JPQL</strong> (Jakarta Persistence Query Language) — SQL-like syntax that
+              operates on entities and their fields rather than tables and columns directly:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskRepository.java — @Query with JPQL</div>
+              <pre><code>import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface TaskRepository extends JpaRepository&lt;Task, Long&gt; {
+
+    @Query("""
+        SELECT t FROM Task t
+        WHERE t.status = :status
+          AND LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        ORDER BY t.priority DESC
+        """)
+    List&lt;Task&gt; search(@Param("status") TaskStatus status, @Param("keyword") String keyword);
+}
+</code></pre>
+            </div>
+
+            <p>
+              Note that the query references <code>Task</code> and <code>t.status</code> — the
+              entity class and its Java fields — not a <code>tasks</code> table or a
+              <code>status</code> column; Hibernate translates that into real SQL against the
+              mapped table. Named parameters (<code>:status</code>, bound with
+              <code>@Param("status")</code>) keep the query readable and safe from the kind of
+              string-concatenation mistakes that lead to SQL injection in hand-written JDBC code.
+            </p>
+          </section>
+
+          <section id="pagination">
+            <h2>5. Pagination &amp; Sorting</h2>
+            <p>
+              <code>findAll()</code> returning every row was harmless with Week 3's tiny
+              in-memory list. Against a real database with thousands or millions of rows, an
+              unpaginated list endpoint is a liability: one slow query, one enormous JSON
+              response, one client that just wanted the first 20 results. Once there's a real
+              database behind an endpoint, you paginate every list endpoint by default.
+            </p>
+
+            <p>
+              Spring Data builds pagination into the repository layer itself.
+              <code>JpaRepository</code> extends <code>PagingAndSortingRepository</code>, which
+              adds an overload of <code>findAll</code> that accepts a <code>Pageable</code>:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Page&lt;Task&gt; findAll(Pageable pageable)</div>
+              <pre><code>import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+Pageable pageable = PageRequest.of(0, 20, Sort.by("priority").descending());
+Page&lt;Task&gt; page = taskRepository.findAll(pageable);
+
+page.getContent();        // the 20 Task rows for this page
+page.getTotalElements();  // total matching rows across all pages
+page.getTotalPages();
+page.getNumber();         // current page index (0-based)
+page.hasNext();
+</code></pre>
+            </div>
+
+            <p>
+              <code>Pageable</code> bundles a page number, page size, and an optional
+              <code>Sort</code> into a single object; <code>Page&lt;T&gt;</code> is what comes
+              back — not just the slice of results, but the metadata a client needs to render
+              pagination controls, without a second <code>COUNT(*)</code> query written by hand.
+              Wiring it into a controller means turning query parameters into a
+              <code>Pageable</code> and mapping each entity in the page to a DTO before it's
+              serialized:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskController.java — paginated listing</div>
+              <pre><code>@GetMapping("/tasks")
+public Page&lt;TaskResponse&gt; listTasks(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size,
+        @RequestParam(defaultValue = "createdAt,desc") String sort) {
+
+    String[] sortParts = sort.split(",");
+    Sort.Direction direction = sortParts.length &gt; 1 &amp;&amp; sortParts[1].equalsIgnoreCase("asc")
+            ? Sort.Direction.ASC
+            : Sort.Direction.DESC;
+
+    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortParts[0]));
+    return taskRepository.findAll(pageable).map(TaskMapper::toResponse);
+}
+</code></pre>
+            </div>
+
+            <p>
+              <code>Page&lt;T&gt;.map(...)</code> transforms each entity into a DTO while keeping
+              the page metadata (total elements, total pages, current page number) intact —
+              exactly the shape you want to hand back as JSON without leaking <code>Task</code>
+              entities to the client.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Testing this against a real database</strong>
+                <p>Right now the only way to be sure your derived queries and pagination behave correctly is running the app and poking it manually. Week 8 introduces Testcontainers, which spins up a real, disposable PostgreSQL instance for your test suite -- so tests exercise the actual SQL Hibernate generates instead of trusting a mocked repository.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Move the Week 3 Task API onto PostgreSQL with Spring Data JPA</h3>
+              <p>Take the in-memory Task API you built in Week 3 and back it with a real database, using everything covered this week: entity mapping, a Spring Data repository, derived and JPQL queries, and pagination.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>In package <code>com.codeverse.week04</code>, turn <code>Task</code> into a proper <code>@Entity</code> mapped to a <code>tasks</code> table, with <code>id</code>, <code>title</code>, <code>description</code>, a <code>TaskStatus</code> enum field stored with <code>@Enumerated(EnumType.STRING)</code>, an integer <code>priority</code>, and a <code>createdAt</code> timestamp — replacing Week 3's in-memory list or map entirely.</li>
+                <li>Point <code>application.properties</code> at a local PostgreSQL instance (Docker is the easiest route) with <code>spring.jpa.hibernate.ddl-auto=update</code>, and confirm the <code>tasks</code> table is created automatically the first time the app starts.</li>
+                <li>Create <code>TaskRepository extends JpaRepository&lt;Task, Long&gt;</code> and add a derived query method, <code>findByStatusAndPriorityGreaterThan(TaskStatus status, int priority)</code>, that your controller can call to filter urgent open tasks.</li>
+                <li>Add one <code>@Query</code> method using JPQL with named parameters — a case-insensitive keyword search across <code>title</code> is a good fit — and expose it through a <code>GET /tasks/search?keyword=...</code> endpoint.</li>
+                <li>Add a paginated <code>GET /tasks</code> endpoint accepting <code>page</code>, <code>size</code>, and <code>sort</code> query parameters, returning a <code>Page&lt;TaskResponse&gt;</code> built by mapping <code>Task</code> entities to Week 3's DTO shape — never serialize the entity directly.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Your existing <code>TaskRequest</code>/<code>TaskResponse</code> DTOs and validation from Week 3 don't need to change shape — only the controller's plumbing changes, from reading and writing a <code>Map</code> to calling <code>TaskRepository</code>. If a test breaks, it's almost always in the mapping between <code>Task</code> and its DTOs, not in JPA itself.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>What is the persistence context, and why is it sometimes called a "first-level cache"?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The persistence context is the set of entity instances an <code>EntityManager</code> is currently tracking, or "managing," within a transaction. When you load an entity by ID, JPA registers it in the persistence context; loading the same ID again in the same transaction returns the identical cached object instead of issuing a second query, which is why it's called a first-level cache. It's more than a cache, though — JPA also uses it to perform dirty checking, comparing a managed entity's current field values against the state it had when loaded, and automatically issuing an <code>UPDATE</code> for any changes when the transaction commits, without an explicit save call.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why do derived query method names get unwieldy, and when should you switch to <code>@Query</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Derived query methods work by encoding the entire query — every condition, operator and sort order — into the method name itself, using keywords like <code>And</code>, <code>GreaterThan</code> and <code>OrderBy</code>. That's readable for one or two conditions, but past that it turns into a long, densely-packed identifier that's hard to parse visually and easy to get subtly wrong, since a mistyped keyword either changes the query silently or fails at startup with a cryptic error rather than a compile-time one. The rule of thumb is to switch to an explicit <code>@Query</code> with JPQL once a method name needs more than two or three conditions, needs a join or aggregate, or once you find yourself squinting at the method signature to figure out what it actually queries.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why is <code>spring.jpa.hibernate.ddl-auto=update</code> unsafe for a real project, even though it's convenient locally?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>ddl-auto=update</code> lets Hibernate infer schema changes from your entity classes and apply them automatically on startup, which is genuinely useful early on because you never hand-write DDL. The problem is that it's a one-way, best-effort guess: it can add columns and tables but won't safely rename or drop them, it has no record of what changed or when, it can behave differently across Hibernate versions, and running it against a shared or production database means every developer's entity changes get applied live with no review step and no rollback path. Real projects need a schema history they can review, test, and roll back — which is exactly what Week 5's Flyway migrations provide, and why <code>ddl-auto</code> should never be enabled outside local development.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>When a repository method returns <code>Page&lt;Task&gt;</code>, what does the client actually receive, and why is that more than just a list?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A <code>Pageable</code> passed into a query method carries the requested page number, page size, and sort order; the <code>Page&lt;T&gt;</code> returned bundles the matching slice of results together with pagination metadata — total element count, total page count, current page number, and whether a next or previous page exists. That's what makes it more useful than a plain <code>List&lt;T&gt;</code>: a client rendering "Page 3 of 40" or a "Load more" button needs that metadata, and without it, the client (or the server, separately) would have to run a second query just to count the total rows. Spring Data computes that count query alongside the content query automatically, so serializing a <code>Page</code> to JSON hands the client everything it needs to build pagination controls in one response.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Week 3: Building REST APIs</span>
+          </a>
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 5: Data Persistence with Spring Data JPA (Part 2)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

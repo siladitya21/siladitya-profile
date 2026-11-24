@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 22: Deployment, CI/CD &amp; Production Ops — CodeVerse Creatives</title>
+<meta name="description" content="Week 22 of the React curriculum: production builds and environment variables, deploying to Vercel/Netlify with preview deployments, a GitHub Actions CI pipeline, Sentry error monitoring, and rollback strategy." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="react">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../react/index.html">React Syllabus</a>
+        <span>/</span>
+        <a href="../react/index.html#timeline">Module 12 · Deployment &amp; Production Ops</a>
+        <span>/</span>
+        <span aria-current="page">Week 22</span>
+      </div>
+
+      <h1>Week 22: Deployment, CI/CD &amp; Production Ops</h1>
+      <p class="lesson-header__lede">
+        Everything so far has run on <code>localhost</code>. This week ships it — turning a working
+        app into something real users can actually reach, safely and repeatably. That means
+        production builds that don't leak secrets, a host that rebuilds automatically on every
+        push, a CI pipeline that catches mistakes before they go live, and a plan for the moment
+        something still gets through anyway.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 12 of 17</span>
+        <span class="chip">Week 22 of 28</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Configure production builds and environment variables without leaking secrets to the client bundle</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Deploy an app to Vercel or Netlify with automatic preview deployments per pull request</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Set up a CI pipeline that lints, tests and builds before every deploy, with monitoring and a rollback plan for when something still slips through</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#env-vars"><span>1</span> Production Builds &amp; Env Vars</a>
+        <a href="#vercel-deploy"><span>2</span> Vercel, Netlify or Self-Hosted</a>
+        <a href="#preview-deployments"><span>3</span> Preview Deployments &amp; Branches</a>
+        <a href="#ci-pipeline"><span>4</span> CI/CD with GitHub Actions</a>
+        <a href="#monitoring"><span>5</span> Error Monitoring with Sentry</a>
+        <a href="#rollbacks"><span>6</span> Rollbacks &amp; Release Safety</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+        <a href="#quiz"><span>8</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="env-vars">
+            <h2>1. Production Builds &amp; Environment Variables</h2>
+            <p>
+              <code>npm run dev</code> serves unminified code with hot reloading and verbose error
+              overlays — none of that belongs in front of real users. A production build strips all
+              of it, minifies and tree-shakes the bundle, and produces the static assets your host
+              actually serves.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — Next.js production build</div>
+              <pre><code>npm run build
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    142 B          87.3 kB
+├ ○ /products                            1.2 kB         92.1 kB
+└ ƒ /products/[productId]                891 B          88.9 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+</code></pre>
+            </div>
+
+            <p>
+              The route table from Week 19's <code>next build</code> doubles as a production sanity
+              check — confirm the routes you expect to be static (○) actually are, before anything
+              ships. A Vite SPA's equivalent is <code>npm run build</code>, which outputs a
+              <code>dist/</code> folder of hashed, minified static assets ready to serve from any
+              static host.
+            </p>
+
+            <p>
+              Environment variables split into two categories, and the difference is a safety
+              boundary, not a naming convention. A plain <code>DATABASE_URL</code> stays on the
+              server — never bundled into the JavaScript sent to the browser. Prefixing a variable
+              with <code>NEXT_PUBLIC_</code> (Next.js) or <code>VITE_</code> (Vite) is a deliberate,
+              explicit opt-in: it tells the build tool "yes, inline this value into the client
+              bundle, where anyone can read it via DevTools." Forgetting the prefix means the
+              variable silently stays <code>undefined</code> in the browser; adding it to something
+              that shouldn't be public is the actual danger.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">.env.production</div>
+              <pre><code># server-only -- never sent to the browser, safe for real secrets
+DATABASE_URL=postgres://prod-user:***@db.internal:5432/app
+STRIPE_SECRET_KEY=sk_live_***
+SENTRY_AUTH_TOKEN=***
+
+# client-exposed -- inlined into the JS bundle, readable by anyone
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com
+NEXT_PUBLIC_SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Never commit real secrets to the repo</strong>
+                <p><code>.env.production</code> above is illustrative — actual secret values belong in your host's environment variable dashboard (Vercel/Netlify project settings), not in a file that gets committed. Keep <code>.env*</code> in <code>.gitignore</code> and commit only a <code>.env.example</code> with placeholder values, so a leaked git history never doubles as a leaked credential dump.</p>
+              </div>
+            </div>
+
+            <p>
+              This is also the config file where Week 3's React Compiler gets turned on for a real
+              production build — a one-line addition that makes every eligible component in the app
+              compiler-optimized, without touching component code:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">next.config.ts</div>
+              <pre><code>import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  reactCompiler: true, // enables the React Compiler for the whole app's production build
+};
+
+export default nextConfig;
+</code></pre>
+            </div>
+
+            <p>
+              After enabling it, <code>next build</code>'s output includes compiler diagnostics for
+              any component that couldn't be optimized (the "bailed out" case from Week 3) — worth a
+              scan on a real production build, since a component silently missing optimization in a
+              large app is easy to overlook without checking the build log directly.
+            </p>
+          </section>
+
+          <section id="vercel-deploy">
+            <h2>2. Deploying to Vercel or Netlify</h2>
+            <p>
+              Both platforms work the same way at a high level: connect a GitHub repository, tell
+              them how to build your app, and every push to your default branch triggers a new
+              production deploy automatically — no manual upload step, no SSH-ing into a server.
+            </p>
+
+            <p>
+              Connecting a repo is a few clicks in either dashboard — "Import Project" (Vercel) or
+              "Add new site from Git" (Netlify) — after which the platform detects your framework
+              and pre-fills sensible build settings. It's worth knowing what those settings actually
+              mean, since a Next.js app and a Vite SPA need different values.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">build settings — Next.js app</div>
+              <pre><code>Build command:     next build
+Output directory:  .next        (Vercel reads this automatically; framework-managed)
+Install command:   npm install
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">build settings — Vite SPA</div>
+              <pre><code>Build command:     npm run build
+Output directory:  dist         (plain static files -- any static host can serve these)
+Install command:   npm install
+</code></pre>
+            </div>
+
+            <p>
+              A Next.js app needs a platform that understands its server runtime (Vercel is built by
+              the Next.js team specifically for this); a Vite SPA is just static HTML/JS/CSS and can
+              be served by literally any static host, Vercel and Netlify included. Config files let
+              you pin these settings in the repo instead of the dashboard, which keeps deploy
+              behavior reviewable in a pull request like any other code change.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">vercel.json — Vite SPA, with client-side routing rewrite</div>
+              <pre><code>{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">netlify.toml — equivalent config</div>
+              <pre><code>[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+</code></pre>
+            </div>
+
+            <p>
+              The rewrite/redirect rule matters for a Vite SPA using Week 6's client-side router:
+              without it, refreshing the browser on <code>/products/42</code> asks the static host
+              for a file at that literal path, which doesn't exist — the host needs to be told to
+              serve <code>index.html</code> for every path and let the router handle it client-side.
+            </p>
+
+            <h3>Self-hosting Next.js: standalone output &amp; Docker</h3>
+            <p>
+              Vercel isn't required. A Next.js app is a Node.js server, so it runs on any platform
+              that runs containers: Cloud Run, Fly.io, Railway, AWS ECS, Kubernetes, or your own VPS.
+              One config line makes the build produce a small, self-contained server:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">next.config.ts</div>
+              <pre><code>import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  output: 'standalone', // .next/standalone/server.js + only the node_modules it actually needs
+};
+
+export default nextConfig;
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">Dockerfile — multi-stage</div>
+              <pre><code>FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:22-alpine AS run
+WORKDIR /app
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
+RUN addgroup -S app &amp;&amp; adduser -S app -G app
+# standalone server + the static assets it doesn't copy by itself
+COPY --from=build --chown=app:app /app/.next/standalone ./
+COPY --from=build --chown=app:app /app/.next/static ./.next/static
+COPY --from=build --chown=app:app /app/public ./public
+USER app
+EXPOSE 3000
+CMD ["node", "server.js"]
+</code></pre>
+            </div>
+
+            <p>
+              The final image contains no source code, no dev dependencies, and no build tools, and
+              it runs as a non-root user. Three things to know when self-hosting:
+            </p>
+            <ul>
+              <li><strong>The static files aren't copied for you.</strong> Forgetting the <code>.next/static</code> and <code>public</code> lines is the classic "the site loads with no CSS or images" bug.</li>
+              <li><strong><code>NEXT_PUBLIC_*</code> variables are baked in at build time</strong> (Section 1), so they must be available during <code>docker build</code>, not just at runtime. Server-only variables can be passed at <code>docker run</code>.</li>
+              <li><strong>Several instances need a shared cache.</strong> Week 21's cache lives on each server's disk by default, so <code>updateTag</code> on one instance doesn't clear the others. Behind a load balancer, configure a shared cache handler (Redis, for example) as described in Next.js's self-hosting guide.</li>
+            </ul>
+          </section>
+
+          <section id="preview-deployments">
+            <h2>3. Preview Deployments &amp; Branch Workflows</h2>
+            <p>
+              Beyond the production deploy on your default branch, both platforms deploy
+              <strong>every pull request</strong> to its own unique, shareable URL — built from that
+              branch's exact code, updated automatically on every new commit pushed to it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a preview URL, generated automatically per PR</div>
+              <pre><code>my-app-git-fix-cart-total-yourteam.vercel.app
+</code></pre>
+            </div>
+
+            <p>
+              This changes the code-review workflow in a real way: a reviewer doesn't have to read a
+              diff and imagine how the UI change looks or behaves — they click a link and use the
+              actual running app, with the actual change applied, including anything that's hard to
+              see in a diff (a layout shift, an animation, a genuinely broken interaction). It also
+              means designers and non-engineers who could never review a diff can weigh in directly
+              on the real thing, before it reaches production.
+            </p>
+
+            <p>
+              Once a pull request is approved and merged into the default branch, the platform
+              automatically promotes that exact build to production — the same artifact that was
+              being reviewed at the preview URL, not a fresh rebuild that could behave differently.
+              Vercel additionally lets you manually "Promote to Production" any past deployment
+              (preview or production) straight from the dashboard, independent of a git merge —
+              useful during Section 6's rollback discussion.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Preview environments still need real (test) data</strong>
+                <p>A preview deployment usually shares environment variables with production by default — worth deliberately pointing preview builds at a staging database or a test Stripe key, so a reviewer clicking around a preview URL can't accidentally mutate real production data.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="ci-pipeline">
+            <h2>4. CI/CD Pipeline with GitHub Actions</h2>
+            <p>
+              A host's automatic build-on-push is not the same thing as CI. It happily deploys code
+              that fails your Week 14 test suite or has broken lint rules — it only knows whether
+              the build compiled, not whether the app actually works. A dedicated CI workflow runs
+              alongside it, gating merges on lint, tests, and a build all passing first.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">.github/workflows/ci.yml</div>
+              <pre><code>name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'   # an active LTS line; Node 20 reached end-of-life in April 2026
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test -- --run   # Vitest (Week 14), non-watch mode in CI
+
+      - name: Build
+        run: npm run build
+</code></pre>
+            </div>
+
+            <p>
+              Each step runs in order, and a non-zero exit code from <em>any</em> step — a failing
+              ESLint rule, a failing Vitest assertion, a build error — halts the job and marks it
+              red on the pull request. Branch protection rules (in GitHub's repo settings) can then
+              require this check to pass before the "Merge" button is even clickable, which is what
+              actually makes this a gate rather than just a notification someone might ignore.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Fail the build, don't just warn</strong>
+                <p>A CI step that logs a warning and exits 0 anyway provides zero actual protection — nothing stops a red-but-ignorable check from merging. The entire value of CI comes from a failing step returning a genuinely non-zero exit code, which is what blocks the merge button when branch protection is configured to require it.</p>
+              </div>
+            </div>
+
+            <h3>From CI to CD: deploying only what passed</h3>
+            <p>
+              The workflow above is the <strong>CI</strong> half: it checks code but never ships it.
+              With Section 2's setup, Vercel or Netlify deploys <code>main</code> the moment it changes,
+              <em>whether or not CI passed</em>. Branch protection makes that mostly safe, but
+              "mostly" includes admin pushes, a check someone forgot to mark as required, and E2E tests
+              that never ran. <strong>Continuous Deployment</strong> closes the gap by making the
+              pipeline itself do the deploy, as the last job, only after every check is green:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">.github/workflows/ci-cd.yml — the full pipeline</div>
+              <pre><code>name: CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true          # a newer push cancels the older run
+
+jobs:
+  verify:                           # the lint/test/build job from above
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22', cache: 'npm' }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test -- --run
+      - run: npm run build
+
+  e2e:                              # Week 15's Playwright suite, in parallel with verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22', cache: 'npm' }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test    # webServer in playwright.config.ts starts the app
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-report, path: playwright-report/ }
+
+  deploy:
+    needs: [verify, e2e]            # never runs unless both passed
+    if: github.event_name == 'push' &amp;&amp; github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production         # holds the secrets; can require manual approval
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '22', cache: 'npm' }
+      - run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+</code></pre>
+            </div>
+
+            <ul>
+              <li><strong><code>needs:</code></strong> chains the jobs. <code>verify</code> and <code>e2e</code> run in parallel (faster), and <code>deploy</code> waits for both.</li>
+              <li><strong>The <code>if:</code> condition</strong> means pull requests only run CI. Section 3's preview deployments still handle PR previews.</li>
+              <li><strong><code>vercel pull</code> → <code>build</code> → <code>deploy --prebuilt</code></strong> builds inside your pipeline and uploads the result, so the deployed bundle is built from the same commit, with the same lockfile, that just passed CI.</li>
+              <li><strong>A GitHub Environment named <code>production</code></strong> (Settings → Environments) holds <code>VERCEL_TOKEN</code> and the IDs, so workflows from PRs can't read them. It can also require a reviewer to approve each production deploy.</li>
+            </ul>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Turn off the host's own production deploys</strong>
+                <p>If the repo is still connected through Vercel's or Netlify's Git integration, it will keep deploying <code>main</code> on its own, racing your pipeline. Keep the integration for PR previews, but disable automatic production deploys (in Vercel, set <code>git.deploymentEnabled</code> for <code>main</code> to <code>false</code> in <code>vercel.json</code>; in Netlify, stop auto-publishing). That way the only path to production is through the <code>deploy</code> job. For Netlify, the equivalent deploy step is <code>npx netlify deploy --prod --dir=dist</code> with a <code>NETLIFY_AUTH_TOKEN</code> secret.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="monitoring">
+            <h2>5. Error Monitoring with Sentry</h2>
+            <p>
+              A bug that throws in a user's browser produces an error in <em>their</em> console —
+              invisible to you unless they screenshot it and file a support ticket, which almost
+              never happens. Error monitoring closes that gap: it captures the error, the stack
+              trace, and the state of the app when it happened, and reports it back to you
+              automatically.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>npm install @sentry/react
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">src/main.tsx — minimal init, near the app's entry point</div>
+              <pre><code>import * as Sentry from '@sentry/react';
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN, // client-exposed by design -- a DSN isn't a secret
+  environment: import.meta.env.MODE,     // "production" vs "development"
+  tracesSampleRate: 0.1,                 // sample 10% of transactions, not every single one
+});
+</code></pre>
+            </div>
+
+            <p>
+              For a Next.js app, <code>@sentry/nextjs</code>'s setup wizard
+              (<code>npx @sentry/wizard@latest -i nextjs</code>) wires up equivalent config files for
+              both the server and client runtimes, since Week 18's server/client split means errors
+              can originate on either side. Once initialized, an uncaught error anywhere in the
+              component tree — including inside a Week 13 error boundary's <code>onError</code>
+              callback, wired up explicitly — is captured with a full stack trace, browser/OS
+              details, and (if configured) the logged-in user, letting you reproduce and fix issues
+              you'd otherwise never even know occurred.
+            </p>
+
+            <h3>Server-side hooks in Next.js: <code>instrumentation.ts</code></h3>
+            <p>
+              The Sentry wizard works by generating an <code>instrumentation.ts</code> file, and you
+              can write one yourself. Next.js calls <code>register()</code> once when the server
+              starts, which is the place to set up tracing (OpenTelemetry, as in the Node.js course's
+              Week 13). It calls <code>onRequestError()</code> for every error thrown on the server,
+              which is where you report to whichever monitoring service you use:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">instrumentation.ts — at the project root</div>
+              <pre><code>import type { Instrumentation } from 'next';
+
+export async function register() {
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    const { registerOTel } = await import('@vercel/otel');
+    registerOTel({ serviceName: 'acme-store' }); // traces for every request, fetch &amp; render
+  }
+}
+
+export const onRequestError: Instrumentation.onRequestError = async (err, request, context) =&gt; {
+  await reportError({
+    message: (err as Error).message,
+    digest: (err as Error &amp; { digest?: string }).digest, // matches the digest error.tsx receives
+    path: request.path,
+    routeType: context.routeType,                         // 'render' | 'route' | 'action' | 'proxy'
+  });
+};
+</code></pre>
+            </div>
+
+            <p>
+              The <code>digest</code> ties the two halves together. The user sees a generic message
+              from Week 19's <code>error.tsx</code>, and you look that same digest up in your logs to
+              find the full server-side error.
+            </p>
+          </section>
+
+          <section id="rollbacks">
+            <h2>6. Rollbacks &amp; Release Safety</h2>
+            <p>
+              CI and monitoring reduce how often something bad reaches production; they don't
+              eliminate it. The remaining question is how fast you can undo damage once it's live,
+              and that's a deploy-level operation, not a git-level one.
+            </p>
+
+            <p>
+              Vercel and Netlify both keep every past deployment around and let you instantly
+              re-point production traffic at any previous one, directly from the dashboard — no
+              rebuild, no waiting on CI, live again in the time it takes to click a button. This is
+              meaningfully faster than <code>git revert</code> plus a fresh push-and-rebuild cycle,
+              and it's the correct first move when something is actively broken for users right now.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">a feature flag, softer than a full rollback</div>
+              <pre><code>function CheckoutPage() {
+  const newFlowEnabled = useFeatureFlag('new-checkout-flow');
+
+  return newFlowEnabled ? &lt;NewCheckoutFlow /&gt; : &lt;LegacyCheckoutFlow /&gt;;
+}
+</code></pre>
+            </div>
+
+            <p>
+              A feature flag lets you disable just the broken piece of a release without rolling
+              back everything else that shipped alongside it — useful when only one feature in a
+              larger deploy is misbehaving, and reverting the whole deploy would also undo unrelated,
+              working changes. Flags cost more up front (every flagged feature needs the conditional
+              logic and, eventually, cleanup once it's fully rolled out) but buy much finer-grained
+              control when something does go wrong.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>What actually broke in prod — a short incident checklist</strong>
+                <p>1) Check Sentry for a spike in a specific error, not just "something feels off." 2) Confirm which deployment introduced it by comparing the error's first-seen timestamp against your deploy history. 3) Roll back that deployment immediately if users are affected right now — investigate the root cause afterward, not before, since "stop the bleeding" and "understand the bug" are separate steps with different urgency.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Ship a real app: hosting, CI, monitoring, and a rollback plan</h3>
+              <p>Take an app you've already built in this course and put the full production pipeline around it.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Push the app to a GitHub repository and connect it to Vercel or Netlify, confirming a production deploy succeeds and that any secret values live in the host's environment variable settings, not in the repo.</li>
+                <li>Open a pull request with a small, visible change and confirm a preview deployment URL is generated automatically for it; click through the preview to verify the change is actually live there.</li>
+                <li>Add a <code>.github/workflows/ci.yml</code> following Section 4, running lint, your Week 14 Vitest suite, and a production build on every pull request — then deliberately break a test to confirm the check goes red and (if you enable branch protection) blocks the merge.</li>
+                <li>Upgrade it to Section 4's full <code>ci-cd.yml</code>: add the Playwright <code>e2e</code> job from Week 15 and a <code>deploy</code> job with <code>needs: [verify, e2e]</code>, put the deploy secrets in a <code>production</code> GitHub Environment, and switch off the host's automatic production deploys. Merge a PR and confirm production updates <em>only</em> after the deploy job runs.</li>
+                <li>Install and initialize Sentry (or an equivalent) with a minimal client-side config, and confirm a deliberately thrown test error actually shows up in the dashboard.</li>
+                <li>Write, as a short markdown checklist inside your repo (e.g. <code>ROLLBACK.md</code>), the exact steps you'd personally take to roll back a bad deploy — from noticing the problem to production traffic pointing at the previous working deployment again.</li>
+                <li>If your app is a Next.js project, enable <code>reactCompiler: true</code>, run <code>next build</code>, and check the output for any compiler diagnostics; if it's a Vite SPA, install <code>babel-plugin-react-compiler</code> per Week 3 instead. Either way, confirm at least one component compiles cleanly with the optimization applied.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Deliberately breaking a test and watching the CI check actually go red is the only way to confirm the gate works — a workflow file that's never seen a real failure might be silently misconfigured (wrong script name, wrong working directory) and passing green for the wrong reason.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>8. Knowledge Check</h2>
+            <p>Five quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why do client-exposed environment variables need an explicit prefix like <code>NEXT_PUBLIC_</code> or <code>VITE_</code>, rather than every variable being available by default?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The prefix is a deliberate safety boundary: it's the explicit act of opting a specific value into the client bundle, where anyone can read it via DevTools. Making every variable available by default would mean a genuine secret (a database password, a private API key) could end up shipped to the browser simply by existing in <code>.env</code>, with no separate step required to catch that mistake.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What is a preview deployment, and why does it change the code-review workflow?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It's a real, running deployment of a pull request's exact branch, built automatically and given its own shareable URL. It changes review because a reviewer can click the link and interact with the actual app as changed, rather than reading a diff and imagining how it looks or behaves — catching visual and interactive issues a diff alone can't show.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why should a CI pipeline fail the build on a lint or test failure, rather than just logging a warning and continuing?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A step that warns but still exits 0 provides no actual protection — nothing stops the pull request from merging regardless. Only a genuinely non-zero exit code, paired with a branch protection rule requiring that check to pass, actually blocks a broken change from being merged, which is the entire point of putting checks in CI in the first place.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>When you "roll back" a deployment on Vercel or Netlify, what exactly gets reverted?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>It re-points production traffic at a previous, already-built deployment — not a git-level operation like <code>git revert</code>, and it doesn't change your repository's commit history at all. That's what makes it fast: there's no rebuild and no waiting on CI, since the previous deployment's build artifact already exists and is simply served again.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q5</span>
+                  <div class="week-item__heading">
+                    <h4>Your repo has a green CI workflow <em>and</em> Vercel's Git integration deploying <code>main</code>. Why isn't that yet continuous deployment?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Because the two run independently. Vercel deploys <code>main</code> as soon as it changes, without knowing or caring whether CI passed, so a commit that reaches <code>main</code> with failing tests still goes live. In continuous deployment, the deploy is a step in the pipeline that depends on the checks (<code>needs: [verify, e2e]</code>), so a failing check means no deploy, by construction.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-19.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 19: App Router Data Fetching, Layouts &amp; Streaming</span>
+          </a>
+          <a href="week-23.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 23: Styling Systems &amp; Accessibility →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

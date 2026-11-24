@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 19: Advanced Data Structures — CodeVerse Creatives</title>
+<meta name="description" content="Week 19 of the DSA in C++ curriculum: segment trees with lazy propagation for range updates, Fenwick trees for prefix sums, and sparse tables for O(1) static range-minimum queries." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="dsa-cpp">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../dsa-cpp/index.html">DSA in C++ Syllabus</a>
+        <span>/</span>
+        <a href="../dsa-cpp/index.html#timeline">Module 16 · Advanced Data Structures</a>
+        <span>/</span>
+        <span aria-current="page">Week 19</span>
+      </div>
+
+      <h1>Week 19: Advanced Data Structures — Segment Trees, Fenwick Trees &amp; Sparse Tables</h1>
+      <p class="lesson-header__lede">
+        This week is about answering range questions — sum, minimum, maximum over a subarray —
+        fast, and choosing the right structure for whether the underlying array changes. Segment
+        trees handle both point <em>and range</em> updates with lazy propagation; Fenwick trees
+        trade some flexibility for far less code when all you need is point updates and
+        prefix/range sums; and sparse tables trade updates away entirely to answer range-minimum
+        queries in true <code>O(1)</code> once a static array is preprocessed. By the end you'll
+        have the full decision tree these three structures — plus Week 2's plain prefix sums —
+        form together.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 16 of 17</span>
+        <span class="chip">Week 19 of 20</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a segment tree with lazy propagation to support range updates in O(log n)</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Implement a Fenwick tree (BIT) for prefix-sum queries and point updates</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a sparse table for O(1) range-minimum queries on a static array, and choose the right range-query structure under time pressure</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#segment-trees"><span>1</span> Segment Trees</a>
+        <a href="#lazy-propagation"><span>2</span> Lazy Propagation</a>
+        <a href="#fenwick"><span>3</span> Fenwick Trees</a>
+        <a href="#sparse-tables"><span>4</span> Sparse Tables</a>
+        <a href="#exercise"><span>5</span> Exercise</a>
+        <a href="#quiz"><span>6</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="segment-trees">
+            <h2>1. Segment Trees: Range Queries &amp; Point Updates</h2>
+            <p>
+              A segment tree answers range queries (sum, min, max, gcd) over an array that also
+              supports point updates, both in <code>O(log n)</code>. It's a binary tree stored in
+              an array where each node covers a contiguous range, and a parent's value is the
+              merge of its two children's values.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">segment_tree.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+using namespace std;
+
+class SegmentTree {
+public:
+    SegmentTree(const vector&lt;int&gt;&amp; nums) {
+        n = nums.size();
+        tree.assign(4 * n, 0);
+        if (n &gt; 0) build(nums, 1, 0, n - 1);
+    }
+
+    // Sum of nums[l..r] inclusive -- O(log n)
+    int query(int l, int r) {
+        return query(1, 0, n - 1, l, r);
+    }
+
+    // Set nums[idx] = val -- O(log n)
+    void update(int idx, int val) {
+        update(1, 0, n - 1, idx, val);
+    }
+
+private:
+    vector&lt;int&gt; tree;
+    int n;
+
+    void build(const vector&lt;int&gt;&amp; nums, int node, int lo, int hi) {
+        if (lo == hi) { tree[node] = nums[lo]; return; }
+        int mid = lo + (hi - lo) / 2;
+        build(nums, 2 * node, lo, mid);
+        build(nums, 2 * node + 1, mid + 1, hi);
+        tree[node] = tree[2 * node] + tree[2 * node + 1];
+    }
+
+    int query(int node, int lo, int hi, int l, int r) {
+        if (r &lt; lo || hi &lt; l) return 0;                  // no overlap
+        if (l &lt;= lo &amp;&amp; hi &lt;= r) return tree[node];        // total overlap
+        int mid = lo + (hi - lo) / 2;
+        return query(2 * node, lo, mid, l, r) + query(2 * node + 1, mid + 1, hi, l, r);
+    }
+
+    void update(int node, int lo, int hi, int idx, int val) {
+        if (lo == hi) { tree[node] = val; return; }
+        int mid = lo + (hi - lo) / 2;
+        if (idx &lt;= mid) update(2 * node, lo, mid, idx, val);
+        else update(2 * node + 1, mid + 1, hi, idx, val);
+        tree[node] = tree[2 * node] + tree[2 * node + 1];
+    }
+};
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Change the merge, get a different query</strong>
+                <p>Swap <code>tree[node] = tree[2*node] + tree[2*node+1]</code> for <code>min(...)</code> or <code>max(...)</code> (and change the "no overlap" sentinel from 0 to <code>INT_MAX</code> or <code>INT_MIN</code>) and the exact same recursive structure answers range-min or range-max queries instead of range-sum.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="lazy-propagation">
+            <h2>2. Lazy Propagation for Range Updates</h2>
+            <p>
+              The segment tree above only supports <em>point</em> updates — setting one index.
+              Adding a value to every element in a <em>range</em> naively would mean touching
+              <code>O(n)</code> nodes per update, destroying the tree's <code>O(log n)</code>
+              guarantee. Lazy propagation fixes this: when a range update fully covers a node's
+              range, stamp a pending change on that node and stop — don't recurse into its
+              children yet. That pending change only gets pushed down to the children the next
+              time something actually needs to look inside them.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">segment_tree_lazy.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+using namespace std;
+
+class LazySegmentTree {
+public:
+    LazySegmentTree(const vector&lt;long long&gt;&amp; nums) {
+        n = nums.size();
+        tree.assign(4 * n, 0);
+        lazy.assign(4 * n, 0);
+        if (n &gt; 0) build(nums, 1, 0, n - 1);
+    }
+
+    // Add `delta` to every element in nums[l..r] -- O(log n)
+    void updateRange(int l, int r, long long delta) {
+        updateRange(1, 0, n - 1, l, r, delta);
+    }
+
+    // Sum of nums[l..r] -- O(log n)
+    long long query(int l, int r) {
+        return query(1, 0, n - 1, l, r);
+    }
+
+private:
+    vector&lt;long long&gt; tree, lazy;
+    int n;
+
+    void build(const vector&lt;long long&gt;&amp; nums, int node, int lo, int hi) {
+        if (lo == hi) { tree[node] = nums[lo]; return; }
+        int mid = lo + (hi - lo) / 2;
+        build(nums, 2 * node, lo, mid);
+        build(nums, 2 * node + 1, mid + 1, hi);
+        tree[node] = tree[2 * node] + tree[2 * node + 1];
+    }
+
+    void pushDown(int node, int lo, int hi) {
+        if (lazy[node] == 0) return;
+        int mid = lo + (hi - lo) / 2;
+        int leftLen = mid - lo + 1, rightLen = hi - mid;
+
+        // Apply this node's pending delta to both children before touching them
+        tree[2 * node] += lazy[node] * leftLen;
+        lazy[2 * node] += lazy[node];
+        tree[2 * node + 1] += lazy[node] * rightLen;
+        lazy[2 * node + 1] += lazy[node];
+
+        lazy[node] = 0;   // pending change has been handed off -- clear it
+    }
+
+    void updateRange(int node, int lo, int hi, int l, int r, long long delta) {
+        if (r &lt; lo || hi &lt; l) return;                     // no overlap
+        if (l &lt;= lo &amp;&amp; hi &lt;= r) {                          // total overlap
+            tree[node] += delta * (hi - lo + 1);
+            lazy[node] += delta;                            // defer pushing to children
+            return;
+        }
+        pushDown(node, lo, hi);                             // partial overlap: must recurse
+        int mid = lo + (hi - lo) / 2;
+        updateRange(2 * node, lo, mid, l, r, delta);
+        updateRange(2 * node + 1, mid + 1, hi, l, r, delta);
+        tree[node] = tree[2 * node] + tree[2 * node + 1];
+    }
+
+    long long query(int node, int lo, int hi, int l, int r) {
+        if (r &lt; lo || hi &lt; l) return 0;
+        if (l &lt;= lo &amp;&amp; hi &lt;= r) return tree[node];
+        pushDown(node, lo, hi);                             // must resolve pending changes first
+        int mid = lo + (hi - lo) / 2;
+        return query(2 * node, lo, mid, l, r) + query(2 * node + 1, mid + 1, hi, l, r);
+    }
+};
+</code></pre>
+            </div>
+
+            <p>
+              <code>lazy[node]</code> means "every element under this node still owes a pending
+              <code>+delta</code> that hasn't been applied to the children yet, only reflected in
+              this node's own aggregate." Both <code>updateRange</code> and <code>query</code>
+              call <code>pushDown</code> before recursing into a node's children — that's the rule
+              that guarantees a child is never read while it still has an un-applied pending change
+              sitting above it. Because each level of the tree does <code>O(1)</code> work per
+              visited node and the recursion still only visits <code>O(log n)</code> nodes per
+              call, both operations stay <code>O(log n)</code> despite touching a whole range at
+              once.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>"Lazy" means deferred, not skipped</strong>
+                <p>Every pending change eventually does get applied — lazy propagation doesn't do less total work than eagerly updating every element, it just defers that work until a query or a later update actually needs to look inside the subtree, and a range that's never queried after being updated never pays the cost of expanding down to individual elements at all.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="fenwick">
+            <h2>3. Fenwick Trees (Binary Indexed Trees)</h2>
+            <p>
+              A Fenwick tree (BIT) answers prefix-sum queries and point updates in
+              <code>O(log n)</code>, with far less code than a segment tree — at the cost of only
+              supporting operations that are <strong>invertible</strong>, like sum or XOR, not
+              min or max.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">fenwick_tree.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+using namespace std;
+
+class FenwickTree {
+public:
+    FenwickTree(int n) : tree(n + 1, 0) {}
+
+    // Add delta to index i (1-indexed) -- O(log n)
+    void update(int i, int delta) {
+        for (; i &lt; (int)tree.size(); i += i &amp; (-i)) {
+            tree[i] += delta;
+        }
+    }
+
+    // Prefix sum of [1..i] -- O(log n)
+    int prefixSum(int i) {
+        int sum = 0;
+        for (; i &gt; 0; i -= i &amp; (-i)) {
+            sum += tree[i];
+        }
+        return sum;
+    }
+
+    // Range sum [l..r], both 1-indexed and inclusive -- O(log n)
+    int rangeSum(int l, int r) {
+        return prefixSum(r) - prefixSum(l - 1);
+    }
+
+private:
+    vector&lt;int&gt; tree;
+};
+</code></pre>
+            </div>
+
+            <p>
+              <code>i &amp; (-i)</code> isolates the lowest set bit of <code>i</code>, which is the
+              size of the range that index is responsible for. <code>update</code> walks upward
+              adding that range size to move to the next node that needs updating; <code>prefixSum</code>
+              walks downward subtracting it to accumulate the answer — the same bit trick powers
+              both directions.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Default to Fenwick when sum is all you need</strong>
+                <p>Whenever a problem needs point updates plus range-sum (or prefix-sum) queries, a Fenwick tree is usually the faster thing to code correctly under time pressure — reach for a segment tree only when the operation isn't invertible (min, max, gcd) or you need range updates too, via lazy propagation.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="sparse-tables">
+            <h2>4. Sparse Tables: O(1) Range-Minimum Queries on a Static Array</h2>
+            <p>
+              When the array never changes after being built, a sparse table beats every structure
+              above: <code>O(n log n)</code> preprocessing buys true <code>O(1)</code> queries, with
+              no <code>log n</code> factor at all. The idea: precompute the minimum of every
+              range whose length is a power of two, then answer any query by covering it with
+              two overlapping power-of-two ranges — overlap is fine for an <strong>idempotent</strong>
+              operation like min or max, where combining the same element twice doesn't change the
+              answer.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">sparse_table.cpp</div>
+              <pre><code>#include &lt;vector&gt;
+#include &lt;cmath&gt;
+using namespace std;
+
+class SparseTable {
+public:
+    // O(n log n) preprocessing
+    SparseTable(const vector&lt;int&gt;&amp; nums) {
+        int n = nums.size();
+        int maxLog = log2(n) + 1;
+        table.assign(maxLog, vector&lt;int&gt;(n));
+        table[0] = nums;   // ranges of length 2^0 = 1 are just the elements themselves
+
+        for (int k = 1; k &lt; maxLog; k++) {
+            int len = 1 &lt;&lt; k;
+            for (int i = 0; i + len &lt;= n; i++) {
+                // Range [i, i+len) = combine [i, i+len/2) and [i+len/2, i+len)
+                table[k][i] = min(table[k - 1][i], table[k - 1][i + len / 2]);
+            }
+        }
+    }
+
+    // Minimum of nums[l..r] inclusive -- O(1)
+    int query(int l, int r) {
+        int len = r - l + 1;
+        int k = log2(len);
+        // Two overlapping ranges of length 2^k together cover [l, r] -- overlap is
+        // harmless because min() is idempotent
+        return min(table[k][l], table[k][r - (1 &lt;&lt; k) + 1]);
+    }
+
+private:
+    vector&lt;vector&lt;int&gt;&gt; table;
+};
+</code></pre>
+            </div>
+
+            <p>
+              <code>table[k][i]</code> holds the minimum of the <code>2&#7521;</code>-length range
+              starting at <code>i</code>, built from two half-length ranges already computed at
+              level <code>k - 1</code> — the same "build longer ranges from shorter, already-solved
+              ones" discipline as Week 14's interval DP, just restricted to power-of-two lengths.
+              Because any range <code>[l, r]</code> can be covered by two possibly-overlapping
+              power-of-two ranges (one anchored at <code>l</code>, one anchored at <code>r</code>),
+              every query is a single lookup and one <code>min</code> — no recursion, no
+              log-factor traversal.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The overlap trick only works for idempotent operations</strong>
+                <p>Range-sum can't use this trick — summing the same overlapping elements twice would double-count them, which is exactly why sparse tables are the go-to for range-min/max/gcd/AND/OR (all idempotent) but never for range-sum, where a Fenwick tree or segment tree is required instead.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>5. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Build a complete range-query toolkit</h3>
+              <p>Implement all four structures — including Week 2's static prefix sum as a baseline — and confirm they agree on the queries each one supports.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Implement <code>SegmentTree</code> and <code>FenwickTree</code>, and confirm both agree with a static <code>buildPrefixSum</code>/<code>rangeSumStatic</code> pair on data that never changes.</li>
+                <li>Implement <code>LazySegmentTree</code> and test a sequence of overlapping range updates followed by range-sum queries; confirm the results match a naive O(n)-per-update array simulation.</li>
+                <li>Implement <code>SparseTable</code> for range-minimum and confirm it agrees with <code>SegmentTree</code> adapted for range-min (swap the merge to <code>min</code>, as in Section 1's callout) on the same static array.</li>
+                <li>Write a one-line comment above each structure stating when to reach for it and its Big-O for build/update/query, covering: no updates, point updates only, range updates, and idempotent-operation-only queries.</li>
+                <li>As a stretch goal, adapt <code>LazySegmentTree</code> to support range <em>assignment</em> (set every element in a range to a fixed value) instead of range addition, and explain in a comment why the <code>pushDown</code> logic changes from adding the lazy value to overwriting with it.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>For requirement 5: with range assignment, a pending "set to X" completely overwrites whatever a child's own pending change was, rather than combining with it — so <code>pushDown</code> should overwrite the children's <code>lazy</code> values instead of adding to them, and you'll need a sentinel (like a boolean "has pending assignment") to distinguish "no pending change" from "pending change of value 0."</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>6. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>In a lazy segment tree, what does <code>lazy[node] != 0</code> mean, and why must both <code>updateRange</code> and <code>query</code> call <code>pushDown</code> before recursing into a node's children?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>lazy[node] != 0</code> means every element under this node has a pending change that's reflected in this node's own aggregate value but hasn't yet been applied to the children individually. If either operation read or modified a child without first pushing that pending change down, the child's value would be stale — missing an update that logically already happened — so pushing down before descending is what keeps every node's value consistent with its actual pending history.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>Why can a Fenwick tree support range-sum but not range-minimum, even though both are "range query" operations?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Fenwick's <code>rangeSum(l, r)</code> works by subtracting <code>prefixSum(l-1)</code> from <code>prefixSum(r)</code> — that only produces a correct answer because addition is invertible (subtraction undoes it). Minimum has no inverse operation: knowing the minimum of <code>[1, r]</code> and the minimum of <code>[1, l-1]</code> tells you nothing about the minimum of just <code>[l, r]</code>, since the overall minimum could have come from either sub-range or been excluded by the subtraction entirely.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why does a sparse table's O(1) range-minimum query correctly handle the two power-of-two ranges it uses overlapping each other?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Minimum is idempotent — taking the minimum of a value together with itself just returns that same value, so an element counted in both overlapping ranges doesn't distort the result. This wouldn't hold for sum, where counting an element twice would incorrectly inflate the total, which is exactly why the overlap trick is restricted to idempotent operations like min, max, gcd, AND, and OR.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Given a static array (no updates ever) and a need for range-minimum queries, why would a sparse table beat both a segment tree and a Fenwick tree?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A Fenwick tree can't do range-minimum at all (see Q2), so it's ruled out regardless. A segment tree adapted for range-min still costs O(log n) per query, because it always pays for the possibility of updates even when none ever happen. A sparse table spends more one-time preprocessing (O(n log n)) specifically to eliminate that per-query log factor entirely, which only pays off because the array never changes — the moment updates are needed, the sparse table's O(1) query is no longer maintainable and a segment tree becomes the right choice again.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-18.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 18: Advanced Dynamic Programming</span>
+          </a>
+          <a href="week-20.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 20: Capstone →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 12: Observability &amp; Production Readiness — CodeVerse Creatives</title>
+<meta name="description" content="Week 12 of the Java &amp; Spring Boot curriculum: Spring Boot Actuator, custom health indicators, Micrometer metrics and Prometheus export, structured JSON logging, and distributed tracing basics across services." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="spring-boot">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../spring-boot/index.html">Spring Boot Syllabus</a>
+        <span>/</span>
+        <a href="../spring-boot/index.html#timeline">Module 9 · Observability &amp; Production Readiness</a>
+        <span>/</span>
+        <span aria-current="page">Week 12</span>
+      </div>
+
+      <h1>Week 12: Observability &amp; Production Readiness</h1>
+      <p class="lesson-header__lede">
+        The app you're building now spans multiple services — the Task and Notification
+        services from Weeks 9-10 — a Redis cache from Week 11, and a database underneath all
+        of it. This week isn't about adding a new feature; it's about actually knowing what
+        the system is doing once it's live: health checks that mean something, metrics you
+        can graph, structured logs that don't turn into noise the moment a second service
+        exists, and a trace ID that follows one request as it crosses from Task to
+        Notification and back.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 9 of 22</span>
+        <span class="chip">Week 12 of 26</span>
+        <span class="chip">~4–5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Expose and interpret Spring Boot Actuator endpoints, securely</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write custom health indicators and export metrics with Micrometer</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Understand structured logging and distributed tracing basics across services</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#actuator"><span>1</span> Spring Boot Actuator</a>
+        <a href="#health-indicators"><span>2</span> Custom Health Indicators</a>
+        <a href="#micrometer-metrics"><span>3</span> Metrics with Micrometer</a>
+        <a href="#structured-logging"><span>4</span> Structured Logging</a>
+        <a href="#distributed-tracing"><span>5</span> Distributed Tracing Basics</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="actuator">
+            <h2>1. Spring Boot Actuator</h2>
+            <p>
+              Every service you've built since Week 3 has been a black box from the outside —
+              it either responds or it doesn't. <strong>Spring Boot Actuator</strong> opens that
+              box: it's a set of production-ready endpoints, built into Spring Boot, that report
+              health, configuration, and runtime metrics without you writing a single controller
+              for them.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <p>
+              Add that one starter and restart, and Actuator is live at
+              <code>/actuator</code> — but by default only <code>/actuator/health</code> is
+              exposed over HTTP. That's a deliberate, safe default, and you'll be turning it up
+              carefully rather than opening everything at once. The endpoints worth knowing:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">key actuator endpoints</div>
+              <pre><code>GET /actuator/health    -&gt; overall app health (UP / DOWN), plus each health indicator
+GET /actuator/info      -&gt; static build/app metadata you choose to expose
+GET /actuator/metrics   -&gt; index of every metric name Micrometer is recording
+GET /actuator/metrics/{name}  -&gt; one metric's current value, e.g. jvm.memory.used
+GET /actuator/prometheus      -&gt; all metrics in Prometheus scrape format (Section 3)
+GET /actuator/env       -&gt; resolved configuration properties -- DANGEROUS to expose publicly
+GET /actuator/loggers    -&gt; view and change log levels at runtime, no redeploy needed
+</code></pre>
+            </div>
+
+            <h3>Choosing what to expose</h3>
+            <p>
+              <code>management.endpoints.web.exposure.include</code> controls which endpoints are
+              reachable over HTTP at all. The safe pattern is an explicit allow-list, not
+              <code>*</code> — <code>/actuator/env</code> and <code>/actuator/heapdump</code> can
+              leak database passwords, API keys, and internal hostnames to anyone who can reach
+              the port.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">application.properties</div>
+              <pre><code>management.endpoints.web.exposure.include=health,info,metrics,prometheus
+management.endpoint.health.show-details=when-authorized
+management.endpoint.health.show-components=always
+management.info.env.enabled=true
+info.app.name=@project.artifactId@
+info.app.version=@project.version@
+</code></pre>
+            </div>
+
+            <h3>Securing actuator endpoints</h3>
+            <p>
+              You already have Spring Security wired up from Weeks 6-7 — reuse it here rather
+              than treating Actuator as a special case. The pattern is the same
+              <code>SecurityFilterChain</code> approach: liveness-style checks stay open for
+              infrastructure to poll, everything else requires authentication.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">ActuatorSecurityConfig.java</div>
+              <pre><code>package com.codeverse.week12.config;
+
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class ActuatorSecurityConfig {
+
+    @Bean
+    SecurityFilterChain actuatorSecurityChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher(EndpointRequest.toAnyEndpoint())
+            .authorizeHttpRequests(auth -&gt; auth
+                .requestMatchers(EndpointRequest.to("health")).permitAll()
+                .anyRequest().hasRole("OPS")
+            )
+            .httpBasic(basic -&gt; {});
+        return http.build();
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Never expose /actuator/env publicly</strong>
+                <p>The same access-control instincts from Week 6/7's security module apply directly here — <code>/actuator/env</code>, <code>/actuator/configprops</code> and <code>/actuator/heapdump</code> can dump your Redis credentials, database URL, and JWT signing secret in plain text to anyone who can reach the port. Explicit exposure plus authentication on non-health endpoints is not optional.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="health-indicators">
+            <h2>2. Custom Health Indicators</h2>
+            <p>
+              Out of the box, <code>/actuator/health</code> aggregates checks Spring Boot can
+              infer automatically — a <code>DataSource</code> being pingable, a Redis connection
+              factory responding. But "is the database reachable" is only half of what your
+              service actually depends on. It also depends on the Notification service from
+              Week 9 being up. A custom <code>HealthIndicator</code> lets you say so explicitly.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">NotificationServiceHealthIndicator.java</div>
+              <pre><code>package com.codeverse.week12.health;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+
+@Component
+public class NotificationServiceHealthIndicator implements HealthIndicator {
+
+    private final RestClient restClient;
+
+    public NotificationServiceHealthIndicator(RestClient.Builder builder) {
+        this.restClient = builder.baseUrl("http://notification-service:8081").build();
+    }
+
+    @Override
+    public Health health() {
+        try {
+            restClient.get()
+                .uri("/actuator/health")
+                .retrieve()
+                .toBodilessEntity();
+            return Health.up()
+                .withDetail("service", "notification-service")
+                .build();
+        } catch (RestClientException ex) {
+            return Health.down()
+                .withDetail("service", "notification-service")
+                .withDetail("reason", ex.getMessage())
+                .build();
+        }
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Spring Boot registers any bean implementing <code>HealthIndicator</code>
+              automatically — no wiring needed. Every indicator's name comes from stripping the
+              <code>HealthIndicator</code> suffix and lowercasing the rest, so the class above
+              shows up as a component named <code>notificationService</code> under
+              <code>/actuator/health</code>.
+            </p>
+
+            <h3>Checking the cache, too</h3>
+            <p>
+              The database and Redis (Week 11) already get automatic checks from
+              <code>DataSourceHealthIndicator</code> and <code>RedisHealthIndicator</code>, but
+              it's worth confirming what "down" actually means for your app. A Redis outage
+              shouldn't necessarily take the whole service down if you built the cache-aside
+              pattern correctly — reads should fall back to the database. You can reflect that
+              nuance with a custom indicator that reports <code>Status.OUT_OF_SERVICE</code> (a
+              degraded-but-serving state) instead of <code>DOWN</code>:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">CacheHealthIndicator.java</div>
+              <pre><code>package com.codeverse.week12.health;
+
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Status;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class CacheHealthIndicator implements HealthIndicator {
+
+    private final StringRedisTemplate redisTemplate;
+
+    public CacheHealthIndicator(StringRedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+    @Override
+    public Health health() {
+        try {
+            redisTemplate.getConnectionFactory().getConnection().ping();
+            return Health.up().withDetail("cache", "redis").build();
+        } catch (Exception ex) {
+            // Redis being down degrades performance (Week 11's cache-aside
+            // pattern falls back to the database) but doesn't take the app down.
+            return Health.status(Status.OUT_OF_SERVICE)
+                .withDetail("cache", "redis")
+                .withDetail("reason", ex.getMessage())
+                .build();
+        }
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>This is what Kubernetes will poll in Week 13</strong>
+                <p>When you containerize and deploy this service next week, Kubernetes needs a way to know "is this pod ready for traffic" versus "is this pod alive at all." Actuator's <code>/actuator/health/readiness</code> and <code>/actuator/health/liveness</code> groups map directly onto readiness and liveness probes — the custom indicators you write this week are exactly what those probes will end up checking.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="micrometer-metrics">
+            <h2>3. Metrics with Micrometer</h2>
+            <p>
+              Health tells you up or down. <strong>Metrics</strong> tell you how — request
+              latency, error rates, queue depth, how many tasks got completed in the last five
+              minutes. Spring Boot Actuator doesn't collect metrics itself; it delegates to
+              <strong>Micrometer</strong>, a vendor-neutral metrics facade that plays the same
+              role for metrics that SLF4J plays for logging — your code talks to Micrometer's
+              API, and Micrometer ships the numbers to whichever backend you configure
+              (Prometheus, Datadog, CloudWatch) without your business code knowing which one.
+            </p>
+
+            <h3>The three core instrument types</h3>
+            <p>
+              Micrometer gives you a small set of instruments, and picking the right one matters:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">Micrometer instruments</div>
+              <pre><code>Counter -&gt; a number that only goes up (or resets to zero)
+           e.g. tasks.completed, orders.rejected
+
+Gauge   -&gt; a number that goes up AND down, sampled at read time
+           e.g. active.websocket.connections, cache.size
+
+Timer   -&gt; counts AND times occurrences of an event
+           e.g. how long POST /tasks took, and how many calls happened
+</code></pre>
+            </div>
+
+            <h3>Timing a method with @Timed</h3>
+            <p>
+              For request-level timing, the annotation-driven approach is the least invasive.
+              Enable it once with a <code>TimedAspect</code> bean, then annotate any method:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">MetricsConfig.java</div>
+              <pre><code>package com.codeverse.week12.config;
+
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class MetricsConfig {
+
+    @Bean
+    TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskService.java</div>
+              <pre><code>package com.codeverse.week12.service;
+
+import io.micrometer.core.annotation.Timed;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TaskService {
+
+    @Timed(value = "task.create.duration", description = "Time to create a task")
+    public void createTask(String title) {
+        // ... persist the task, publish the Kafka event from Week 10
+    }
+}
+</code></pre>
+            </div>
+
+            <h3>A custom business metric: tasks-completed counter</h3>
+            <p>
+              JVM and HTTP metrics come free, but the numbers that matter most to the business —
+              "how many tasks did users actually complete today" — you have to record yourself.
+              Inject the <code>MeterRegistry</code> and increment a counter wherever the domain
+              event happens:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskCompletionService.java</div>
+              <pre><code>package com.codeverse.week12.service;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TaskCompletionService {
+
+    private final Counter tasksCompletedCounter;
+
+    public TaskCompletionService(MeterRegistry registry) {
+        this.tasksCompletedCounter = Counter.builder("tasks.completed")
+            .description("Number of tasks marked complete")
+            .tag("service", "task-service")
+            .register(registry);
+    }
+
+    public void markComplete(Long taskId) {
+        // ... update task status in the database
+        tasksCompletedCounter.increment();
+    }
+}
+</code></pre>
+            </div>
+
+            <h3>Exporting to Prometheus</h3>
+            <p>
+              Add the Prometheus registry dependency and Micrometer starts formatting every
+              metric — JVM, HTTP, and your custom <code>tasks.completed</code> counter — in the
+              text format Prometheus expects, served at <code>/actuator/prometheus</code>
+              (already added to <code>exposure.include</code> in Section 1):
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micrometer-registry-prometheus&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>curl http://localhost:8080/actuator/prometheus | grep tasks_completed
+
+# tasks_completed_total{service="task-service",} 42.0
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>This is how you actually verify Week 11's cache helped</strong>
+                <p>"Adding Redis should speed things up" was an assumption in Week 11 — metrics are how you confirm it. Wrap the cached lookup path in a <code>Timer</code> alongside a <code>cache.hit</code> / <code>cache.miss</code> counter pair, graph both, and you'll see the P95 latency for cache hits drop compared to database round-trips, with real numbers instead of a guess.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="structured-logging">
+            <h2>4. Structured Logging</h2>
+            <p>
+              Plain-text logs work fine for one service on one machine. They stop working the
+              moment you have two: Task and Notification each write their own
+              <code>System.out</code>-style lines, on different hosts, with no shared way to
+              say "these five lines, across both services, belong to the same request." Grepping
+              two separate log streams by eyeball doesn't scale past a demo.
+            </p>
+
+            <p>
+              The fix is <strong>structured logging</strong> — emitting each log line as a JSON
+              object with consistent field names, instead of a free-form sentence. A log
+              aggregator (ELK, Loki, Datadog) can then index, filter, and join those fields
+              across every service instead of pattern-matching text.
+            </p>
+
+            <h3>JSON logging with Logback</h3>
+            <p>
+              Spring Boot uses Logback by default. Add the structured-log encoder dependency and
+              swap the console appender's encoder for a JSON one:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;net.logstash.logback&lt;/groupId&gt;
+    &lt;artifactId&gt;logstash-logback-encoder&lt;/artifactId&gt;
+    &lt;version&gt;7.4&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">logback-spring.xml</div>
+              <pre><code>&lt;configuration&gt;
+    &lt;appender name="JSON" class="ch.qos.logback.core.ConsoleAppender"&gt;
+        &lt;encoder class="net.logstash.logback.encoder.LogstashEncoder"&gt;
+            &lt;includeMdcKeyName&gt;traceId&lt;/includeMdcKeyName&gt;
+            &lt;includeMdcKeyName&gt;spanId&lt;/includeMdcKeyName&gt;
+            &lt;includeMdcKeyName&gt;requestId&lt;/includeMdcKeyName&gt;
+        &lt;/encoder&gt;
+    &lt;/appender&gt;
+
+    &lt;root level="INFO"&gt;
+        &lt;appender-ref ref="JSON" /&gt;
+    &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+            </div>
+
+            <p>
+              Every log line now comes out as one JSON object per line, ready to ship straight
+              into a log aggregator without a fragile regex parser on the other end:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">example log line</div>
+              <pre><code>{"@timestamp":"2026-08-02T14:03:11.482Z","level":"INFO",
+ "logger_name":"com.codeverse.week12.service.TaskService",
+ "message":"Task 482 marked complete",
+ "traceId":"6b8f1c2e9a3d4f11","spanId":"a1b2c3d4e5f60718",
+ "requestId":"req-9f3e2c1a"}
+</code></pre>
+            </div>
+
+            <h3>MDC: attaching context to every log line automatically</h3>
+            <p>
+              Manually passing a request ID into every log statement doesn't scale either. The
+              <strong>Mapped Diagnostic Context</strong> (MDC) is a thread-local map that Logback
+              reads automatically — set a value once per request, and every log line on that
+              thread includes it without your code repeating itself:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">RequestIdFilter.java</div>
+              <pre><code>package com.codeverse.week12.web;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.UUID;
+
+@Component
+public class RequestIdFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                     FilterChain chain) throws ServletException, IOException {
+        String requestId = request.getHeader("X-Request-Id");
+        if (requestId == null || requestId.isBlank()) {
+            requestId = UUID.randomUUID().toString();
+        }
+        MDC.put("requestId", requestId);
+        response.setHeader("X-Request-Id", requestId);
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            MDC.clear(); // never leak context onto the next request on a pooled thread
+        }
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>MDC.clear() is not optional</strong>
+                <p>Servlet containers reuse threads across requests via a thread pool. If you forget to clear the MDC in a <code>finally</code> block, a request ID from one user's request can leak into the log lines of the next unrelated request handled by that same thread — a subtle bug that only shows up under load.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="distributed-tracing">
+            <h2>5. Distributed Tracing Basics</h2>
+            <p>
+              The <code>requestId</code> from Section 4 solves logging within one service. It
+              doesn't solve the harder problem: a single user action can trigger a call chain
+              like Task <strong>-&gt;</strong> Notification (Week 9's synchronous call) or Task
+              <strong>-&gt;</strong> Kafka <strong>-&gt;</strong> Notification (Week 10's
+              event-driven path). Following that one logical operation across process
+              boundaries, asynchronously, is exactly what <strong>distributed tracing</strong>
+              is for.
+            </p>
+
+            <h3>Trace IDs and span IDs</h3>
+            <p>
+              A <strong>trace</strong> represents one end-to-end operation — say, "create a task,
+              which triggers a notification." A <strong>span</strong> represents one unit of work
+              within that trace — the HTTP handler in Task, the Kafka publish, the consumer in
+              Notification. Every span shares the same <strong>trace ID</strong>, while each span
+              gets its own unique <strong>span ID</strong> and records which span it's a child
+              of, letting a tracing backend reconstruct the whole call tree.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+    &lt;artifactId&gt;micrometer-tracing-bridge-brave&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.zipkin.reporter2&lt;/groupId&gt;
+    &lt;artifactId&gt;zipkin-reporter-brave&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <p>
+              With <strong>Micrometer Tracing</strong> on the classpath, Spring Boot instruments
+              incoming and outgoing HTTP calls automatically. When Task calls Notification via
+              the <code>RestClient</code> from Week 9, the trace ID and parent span ID are
+              propagated in outgoing request headers (the W3C <code>traceparent</code> header, by
+              default) with no manual plumbing:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">application.properties</div>
+              <pre><code>management.tracing.sampling.probability=1.0
+management.zipkin.tracing.endpoint=http://localhost:9411/api/v2/spans
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">propagated header, Task -&gt; Notification</div>
+              <pre><code>traceparent: 00-6b8f1c2e9a3d4f11a1b2c3d4e5f60718-a1b2c3d4e5f60718-01
+             |  |------ trace id ------------|  |--span id----|
+</code></pre>
+            </div>
+
+            <p>
+              For the asynchronous path — Task publishing to Kafka in Week 10, Notification
+              consuming it later — Micrometer Tracing's Kafka instrumentation injects the trace
+              context into message headers on publish and restores it on consume, so the trace
+              stays intact even though the two spans never share a thread or an HTTP connection.
+            </p>
+
+            <h3>Closing the loop with structured logs</h3>
+            <p>
+              This is where Section 4 and this section connect: once tracing is on the
+              classpath, Spring Boot automatically populates the MDC with <code>traceId</code>
+              and <code>spanId</code> for every log line — the same MDC keys already wired into
+              the <code>logback-spring.xml</code> encoder above. Search your log aggregator for
+              one trace ID, and you get every log line from Task <em>and</em> Notification that
+              belongs to that single request, in causal order, even though they were written by
+              two separate JVMs on two separate hosts.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The services from Weeks 9 and 10 are now visible end to end</strong>
+                <p>Before this week, "did the Notification service actually get the event Task published?" meant manually cross-referencing two separate log files by timestamp and hoping the clocks agreed. With tracing wired in, one trace ID answers that question directly — you can see the HTTP call or the Kafka publish/consume pair as connected spans in a single trace, regardless of which integration pattern from Week 9 or 10 was used.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Make the Task and Notification services observable end to end</h3>
+              <p>Add health, metrics, structured logs and tracing to the services from Weeks 9-11, then prove a single request is traceable across both processes.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Add <code>spring-boot-starter-actuator</code> to both the Task and Notification services. Configure <code>management.endpoints.web.exposure.include</code> to expose only <code>health</code>, <code>info</code>, <code>metrics</code> and <code>prometheus</code>, and secure every endpoint except <code>health</code> behind your existing Spring Security setup so only an authenticated "ops" role can read them.</li>
+                <li>Write a custom <code>HealthIndicator</code> in the Task service that checks both the database connection and connectivity to the Notification service, following the pattern in Section 2. Confirm <code>/actuator/health</code> reports <code>DOWN</code> when the Notification service is stopped.</li>
+                <li>Add a custom Micrometer <code>Counter</code> named <code>tasks.completed</code> that increments whenever a task is marked complete, plus the Prometheus registry dependency so it's readable at <code>/actuator/prometheus</code>.</li>
+                <li>Switch both services to JSON structured logging with Logstash's Logback encoder, and add an <code>OncePerRequestFilter</code> (or Micrometer Tracing, if you've wired it in) that puts a request or trace ID into the MDC on every incoming request, cleared in a <code>finally</code> block.</li>
+                <li>Add Micrometer Tracing with the Brave bridge to both services, trigger one end-to-end request (create a task that notifies), and confirm the same trace ID appears in log lines from <em>both</em> the Task service and the Notification service for that one request.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>You don't need a Zipkin or Prometheus server actually running to complete requirement 5 — printing structured logs to the console and grepping both services' output for the same <code>traceId</code> value is enough to prove propagation is working. Standing up the real collectors is optional polish, not a requirement.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why shouldn't you just set <code>management.endpoints.web.exposure.include=*</code> and leave every actuator endpoint open?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Several actuator endpoints expose information an attacker can use directly: <code>/actuator/env</code> and <code>/actuator/configprops</code> can reveal database credentials, API keys, and JWT secrets from your configuration; <code>/actuator/heapdump</code> can leak in-memory secrets and session data; <code>/actuator/threaddump</code> and <code>/actuator/shutdown</code> hand out operational control over the process. The safe pattern is an explicit allow-list of only the endpoints you actually need externally (typically <code>health</code>, <code>info</code>, <code>metrics</code>, and <code>prometheus</code>), with everything beyond a bare <code>health</code> check gated behind the same authentication and authorization you'd require for any other sensitive route.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What's the practical difference between a Micrometer <code>Counter</code>, a <code>Gauge</code>, and a <code>Timer</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>A <code>Counter</code> only ever goes up (or resets to zero on restart) and fits monotonically increasing totals like <code>tasks.completed</code> or <code>orders.rejected</code> — you never decrement it. A <code>Gauge</code> reports a value sampled at read time that can move in either direction, like the number of active WebSocket connections or the current size of a cache — Micrometer doesn't store it, it calls a supplier function whenever the value is scraped. A <code>Timer</code> combines both ideas for timed events: it records a count of occurrences and a duration distribution simultaneously, which is why it's the right instrument for something like "how long did <code>POST /tasks</code> take, and how many times was it called" rather than reaching for a counter and a separate gauge to approximate the same thing.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why does structured JSON logging start to matter specifically once there's more than one service?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>With one service and one developer tailing one console, a free-form text log line like <code>"Task 482 completed"</code> is perfectly readable. The moment you have Task and Notification running as separate processes -- possibly on separate hosts -- you need a log aggregator to merge both streams, and that aggregator can only filter, index, and correlate on fields it can parse reliably. A JSON log line with consistent keys (<code>message</code>, <code>level</code>, <code>traceId</code>, <code>requestId</code>) is trivial for a tool like ELK or Loki to index and query across services; a free-text sentence requires a fragile regex that breaks the moment someone changes the wording. Structured logging turns "grep and hope the format matches" into "query by field," which is the only approach that scales past one service.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>What does a propagated trace ID and span ID let you do that separate per-service log files don't?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Per-service logs, even structured ones with a local request ID, only tell you what happened inside one process. A trace ID is generated once at the start of a logical operation and automatically propagated across process boundaries -- in HTTP headers for Task calling Notification directly, or in Kafka message headers for the event-driven path -- so every span of that one operation, no matter which service or which thread handled it, carries the same trace ID with a unique span ID per unit of work. That means you can take one trace ID, search across every service's logs simultaneously, and reconstruct the full causal chain of one user action -- "the API call arrived here, triggered a Kafka publish there, was consumed over there" -- in order, without manually cross-referencing timestamps across log files that were never designed to line up.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-11.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Week 11: Caching &amp; Performance</span>
+          </a>
+          <a href="week-13.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 13: Containerization &amp; Deployment</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

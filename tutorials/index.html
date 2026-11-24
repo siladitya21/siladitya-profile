@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeVerse Creatives — Learn Angular, React, AI &amp; ML, Spring Boot, DevOps, Python, DSA, System Design, Node.js, ServiceNow, PHP &amp; Git/GitHub</title>
+<meta name="description" content="Free, project-driven syllabi for Angular, React, AI &amp; Machine Learning, Java Spring Boot, DevOps &amp; Cloud, Python &amp; FastAPI, DSA in C++, System Design, Node.js &amp; Express, ServiceNow, Numerical Aptitude, PHP with Laravel &amp; WordPress, and Git &amp; GitHub — structured week-by-week timelines from fundamentals to a deployed capstone." />
+<link rel="icon" href="assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="index.html" aria-current="page">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown>
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="courses/angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-angular course-icon--angular" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><img class="course-icon--devops" src="assets/icons/devops-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><img class="course-icon--cpp" src="assets/icons/cpp-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><img class="course-icon--ai" src="assets/icons/ai-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><img class="course-icon--ai" src="assets/icons/ai-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><img class="course-icon--ai" src="assets/icons/ai-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><img class="course-icon--ai" src="assets/icons/ai-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-node-js course-icon--node" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-php course-icon--php" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-python course-icon--python" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-react course-icon--react" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><i class="fa-brands fa-java course-icon--java" aria-hidden="true"></i></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><img src="assets/icons/system-design-icon.png" alt="" width="22" height="22" /></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="courses/docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="courses/oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero__eyebrow">CodeVerse Creatives</span>
+      <h1>Structured, <span>project-driven</span> paths for real engineering skills</h1>
+      <p class="hero__lede">
+        Thirteen free syllabi — Angular, React, AI &amp; Machine Learning, Java with Spring Boot,
+        DevOps &amp; Cloud, Python with FastAPI, DSA in C++, System Design, Node.js &amp;
+        Express, ServiceNow, Numerical Aptitude, PHP with Laravel &amp; WordPress, and Git &amp;
+        GitHub — each laid out as a week-by-week timeline from first principles to a capstone
+        you actually ship.
+      </p>
+
+      <div class="hero__meta">
+        <span class="chip chip--accent">13 Courses</span>
+        <span class="chip">316 Weeks of Content</span>
+        <span class="chip">274 Modules</span>
+        <span class="chip">Self-Paced &amp; Free</span>
+        <span class="chip">+ Excel, SQL &amp; Power BI (New)</span>
+        <span class="chip">+ MongoDB (New)</span>
+      </div>
+
+      <div class="hero__actions">
+        <a href="#courses" class="btn btn--primary">Browse Courses</a>
+        <a href="#how-it-works" class="btn btn--ghost">How It Works</a>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat-card">
+          <div class="stat-card__value">13</div>
+          <div class="stat-card__label">Full courses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">274</div>
+          <div class="stat-card__label">Combined modules</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">316</div>
+          <div class="stat-card__label">Weeks of content</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">13</div>
+          <div class="stat-card__label">Capstone projects</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses -->
+  <section class="section" id="courses">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">Courses</span>
+        <h2>Pick a path and start Week 1</h2>
+        <p>Every course follows the same shape: prerequisites up front, a clear timeline, and a capstone project at the end.</p>
+      </div>
+
+      <div class="course-grid">
+
+        <a href="courses/angular/index.html" class="course-card reveal c-angular">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-angular course-icon--angular" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Frontend · Angular 22</span>
+          <h3>Angular</h3>
+          <p>Signals, standalone components, routing, forms, RxJS, testing, SSR and an enterprise stack (Material, GraphQL, D3, Leaflet, Keycloak) — a deeply detailed, 8-phase path to a production-ready app.</p>
+          <div class="course-card__meta">
+            <span class="chip">34 Weeks</span>
+            <span class="chip">32 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">11,800+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Active hiring in Kolkata</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/cybersecurity/index.html" class="course-card reveal c-cybersecurity">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Security · Threats, Networking &amp; Cloud</span>
+          <h3>Cybersecurity Basics</h3>
+          <p>Threat models, networking and cryptography fundamentals through web and cloud attack surfaces and incident response — built to complement the DevOps &amp; Cloud course, ending with a capstone that secures a real CI/CD pipeline.</p>
+          <div class="course-card__meta">
+            <span class="chip">16 Weeks</span>
+            <span class="chip">15 Modules</span>
+            <span class="chip">Beginner-Friendly</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">30,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>High-growth security hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/devops-cloud/index.html" class="course-card reveal c-devops-cloud">
+          <div class="course-card__icon">
+            <img class="course-icon--devops" src="assets/icons/devops-icon.png" alt="" width="32" height="32" />
+          </div>
+          <span class="course-card__eyebrow">Infrastructure · Docker, AWS &amp; Kubernetes</span>
+          <h3>DevOps &amp; Cloud</h3>
+          <p>Linux, Docker, CI/CD, AWS, Terraform, Kubernetes, service mesh, GitOps and multi-cloud — build and ship a real cloud deployment pipeline.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">22 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">50,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Strong local hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/dsa-cpp/index.html" class="course-card reveal c-dsa-cpp">
+          <div class="course-card__icon">
+            <img class="course-icon--cpp" src="assets/icons/cpp-icon.png" alt="" width="32" height="32" />
+          </div>
+          <span class="course-card__eyebrow">Interview Prep · C++17 &amp; STL</span>
+          <h3>DSA in C++</h3>
+          <p>Arrays, trees, graphs and dynamic programming through a placement-prep lens — built for the Indian hiring market's DSA-heavy interview rounds.</p>
+          <div class="course-card__meta">
+            <span class="chip">20 Weeks</span>
+            <span class="chip">17 Modules</span>
+            <span class="chip">Beginner → Interview-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Core skill in every SDE interview</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Assessed across local tech hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/github/index.html" class="course-card reveal c-github">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Tooling · Version Control &amp; Collaboration</span>
+          <h3>Git &amp; GitHub</h3>
+          <p>Local version control, branching and merge conflicts, remote collaboration and pull requests, rewriting history, and GitHub Actions CI/CD — the version-control skill every other course on this site assumes you already have.</p>
+          <div class="course-card__meta">
+            <span class="chip">5 Weeks</span>
+            <span class="chip">5 Modules</span>
+            <span class="chip">Beginner Friendly</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Required baseline for nearly every dev role</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Expected on day one of any dev job</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/javascript-typescript/index.html" class="course-card reveal c-javascript-typescript">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Fundamentals · ES2023 &amp; TypeScript 5</span>
+          <h3>JavaScript &amp; TypeScript</h3>
+          <p>Core JS — values, functions, closures, objects, async — then TypeScript's type system, generics and tooling. The language foundation this site's Angular, React and Node.js courses assume you already have, ending with a typed capstone project.</p>
+          <div class="course-card__meta">
+            <span class="chip">14 Weeks</span>
+            <span class="chip">No Prior Coding Required</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Required baseline for nearly every dev role</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Assumed on day one of any frontend or full-stack job</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/spring-boot/index.html" class="course-card reveal c-spring-boot">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-java course-icon--java" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Backend · Java 21 &amp; Spring Boot 3</span>
+          <h3>Java &amp; Spring Boot</h3>
+          <p>Core Spring, REST APIs, JPA, security, testing, microservices, GraphQL and Spring Batch — containerize and deploy a production-grade service.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">22 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">21,800+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Strong local hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/llm-ml/index.html" class="course-card reveal c-llm-ml">
+          <div class="course-card__icon">
+            <img class="course-icon--ai" src="assets/icons/ai-icon.png" alt="" width="32" height="32" />
+          </div>
+          <span class="course-card__eyebrow">AI / ML · Complete Path</span>
+          <h3>AI &amp; Machine Learning</h3>
+          <p>Math and classical ML through neural networks, transformers, fine-tuning, RAG and agents — deploy a real AI application.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">25 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">1M+ AI/ML roles projected by 2026</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Emerging — GenAI roles opening up</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/artificial-intelligence/index.html" class="course-card reveal c-artificial-intelligence">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg>
+          </div>
+          <span class="course-card__eyebrow">AI · Classic AI to GenAI</span>
+          <h3>Artificial Intelligence</h3>
+          <p>Intelligent agents, search and A*, game playing, constraint satisfaction, logic and planning, probabilistic reasoning and reinforcement learning — then transformers, LLMs, RAG, agents and a deployed capstone.</p>
+          <div class="course-card__meta">
+            <span class="chip">19 Weeks</span>
+            <span class="chip">Intermediate → Job-Ready</span>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/machine-learning/index.html" class="course-card reveal c-machine-learning">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg>
+          </div>
+          <span class="course-card__eyebrow">ML · scikit-learn to PyTorch</span>
+          <h3>Machine Learning</h3>
+          <p>The supervised-learning workflow, evaluation and tuning, clustering and PCA, gradient boosting, SVMs and ensembles, then neural networks with PyTorch, CNNs and sequence models.</p>
+          <div class="course-card__meta">
+            <span class="chip">10 Weeks</span>
+            <span class="chip">Intermediate</span>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/data-science/index.html" class="course-card reveal c-data-science">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Data · Python, SQL &amp; Dashboards</span>
+          <h3>Data Science</h3>
+          <p>NumPy and Pandas, statistics, feature engineering, Seaborn and Plotly, SQL, APIs and web scraping, time series forecasting, Streamlit dashboards and an end-to-end capstone.</p>
+          <div class="course-card__meta">
+            <span class="chip">10 Weeks</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/node-express/index.html" class="course-card reveal c-node-express">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-node-js course-icon--node" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Backend · Node.js 24 &amp; Express</span>
+          <h3>Node.js &amp; Express</h3>
+          <p>TypeScript, REST API design, Prisma, authentication, testing, real-time features, gRPC and GraphQL — the natural backend pairing for the React course.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">22 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">8,200+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Active hiring in Kolkata</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/aptitude/index.html" class="course-card reveal c-aptitude">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Interview Prep · Quant &amp; Aptitude</span>
+          <h3>Numerical Aptitude</h3>
+          <p>Percentages, interest, time-speed-distance, permutations, probability and data interpretation — the screening round every campus placement drive starts with.</p>
+          <div class="course-card__meta">
+            <span class="chip">21 Weeks</span>
+            <span class="chip">20 Modules</span>
+            <span class="chip">Beginner → Interview-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Screening round at nearly every IT campus drive</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>TCS NQT, Infosys, Wipro-style test formats</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/php/index.html" class="course-card reveal c-php">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-php course-icon--php" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Backend &amp; CMS · PHP 8, Laravel &amp; WordPress</span>
+          <h3>PHP</h3>
+          <p>PHP fundamentals and MySQL through Laravel application development and WordPress/WooCommerce — the stack behind a huge share of the web's backend and CMS work.</p>
+          <div class="course-card__meta">
+            <span class="chip">32 Weeks</span>
+            <span class="chip">28 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">15,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Steady WordPress &amp; Laravel hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/python/index.html" class="course-card reveal c-python">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-python course-icon--python" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Backend · Python 3.12 &amp; FastAPI</span>
+          <h3>Python &amp; FastAPI</h3>
+          <p>Modern Python, FastAPI, SQLAlchemy, authentication, testing, async concurrency, gRPC and GraphQL — ship a production-grade service.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">22 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">6,500+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Active hiring in Kolkata</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/react/index.html" class="course-card reveal c-react">
+          <div class="course-card__icon">
+            <i class="fa-brands fa-react course-icon--react" aria-hidden="true"></i>
+          </div>
+          <span class="course-card__eyebrow">Frontend · React 19</span>
+          <h3>React</h3>
+          <p>Hooks, routing, server state, global state, testing, performance, security and Next.js — a hands-on path to a production-ready app.</p>
+          <div class="course-card__meta">
+            <span class="chip">28 Weeks</span>
+            <span class="chip">17 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">5,100+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Active hiring in Kolkata</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/react-native/index.html" class="course-card reveal c-react-native">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Mobile · React Native &amp; Expo</span>
+          <h3>React Native</h3>
+          <p>Core components, navigation and device APIs through native modules, testing and app store publishing — the natural next step for a React developer going mobile, ending with a capstone app you actually ship to the store.</p>
+          <div class="course-card__meta">
+            <span class="chip">22 Weeks</span>
+            <span class="chip">Requires React Fundamentals</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">7,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Growing mobile-first hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/servicenow/index.html" class="course-card reveal c-servicenow">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Platform &amp; ITSM · Now Platform</span>
+          <h3>ServiceNow</h3>
+          <p>Glide scripting, ITSM, CMDB and Flow Designer through to Service Portal's AngularJS widgets — the natural next platform for an Angular developer.</p>
+          <div class="course-card__meta">
+            <span class="chip">26 Weeks</span>
+            <span class="chip">25 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">9,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Growing enterprise IT hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/system-design/index.html" class="course-card reveal c-system-design">
+          <div class="course-card__icon">
+            <img src="assets/icons/system-design-icon.png" alt="" width="32" height="32" />
+          </div>
+          <span class="course-card__eyebrow">Interview Prep · HLD &amp; LLD</span>
+          <h3>System Design</h3>
+          <p>Scalability, databases at scale, caching, distributed systems and low-level design — the companion track to DSA for senior-track interview loops.</p>
+          <div class="course-card__meta">
+            <span class="chip">28 Weeks</span>
+            <span class="chip">24 Modules</span>
+            <span class="chip">Beginner → Interview-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Standard round in every senior SDE loop</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Assessed at senior levels across local tech hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/data-analytics/index.html" class="course-card reveal c-data-analytics">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Data · Excel, SQL &amp; Power BI</span>
+          <h3>Excel, SQL &amp; Power BI</h3>
+          <p>Spreadsheet formulas and PivotTables, SQL querying and joins, then Power BI data modeling, DAX and published dashboards — the exact three-tool stack most analyst roles list as requirements. New course: 7 of 12 weeks live now, more publishing weekly.</p>
+          <div class="course-card__meta">
+            <span class="chip">12-Week Plan</span>
+            <span class="chip">7 Weeks Live</span>
+            <span class="chip">No Coding Background Needed</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Widely listed for analyst &amp; ops roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Common baseline across BPO, finance &amp; ops hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/docker-kubernetes/index.html" class="course-card reveal c-docker-kubernetes">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Infrastructure · Docker &amp; Kubernetes</span>
+          <h3>Docker &amp; Kubernetes</h3>
+          <p>Containers from first principles through production-grade orchestration — Dockerfiles, Compose and image optimization, then Kubernetes objects, storage, networking, Helm, autoscaling and GitOps — capped by a capstone that ships a real multi-service app to a live cluster.</p>
+          <div class="course-card__meta">
+            <span class="chip">18 Weeks</span>
+            <span class="chip">18 Modules</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Core skill across nearly every DevOps &amp; cloud role</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Pairs with DevOps &amp; Cloud, expected in cloud hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/sql-postgresql/index.html" class="course-card reveal c-sql-postgresql">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Database · SQL &amp; PostgreSQL</span>
+          <h3>SQL &amp; PostgreSQL</h3>
+          <p>SELECT and the relational model, then joins, subqueries and window functions, schema design and normalization, indexes and query performance, transactions, and connecting from real application code — capped by a deployed capstone API.</p>
+          <div class="course-card__meta">
+            <span class="chip">10 Weeks</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Required baseline for nearly every backend role</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Pairs with every backend course on this site</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/claude/index.html" class="course-card reveal c-claude">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg>
+          </div>
+          <span class="course-card__eyebrow">AI Tooling · Claude API, Code CLI &amp; Agents</span>
+          <h3>Claude &amp; AI-Assisted Development</h3>
+          <p>Prompt engineering and the Anthropic SDK, then Claude Code for agentic terminal workflows, and the design patterns behind real AI agents — build with Claude and get faster at everything else using it.</p>
+          <div class="course-card__meta">
+            <span class="chip">14 Weeks</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">AI fluency now expected across dev &amp; analyst roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Fastest-growing skill line in hiring posts</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/ugc-net-cse/index.html" class="course-card reveal c-ugc-net-cse">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Exam Prep · UGC NET Paper 1 &amp; Paper 2 (CS)</span>
+          <h3>UGC NET Computer Science</h3>
+          <p>A complete run through both papers — Teaching &amp; Research Aptitude, then the full Computer Science &amp; Applications syllabus — with worked examples, exam-style practice questions every week, and a full-length mock test to close it out. New course — Module 1 (all of Paper 1) is live now.</p>
+          <div class="course-card__meta">
+            <span class="chip">19-Week Plan</span>
+            <span class="chip">7 Weeks Live</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Gateway to Assistant Professor &amp; JRF eligibility nationwide</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Held twice a year by NTA for every UGC-recognized university</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/kannada/index.html" class="course-card reveal c-kannada">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Language · Kannada Script, Grammar &amp; Conversation</span>
+          <h3>Kannada Language</h3>
+          <p>Read and write the Kannada script from your first vowel, then build toward real conversation — greetings, numbers, all three tenses, and everyday situations like ordering food or asking for directions, capped by a full conversational-fluency capstone.</p>
+          <div class="course-card__meta">
+            <span class="chip">12 Weeks</span>
+            <span class="chip">Zero to Conversational</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Why learn it</span>
+            <div class="course-card__demand-value">The official language of Karnataka, spoken by 45M+ people</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>No prior knowledge of the script or grammar assumed</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/distributed-systems/index.html" class="course-card reveal c-distributed-systems">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Backend Depth · Replication, Consensus &amp; Clocks</span>
+          <h3>Distributed Systems</h3>
+          <p>The ideas underneath every database, queue and cloud service you use — partial failure, logical clocks, replication, consensus with Raft and Paxos, distributed transactions and CRDTs — ending with a Raft-backed key-value store you build yourself.</p>
+          <div class="course-card__meta">
+            <span class="chip">16 Weeks</span>
+            <span class="chip">100% Complete</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Why learn it</span>
+            <div class="course-card__demand-value">The theory behind senior backend, SRE &amp; infrastructure roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Goes deeper than System Design — how the building blocks actually work</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/oracle-netsuite/index.html" class="course-card reveal c-oracle-netsuite">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Enterprise Software · Oracle NetSuite ERP/CRM</span>
+          <h3>Oracle NetSuite</h3>
+          <p>The cloud ERP/CRM platform behind finance, inventory and customer ops at thousands of companies — navigation and the record data model, core order-to-cash and procure-to-pay processes, no-code customization with SuiteFlow, and SuiteScript development, ending with a capstone SuiteApp you build and deploy. New course — Week 1 is live now.</p>
+          <div class="course-card__meta">
+            <span class="chip">26-Week Plan</span>
+            <span class="chip">Week 1 Live</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Why learn it</span>
+            <div class="course-card__demand-value">One of the most in-demand ERP/CRM platforms for finance, ops &amp; consulting roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>No prior ERP or accounting background assumed</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/golang/index.html" class="course-card reveal c-golang">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Backend · Go (Golang)</span>
+          <h3>Go</h3>
+          <p>Syntax, types and the toolchain, then structs and interfaces, goroutines and channels, testing, REST APIs and databases — capped by a deployed capstone service. The language behind Docker, Kubernetes and most cloud-native tooling.</p>
+          <div class="course-card__meta">
+            <span class="chip">16 Weeks</span>
+            <span class="chip">Concurrency &amp; REST APIs</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Growing steadily in backend &amp; platform roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Common in cloud-native &amp; infra-adjacent job posts</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/flutter/index.html" class="course-card reveal c-flutter">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Mobile · Flutter &amp; Dart</span>
+          <h3>Flutter</h3>
+          <p>Dart from scratch, then widgets and layout, navigation, state management, networking, native device APIs and platform channels — one codebase compiled to real native iOS, Android and web apps, ending with a capstone app shipped to both stores.</p>
+          <div class="course-card__meta">
+            <span class="chip">20 Weeks</span>
+            <span class="chip">Beginner → Job-Ready</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">6,000+ open roles</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Growing cross-platform mobile hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+        <a href="courses/mongodb/index.html" class="course-card reveal c-mongodb">
+          <div class="course-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg>
+          </div>
+          <span class="course-card__eyebrow">Database · MongoDB &amp; NoSQL</span>
+          <h3>MongoDB</h3>
+          <p>The document model and CRUD, then querying, indexing and the aggregation pipeline, schema design, transactions, replication, sharding and Atlas — capped by a deployed API capstone. New course: 2 of 10 weeks live now, more publishing weekly.</p>
+          <div class="course-card__meta">
+            <span class="chip">10-Week Plan</span>
+            <span class="chip">2 Weeks Live</span>
+            <span class="chip">Pairs With Node.js &amp; Express</span>
+          </div>
+          <div class="course-card__demand">
+            <span class="course-card__demand-eyebrow">Market demand · India</span>
+            <div class="course-card__demand-value">Standard NoSQL skill in backend job posts</div>
+            <div class="course-card__demand-kolkata"><span class="demand-dot"></span>Common alongside Node.js &amp; full-stack hiring</div>
+          </div>
+          <span class="course-card__cta">
+            View syllabus
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+
+      </div>
+
+      <p class="course-grid__footnote">Market-demand figures are directional estimates from public job-board listings, as of Aug 2026 — not live data.</p>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section section--tight" id="how-it-works">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">How It Works</span>
+        <h2>The same shape, every course</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step-card reveal">
+          <div class="step-card__num">1</div>
+          <h3>Check prerequisites</h3>
+          <p>Every syllabus starts with exactly what you need to know first — and the tools to install before Week 1.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-card__num">2</div>
+          <h3>Follow the timeline</h3>
+          <p>Work module by module, week by week, building real features instead of isolated exercises.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-card__num">3</div>
+          <h3>Ship a capstone</h3>
+          <p>Finish with a complete, deployed project — something portfolio-ready you can point to.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="cta-banner reveal">
+        <h2>Not sure where to start?</h2>
+        <p>Angular, React or Node.js &amp; Express for full-stack engineering, AI &amp; ML — or the focused Artificial Intelligence, Machine Learning and Data Science tutorials — for AI and data careers, Spring Boot or Python for backend engineering, DevOps &amp; Cloud for infrastructure, ServiceNow for enterprise platform development, or DSA in C++ and System Design for interview prep — every path ends with something real.</p>
+        <div class="cta-banner__actions">
+          <a href="courses/angular/index.html" class="btn btn--primary">Start Angular</a>
+          <a href="courses/cybersecurity/index.html" class="btn btn--ghost">Start Cybersecurity Basics</a>
+          <a href="courses/devops-cloud/index.html" class="btn btn--ghost">Start DevOps &amp; Cloud</a>
+          <a href="courses/dsa-cpp/index.html" class="btn btn--ghost">Start DSA in C++</a>
+          <a href="courses/github/index.html" class="btn btn--ghost">Start Git &amp; GitHub</a>
+          <a href="courses/javascript-typescript/index.html" class="btn btn--ghost">Start JavaScript &amp; TypeScript</a>
+          <a href="courses/llm-ml/index.html" class="btn btn--ghost">Start AI &amp; ML</a>
+          <a href="courses/artificial-intelligence/index.html" class="btn btn--ghost">Start Artificial Intelligence</a>
+          <a href="courses/machine-learning/index.html" class="btn btn--ghost">Start Machine Learning</a>
+          <a href="courses/data-science/index.html" class="btn btn--ghost">Start Data Science</a>
+          <a href="courses/node-express/index.html" class="btn btn--ghost">Start Node.js &amp; Express</a>
+          <a href="courses/aptitude/index.html" class="btn btn--ghost">Start Numerical Aptitude</a>
+          <a href="courses/php/index.html" class="btn btn--ghost">Start PHP</a>
+          <a href="courses/python/index.html" class="btn btn--ghost">Start Python</a>
+          <a href="courses/react/index.html" class="btn btn--ghost">Start React</a>
+          <a href="courses/react-native/index.html" class="btn btn--ghost">Start React Native</a>
+          <a href="courses/servicenow/index.html" class="btn btn--ghost">Start ServiceNow</a>
+          <a href="courses/spring-boot/index.html" class="btn btn--ghost">Start Spring Boot</a>
+          <a href="courses/system-design/index.html" class="btn btn--ghost">Start System Design</a>
+          <a href="courses/flutter/index.html" class="btn btn--ghost">Start Flutter</a>
+          <a href="courses/claude/index.html" class="btn btn--ghost">Start Claude &amp; AI-Assisted Development</a>
+          <a href="courses/ugc-net-cse/index.html" class="btn btn--ghost">Start UGC NET Computer Science</a>
+          <a href="courses/distributed-systems/index.html" class="btn btn--ghost">Start Distributed Systems</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="courses/angular/index.html">Angular</a>
+          <a href="courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="courses/golang/index.html">Go</a>
+          <a href="courses/flutter/index.html">Flutter</a>
+          <a href="courses/coding-practice/index.html">Coding Practice</a>
+          <a href="courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+          <a href="courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="courses/claude/index.html">Claude</a>
+          <a href="courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="courses/kannada/index.html">Kannada Language</a>
+          <a href="courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+          <a href="courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="courses/github/index.html">Git &amp; GitHub</a>
+          <a href="courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="courses/machine-learning/index.html">Machine Learning</a>
+          <a href="courses/data-science/index.html">Data Science</a>
+          <a href="courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="courses/php/index.html">PHP</a>
+          <a href="courses/python/index.html">Python</a>
+          <a href="courses/react/index.html">React</a>
+          <a href="courses/react-native/index.html">React Native</a>
+          <a href="courses/servicenow/index.html">ServiceNow</a>
+          <a href="courses/spring-boot/index.html">Spring Boot</a>
+          <a href="courses/system-design/index.html">System Design</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved. Course icons from Flaticon: <a href="https://www.flaticon.com/free-icon/web-development_1163780" target="_blank" rel="noopener noreferrer">Web Development</a>, <a href="https://www.flaticon.com/free-icon/react_8719430" target="_blank" rel="noopener noreferrer">React by zafdesign</a>, <a href="https://www.flaticon.com/free-icon/artificial-intelligence_4616809" target="_blank" rel="noopener noreferrer">AI by Smashicons</a>, <a href="https://www.flaticon.com/free-icon/java_311311" target="_blank" rel="noopener noreferrer">Java</a>, <a href="https://www.flaticon.com/free-icon/devops_10835121" target="_blank" rel="noopener noreferrer">DevOps by Karyative</a>, <a href="https://www.flaticon.com/free-icon/python_11068874" target="_blank" rel="noopener noreferrer">Python</a>, <a href="https://www.flaticon.com/free-icon/c_5486412" target="_blank" rel="noopener noreferrer">C++</a>, <a href="https://www.flaticon.com/free-icon/nodes_1349717" target="_blank" rel="noopener noreferrer">System Design</a>, and <a href="https://www.flaticon.com/free-icon/nodejs_15379746" target="_blank" rel="noopener noreferrer">Node.js by Grand Iconic</a>.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 7: Spring Security (Part 2) — OAuth2 &amp; Authorization — CodeVerse Creatives</title>
+<meta name="description" content="Week 7 of the Java &amp; Spring Boot curriculum: adding Google-style OAuth2/OIDC login alongside JWT auth, enforcing role-based access with method-level authorization, and configuring CORS and CSRF correctly for a stateless API." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="spring-boot">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../spring-boot/index.html">Spring Boot Syllabus</a>
+        <span>/</span>
+        <a href="../spring-boot/index.html#timeline">Module 5 · Spring Security &amp; Authentication</a>
+        <span>/</span>
+        <span aria-current="page">Week 7</span>
+      </div>
+
+      <h1>Week 7: Spring Security (Part 2) — OAuth2 &amp; Authorization</h1>
+      <p class="lesson-header__lede">
+        Week 6 built username/password JWT login from scratch. This week adds a second, more
+        familiar front door — "Sign in with Google"-style OAuth2/OIDC login — as an alternative
+        to that flow, then turns to a different question entirely: now that you know
+        <em>who</em> a request is from, what should they actually be allowed to do? You'll lock
+        down operations with role-based, method-level authorization, and close out with CORS and
+        CSRF, two topics that only make sense once a real browser-based frontend enters the
+        picture.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Module 5 of 22</span>
+        <span class="chip">Week 7 of 26</span>
+        <span class="chip">~4–5 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Understand OAuth2/OIDC concepts and wire up OAuth2 login with Spring Security</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Enforce role-based access with <code>@PreAuthorize</code> method-level authorization</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Configure CORS and CSRF correctly for a stateless API called from a browser</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#oauth2-oidc"><span>1</span> OAuth2 &amp; OIDC Concepts</a>
+        <a href="#oauth2-login"><span>2</span> OAuth2 Login with Spring Security</a>
+        <a href="#method-authorization"><span>3</span> Method-Level Authorization</a>
+        <a href="#cors-csrf"><span>4</span> CORS &amp; CSRF in a Stateless API</a>
+        <a href="#exercise"><span>5</span> Exercise</a>
+        <a href="#quiz"><span>6</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="oauth2-oidc">
+            <h2>1. OAuth2 &amp; OIDC Concepts</h2>
+            <p>
+              Before writing any Spring code, it's worth being precise about what OAuth2 actually
+              solves, because it's commonly misused as a synonym for "login." OAuth2 is, at its
+              core, an <strong>authorization</strong> framework — it lets an application obtain
+              limited access to a resource on a user's behalf, without ever seeing that user's
+              password. "Sign in with Google" is one application of that framework, not the whole
+              of it.
+            </p>
+
+            <h3>Three roles</h3>
+            <p>
+              Every OAuth2 flow involves three actors talking to each other. The
+              <strong>authorization server</strong> (Google, GitHub, Okta, your own identity
+              provider) authenticates the user and issues tokens. The <strong>resource
+              server</strong> hosts the protected data the client wants — often the same server as
+              the authorization server for a big provider like Google, but a separate system
+              entirely in an enterprise setup. The <strong>client</strong> is the application
+              requesting access on the user's behalf — in this course, your Spring Boot Task API.
+            </p>
+
+            <h3>The authorization code flow, conceptually</h3>
+            <p>
+              The flow your browser goes through when you click "Sign in with Google" follows a
+              consistent shape, regardless of provider:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">authorization code flow -- conceptual</div>
+              <pre><code>1. Browser hits your app's "Login with Google" link
+   -&gt; redirected to accounts.google.com with your app's client-id
+
+2. User logs in at Google (your app never sees their Google password)
+   and approves the permissions your app is requesting
+
+3. Google redirects back to your app with a one-time authorization code
+   GET /login/oauth2/code/google?code=4/0AY0e-g7...
+
+4. Your app's backend exchanges that code for tokens -- server-to-server,
+   never visible to the browser -- by calling Google's token endpoint
+   with the code, client-id, and client-secret
+
+5. Google returns an access token (and, for OIDC, an ID token)
+   -&gt; your app now knows who the user is and can call Google APIs
+      on their behalf, within the granted scope
+</code></pre>
+            </div>
+
+            <p>
+              The authorization <em>code</em> that bounces through the browser in step 3 is
+              deliberately short-lived and useless on its own — it can only be redeemed for real
+              tokens by a client that also knows the client secret, in a direct server-to-server
+              call the browser never sees. That's what keeps the actual access token out of the
+              browser's history and any JavaScript that might be running on the page.
+            </p>
+
+            <h3>What OIDC adds: identity on top of authorization</h3>
+            <p>
+              Plain OAuth2 answers "can this app access this resource?" — it was never designed to
+              answer "who is this person?" <strong>OpenID Connect (OIDC)</strong> is a thin
+              identity layer built on top of OAuth2 that closes exactly that gap: alongside the
+              access token, the authorization server also issues an <strong>ID token</strong>, a
+              signed JWT containing standardized claims about the user — <code>sub</code> (a
+              stable unique identifier), <code>email</code>, <code>name</code>,
+              <code>picture</code>, and so on. That ID token is what actually lets your app say
+              "this session belongs to ada@example.com" with cryptographic confidence, rather than
+              inferring identity indirectly from what an access token happens to unlock.
+            </p>
+
+            <p>
+              This distinction is why nearly every "social login" integration you've used is OIDC,
+              not bare OAuth2 — and why teams reach for it instead of rolling their own social
+              login: the provider has already solved multi-factor auth, account recovery, breach
+              detection, and consent screens, and hands you back a standardized, signed identity
+              token instead of a pile of provider-specific quirks to reverse-engineer.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>This isn't replacing Week 6</strong>
+                <p>OAuth2/OIDC login is an <em>alternative</em> front door, not a rewrite of what you built last week. The JWT-based username/password flow from Week 6 keeps working exactly as before -- you're adding a second way for a user to arrive at an authenticated session, not removing the first.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="oauth2-login">
+            <h2>2. OAuth2 Login with Spring Security</h2>
+            <p>
+              Spring Security implements the entire authorization code flow from section 1 for
+              you — redirects, state/nonce validation, the server-to-server token exchange, and ID
+              token verification — behind one starter and a handful of configuration properties.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pom.xml</div>
+              <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-oauth2-client&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+            </div>
+
+            <h3>Registering a provider</h3>
+            <p>
+              Google (and most major providers) are pre-configured in Spring Boot's OAuth2 client
+              support -- you only need to supply the credentials you get from Google's developer
+              console, plus the scopes you're requesting:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">application.properties</div>
+              <pre><code>spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID}
+spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}
+spring.security.oauth2.client.registration.google.scope=openid,profile,email
+</code></pre>
+            </div>
+
+            <p>
+              Just like the JWT secret in Week 6, these credentials are loaded from environment
+              variables rather than hard-coded -- a client secret checked into source control is a
+              standing invitation for anyone with repo access to impersonate your app to Google.
+            </p>
+
+            <h3>The endpoints Spring Boot wires up for free</h3>
+            <p>
+              Registering a provider auto-configures two URLs, and you never write a controller
+              for either of them -- Spring Security's <code>oauth2Login()</code> DSL handles both:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">auto-configured endpoints</div>
+              <pre><code>GET /oauth2/authorization/google
+    -&gt; starts the flow: redirects the browser to Google's consent screen
+
+GET /login/oauth2/code/google
+    -&gt; the redirect URI Google sends the browser back to with the
+       authorization code; Spring Security exchanges it for tokens here
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">SecurityConfig.java -- enabling OAuth2 login</div>
+              <pre><code>@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .csrf(csrf -&gt; csrf.disable())
+            .sessionManagement(sm -&gt;
+                    sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -&gt; auth
+                    .requestMatchers("/auth/login", "/auth/register", "/oauth2/**", "/login/**").permitAll()
+                    .anyRequest().authenticated())
+            .oauth2Login(oauth2 -&gt; oauth2
+                    .successHandler(oAuth2LoginSuccessHandler)) // section below
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+}
+</code></pre>
+            </div>
+
+            <h3>Bridging OAuth2User into your own User table</h3>
+            <p>
+              After a successful OAuth2 login, Spring Security hands you an
+              <code>OAuth2User</code> (or, for OIDC providers like Google, an
+              <code>OidcUser</code>) populated with the provider's claims -- but that object isn't
+              your <code>User</code> entity from Week 6, and it isn't persisted anywhere. A custom
+              success handler is the bridge: it looks up or creates a row in the same
+              <code>app_user</code> table, then issues the exact same kind of JWT your
+              <code>/auth/login</code> endpoint issues, so everything downstream of login -- the
+              JWT filter, the Task endpoints, method-level authorization -- treats both login
+              paths identically.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">OAuth2LoginSuccessHandler.java</div>
+              <pre><code>package com.codeverse.week07.security;
+
+import com.codeverse.week07.user.Role;
+import com.codeverse.week07.user.User;
+import com.codeverse.week07.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+
+    public OAuth2LoginSuccessHandler(UserRepository userRepository, JwtService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) throws IOException {
+
+        OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
+        String email = oidcUser.getEmail();
+
+        User user = userRepository.findByUsername(email)
+                .orElseGet(() -&gt; {
+                    User created = new User();
+                    created.setUsername(email);
+                    created.setPasswordHash(null); // no local password -- OAuth2-only account
+                    created.setRole(Role.USER);
+                    return userRepository.save(created);
+                });
+
+        String token = jwtService.generateToken(user.getUsername());
+
+        // Hand the token back the same shape /auth/login uses, so the frontend
+        // doesn't need two different response formats to deal with.
+        response.setContentType("application/json");
+        response.getWriter().write("{\"token\": \"" + token + "\"}");
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              Note the <code>orElseGet</code> — the first time a given Google account logs in, it
+              silently provisions a matching <code>User</code> row with a null password hash
+              (there's nothing to hash; this account never sets a local password) and the default
+              <code>Role.USER</code>. Every login after that finds the existing row by email
+              instead of creating duplicates.
+            </p>
+          </section>
+
+          <section id="method-authorization">
+            <h2>3. Method-Level Authorization</h2>
+            <p>
+              Week 6's <code>authorizeHttpRequests</code> answers one question well:
+              <em>"is this URL reachable at all without a valid token?"</em> It can't express
+              anything more specific than that from the security config alone — "only the task's
+              owner can delete it" or "only admins can delete arbitrary tasks" needs information
+              that only exists once you're inside the method, looking at the request and the
+              resource together. That's what method-level authorization is for.
+            </p>
+
+            <h3>Enabling it</h3>
+            <p>
+              One annotation on a configuration class turns on
+              <code>@PreAuthorize</code>/<code>@PostAuthorize</code> support across the app:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">MethodSecurityConfig.java</div>
+              <pre><code>package com.codeverse.week07.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
+@Configuration
+@EnableMethodSecurity
+public class MethodSecurityConfig {
+    // No beans needed -- the annotation alone activates method-level checks
+    // wherever @PreAuthorize / @PostAuthorize / @Secured are used.
+}
+</code></pre>
+            </div>
+
+            <h3>Roles vs. granted authorities</h3>
+            <p>
+              A <strong>granted authority</strong> is just a string Spring Security attaches to an
+              authenticated principal — <code>"ROLE_ADMIN"</code>, but also things like
+              <code>"tasks:write"</code> for finer-grained permissions. A <strong>role</strong> is
+              a specific convention layered on top: any authority prefixed with
+              <code>ROLE_</code> is treated as a role, and expressions like
+              <code>hasRole("ADMIN")</code> automatically add that prefix for you --
+              <code>hasRole("ADMIN")</code> and <code>hasAuthority("ROLE_ADMIN")</code> check the
+              exact same thing. This week sticks to roles, since <code>USER</code>/<code>ADMIN</code>
+              is enough for the Task API.
+            </p>
+
+            <h3><code>@PreAuthorize</code> with SpEL</h3>
+            <p>
+              <code>@PreAuthorize</code> evaluates a Spring Expression Language (SpEL) condition
+              <em>before</em> the method body runs, and can reference the method's own arguments —
+              which is exactly what lets you express "the caller is either an admin, or the owner
+              of this specific task":
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskService.java -- excerpt</div>
+              <pre><code>package com.codeverse.week07.task;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
+@Service
+public class TaskService {
+
+    private final TaskRepository taskRepository;
+
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    // Any authenticated user may delete their own task; only an ADMIN may
+    // delete a task belonging to someone else. isOwner() is a small helper
+    // bean exposed to SpEL below.
+    @PreAuthorize("hasRole('ADMIN') or @taskSecurity.isOwner(#taskId, authentication.name)")
+    public void deleteTask(Long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+
+    // Admin-only: hard delete regardless of ownership, used from an admin panel.
+    @PreAuthorize("hasRole('ADMIN')")
+    public void adminDeleteTask(Long taskId) {
+        taskRepository.deleteById(taskId);
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">TaskSecurity.java -- the @taskSecurity SpEL bean</div>
+              <pre><code>package com.codeverse.week07.task;
+
+import org.springframework.stereotype.Component;
+
+@Component("taskSecurity")
+public class TaskSecurity {
+
+    private final TaskRepository taskRepository;
+
+    public TaskSecurity(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    public boolean isOwner(Long taskId, String username) {
+        return taskRepository.findById(taskId)
+                .map(task -&gt; task.getOwnerUsername().equals(username))
+                .orElse(false);
+    }
+}
+</code></pre>
+            </div>
+
+            <p>
+              If the SpEL expression evaluates to <code>false</code>, Spring Security throws an
+              <code>AccessDeniedException</code> before <code>deleteTask</code>'s body ever
+              executes, and the response comes back as a <strong>403 Forbidden</strong> -- the
+              request was authenticated (a 401 would mean it wasn't), it's just not permitted.
+              That's the exact distinction Week 6 flagged as "coming in Week 7."
+            </p>
+
+            <h3>URL-pattern rules vs. method-level rules</h3>
+            <p>
+              These two mechanisms aren't competitors -- they operate at different layers and are
+              meant to be used together. <code>authorizeHttpRequests</code> is coarse and fast: it
+              runs in the filter chain, before any controller code executes, and is the right tool
+              for "this whole path requires <em>some</em> authenticated user" or "this whole admin
+              section requires the ADMIN role," expressed once in the security config.
+              <code>@PreAuthorize</code> is fine-grained and contextual: it runs at the service or
+              controller method, has access to the actual method arguments, and is the only place
+              a rule like "only <em>this task's</em> owner" can live, because ownership isn't
+              knowable from the URL alone. A well-designed app layers both: broad gates at the
+              filter chain, precise checks at the method that actually touches the resource.
+            </p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Looking ahead to Week 8</strong>
+                <p>Once controllers depend on <em>who's calling</em> and <em>what role they hold</em>, testing has to account for that too -- Week 8 covers how to write <code>@WebMvcTest</code> and <code>@SpringBootTest</code> cases that run the same endpoint as a plain USER, as an ADMIN, and as nobody at all, and assert the right status code comes back for each.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="cors-csrf">
+            <h2>4. CORS &amp; CSRF in a Stateless API</h2>
+            <p>
+              These two acronyms get confused constantly, partly because both are browser security
+              mechanisms and both showed up already in this week's and last week's
+              <code>SecurityFilterChain</code> config -- but they defend against different threats,
+              and a stateless, token-based API treats them very differently.
+            </p>
+
+            <h3>Why CSRF is disabled here</h3>
+            <p>
+              CSRF (Cross-Site Request Forgery) exploits the fact that browsers automatically
+              attach cookies to every request to a domain, including requests triggered by a
+              malicious third-party page the user happens to have open. If your API authenticated
+              via a session cookie, a hostile page could silently trigger
+              <code>POST /api/tasks/1/delete</code> and the browser would obligingly attach your
+              session cookie, with no way for the server to tell that request apart from one you
+              made yourself -- that's exactly what CSRF tokens exist to prevent.
+            </p>
+            <p>
+              This Task API doesn't have that problem, by construction. Every request --
+              JWT-authenticated or OAuth2-derived -- carries its credential in an
+              <code>Authorization: Bearer &lt;token&gt;</code> header, which the browser never
+              attaches automatically the way it does cookies; a malicious page has no way to make
+              the victim's browser send that header on its behalf. No cookies for authentication
+              means no ambient credential for an attacker to ride on, which is precisely why
+              <code>csrf(csrf -&gt; csrf.disable())</code> was correct back in Week 6 and stays
+              correct this week: there's no CSRF risk to defend against in a stateless,
+              header-authenticated API.
+            </p>
+
+            <h3>Why CORS still matters</h3>
+            <p>
+              CORS (Cross-Origin Resource Sharing) is a completely different concern: it's the
+              browser's own default-deny policy for cross-origin <code>fetch</code>/XHR calls made
+              from JavaScript, regardless of how those calls are authenticated. If your frontend is
+              served from <code>http://localhost:4200</code> (an Angular or React dev server) and
+              your API runs on <code>http://localhost:8080</code>, those are different origins by
+              the browser's definition -- and without an explicit CORS policy telling the browser
+              "requests from that origin are allowed," the browser blocks the frontend's JavaScript
+              from reading the response, even if the API itself would have happily served it.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">CorsConfig.java</div>
+              <pre><code>package com.codeverse.week07.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+@Configuration
+public class CorsConfig {
+
+    @Value("${app.cors.allowed-origins}")
+    private List&lt;String&gt; allowedOrigins;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(allowedOrigins);              // explicit list, never "*"
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+}
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">application.properties</div>
+              <pre><code>app.cors.allowed-origins=http://localhost:4200
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Looking ahead to Week 12</strong>
+                <p>Once requests carry a real identity -- whether from Week 6's JWT login or this week's OAuth2 flow -- that identity becomes something worth recording, not just checking. Week 12 covers auditing: capturing who created, updated, or deleted a given row, using the same authenticated principal this week's <code>@PreAuthorize</code> checks already rely on.</p>
+              </div>
+            </div>
+
+            <p>
+              Wiring the bean into the filter chain is one line -- Spring Security picks up a
+              <code>CorsConfigurationSource</code> bean automatically once you reference it:
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">SecurityConfig.java -- excerpt</div>
+              <pre><code>return http
+        .cors(cors -&gt; cors.configurationSource(corsConfigurationSource))
+        .csrf(csrf -&gt; csrf.disable())
+        // ...rest unchanged from section 2
+        .build();
+</code></pre>
+            </div>
+
+            <h3>Never wildcard everything in production</h3>
+            <p>
+              <code>setAllowedOrigins(List.of("*"))</code> looks tempting during local development
+              because it "just works" against any frontend, but it's a production liability the
+              moment credentials are involved -- covered in the quiz below. Keep the allowed-origin
+              list explicit and environment-specific: <code>localhost:4200</code> locally,
+              your real frontend's domain in production, loaded from configuration exactly like
+              the JWT secret and OAuth2 client credentials.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>5. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Add roles, method-level authorization, and CORS to the Task API</h3>
+              <p>Extend the JWT-secured Task API from Week 6 with real authorization: roles, ownership checks, a browser-facing CORS policy, and -- optionally -- OAuth2 login as a second way in.</p>
+
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Add a <code>Role</code> enum (<code>USER</code>, <code>ADMIN</code>) and a <code>role</code> field on the Week 6 <code>User</code> entity, defaulting new registrations to <code>USER</code>. Seed at least one <code>ADMIN</code> user directly in the database or via a startup <code>CommandLineRunner</code>.</li>
+                <li>Add <code>@EnableMethodSecurity</code> and implement a <code>deleteTask(Long taskId)</code> that regular users can only call successfully against tasks they own, while an <code>ADMIN</code> can delete any task -- using <code>@PreAuthorize</code> with a SpEL expression referencing an ownership-check helper bean, following the <code>TaskSecurity</code> pattern above.</li>
+                <li>Add a separate admin-only endpoint (e.g. <code>DELETE /api/admin/tasks/{id}</code>) guarded with <code>@PreAuthorize("hasRole('ADMIN')")</code>, and confirm with <code>curl</code> that a <code>USER</code> token gets a 403 while an <code>ADMIN</code> token succeeds.</li>
+                <li>Configure a <code>CorsConfigurationSource</code> bean that allows your local frontend's origin (e.g. <code>http://localhost:4200</code>) with an explicit origin list -- not a wildcard -- and wire it into the <code>SecurityFilterChain</code> with <code>.cors(...)</code>.</li>
+                <li><em>(Optional, extra credit)</em> Add <code>spring-boot-starter-oauth2-client</code>, register a Google OAuth2 client, and implement an <code>AuthenticationSuccessHandler</code> that finds-or-creates a <code>User</code> row by email and issues the same JWT format as <code>/auth/login</code>, so a frontend can treat both login paths identically.</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Your Week 6 <code>JwtAuthenticationFilter</code> and <code>UserDetailsService</code> don't need to change for roles to work -- just make sure <code>loadUserByUsername</code> maps the entity's <code>role</code> field onto <code>.authorities("ROLE_" + user.getRole())</code> instead of the hard-coded <code>"ROLE_USER"</code> string from last week.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>6. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>What does OIDC add on top of plain OAuth2, and why does it matter for "Sign in with Google"-style login?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Plain OAuth2 is an authorization framework -- it's built to answer "can this app access this resource on the user's behalf?" and issues an access token scoped to that resource, without any standardized notion of who the user actually is. OIDC layers identity on top: alongside the access token, the authorization server also issues a signed ID token, a JWT carrying standardized claims like <code>sub</code>, <code>email</code>, and <code>name</code>. That ID token is what actually answers "who is this person?" with cryptographic confidence, which is the piece "Sign in with Google" fundamentally needs -- without OIDC, an app would only know it was granted some scope of access, not whose account it belongs to.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>What's the practical difference between a <code>@PreAuthorize</code> role check and an <code>authorizeHttpRequests</code> URL pattern rule?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>authorizeHttpRequests</code> rules live in the security filter chain and run before any controller code executes -- they can only reason about the request's path and method, which makes them ideal for coarse, blanket rules like "everything under <code>/api/admin/**</code> requires the ADMIN role." <code>@PreAuthorize</code> runs at the method itself, with full access to the method's actual arguments (and, via a SpEL helper bean, to data fetched from the database), so it can express rules URL patterns fundamentally can't -- like "this specific task can only be deleted by its owner or an admin," where the answer depends on the resource, not just the path. In practice they're complementary: broad gates at the filter chain, precise ownership checks at the method that touches the resource.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>Why is CSRF protection typically disabled for a token-based API, while CORS still needs to be configured?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>CSRF attacks work by exploiting the browser's habit of automatically attaching cookies to every request to a given domain, including requests a malicious third-party page silently triggers -- so a session-cookie-authenticated app is vulnerable unless it defends against forged requests riding on that ambient cookie. This Task API never authenticates via cookies; every request carries its credential explicitly in an <code>Authorization: Bearer</code> header, which the browser does not attach automatically the way it does cookies, so a malicious page has no way to forge that header on a victim's behalf -- there's no ambient credential to ride on, hence no CSRF risk to defend against. CORS is unrelated: it's the browser's own default-deny policy for any cross-origin JavaScript call, regardless of how it's authenticated, so a legitimate frontend served from a different origin than the API still needs an explicit CORS policy or the browser blocks its requests outright.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why is a wildcard CORS origin (<code>"*"</code>) dangerous once endpoints require credentials?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>An allowed origin of <code>"*"</code> tells the browser that a script running on literally any website is permitted to read responses from your API -- fine for a truly public, unauthenticated endpoint, but catastrophic once requests carry a bearer token or credentials, because any malicious site the victim happens to have open could make an authenticated call to your API from the victim's browser and read the response back into its own JavaScript. Browsers actually enforce this: the CORS spec forbids combining a wildcard origin with <code>allowCredentials(true)</code>, and a compliant browser will reject that combination outright. The safe pattern is an explicit, environment-specific allow-list -- <code>localhost:4200</code> in development, your real frontend's domain in production -- so only origins you actually trust can read authenticated responses.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Previous</span>
+            <span class="lesson-pager__title">Week 6: Spring Security (Part 1) — Authentication &amp; JWT</span>
+          </a>
+          <a href="week-08.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 8: Testing Spring Boot Applications</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

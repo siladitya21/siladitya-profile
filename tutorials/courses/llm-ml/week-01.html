@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 1: Python Data Science Toolchain — NumPy, Pandas &amp; Environments — CodeVerse Creatives</title>
+<meta name="description" content="Week 1 of the AI &amp; Machine Learning curriculum: reproducible Python environments, NumPy arrays and vectorization, Pandas DataFrames, handling missing data, and exploratory visualization with Matplotlib." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="llm-ml">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      CodeVerse Creatives
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../angular/index.html" class="nav-course-card c-angular">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Angular</span>
+              <span class="nav-course-card__meta">34 Weeks</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../devops-cloud/index.html" class="nav-course-card c-devops-cloud">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a5 5 0 1 1 .87-9.92A6 6 0 0 1 21 11a4 4 0 0 1-.5 8Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DevOps &amp; Cloud</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../github/index.html" class="nav-course-card c-github">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Git &amp; GitHub</span>
+              <span class="nav-course-card__meta">5 Weeks</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../llm-ml/index.html" class="nav-course-card c-llm-ml" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M4 9H2M4 15H2M22 9h-2M22 15h-2M9 4V2M15 4V2M9 22v-2M15 22v-2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">AI &amp; ML</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../artificial-intelligence/index.html" class="nav-course-card c-artificial-intelligence">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 8V5"/><circle cx="12" cy="4" r="1"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/><path d="M9.5 16.5h5M3 12v3M21 12v3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Artificial Intelligence</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../machine-learning/index.html" class="nav-course-card c-machine-learning">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="19" cy="12" r="2"/><path d="m6.5 10.5 4-4M6.5 13.5l4 4M13.5 6.5l4 4M13.5 17.5l4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Machine Learning</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-science/index.html" class="nav-course-card c-data-science">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Data Science</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../node-express/index.html" class="nav-course-card c-node-express">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 21 6.5 21 15.5 12 20 3 15.5 3 6.5 12 2"/><path d="M9 9.5c1.5-1 3.5-1 5 0M8 13c2 1.5 6 1.5 8 0"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Node.js &amp; Express</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../aptitude/index.html" class="nav-course-card c-aptitude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="8" y2="12"/><line x1="12" y1="12" x2="12" y2="12"/><line x1="16" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="12" y1="16" x2="12" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/><line x1="8" y1="20" x2="8" y2="20"/><line x1="12" y1="20" x2="12" y2="20"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Numerical Aptitude</span>
+              <span class="nav-course-card__meta">21 Weeks</span>
+            </span>
+          </a>
+          <a href="../php/index.html" class="nav-course-card c-php">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15c0-4.5 3.4-8 8-8s8 3.5 8 8v1a2 2 0 0 1-2 2h-1"/><path d="M18 16v3a2 2 0 0 1-2 2"/><path d="M6 18v3M10 19v3M14 19v3"/><circle cx="7.5" cy="12" r=".6" fill="currentColor"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">PHP</span>
+              <span class="nav-course-card__meta">32 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../react/index.html" class="nav-course-card c-react">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="4.2"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../react-native/index.html" class="nav-course-card c-react-native">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="19" x2="14" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">React Native</span>
+              <span class="nav-course-card__meta">22 Weeks</span>
+            </span>
+          </a>
+          <a href="../servicenow/index.html" class="nav-course-card c-servicenow">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2a2 2 0 0 0 4 0h6a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2h-6a2 2 0 0 0-4 0H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">ServiceNow</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../spring-boot/index.html" class="nav-course-card c-spring-boot">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="1"/><rect x="2" y="15" width="20" height="6" rx="1"/><path d="M6 6h.01M6 18h.01"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Spring Boot</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../system-design/index.html" class="nav-course-card c-system-design">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">System Design</span>
+              <span class="nav-course-card__meta">28 Weeks</span>
+            </span>
+          </a>
+          <a href="../mongodb/index.html" class="nav-course-card c-mongodb">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 12c0 1.7 4 3 9 3s9-1.3 9-3"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">MongoDB</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../data-analytics/index.html" class="nav-course-card c-data-analytics">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Excel, SQL &amp; Power BI</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../golang/index.html" class="nav-course-card c-golang">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Go</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../flutter/index.html" class="nav-course-card c-flutter">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 12l4 4L21 2h-8Z"/><path d="M13 22 7 16l4-4 4 4-4 4Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Flutter</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../coding-practice/index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Coding Practice</span>
+              <span class="nav-course-card__meta">120 Problems</span>
+            </span>
+          </a>
+          <a href="../docker-kubernetes/index.html" class="nav-course-card c-docker-kubernetes">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Docker &amp; Kubernetes</span>
+              <span class="nav-course-card__meta">18 Weeks</span>
+            </span>
+          </a>
+                  <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../claude/index.html" class="nav-course-card c-claude">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c0 4.5 2.5 7 7 7-4.5 0-7 2.5-7 7 0-4.5-2.5-7-7-7 4.5 0 7-2.5 7-7Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Claude</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">7 of 19 Weeks</span>
+            </span>
+          </a>
+          <a href="../kannada/index.html" class="nav-course-card c-kannada">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="7" y1="9" x2="15" y2="9"/><line x1="7" y1="13" x2="12" y2="13"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Kannada Language</span>
+              <span class="nav-course-card__meta">12 Weeks</span>
+            </span>
+          </a>
+          <a href="../distributed-systems/index.html" class="nav-course-card c-distributed-systems">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M10.8 7.2 6.2 16.8M13.2 7.2l4.6 9.6M7.5 19h9"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Distributed Systems</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../oracle-netsuite/index.html" class="nav-course-card c-oracle-netsuite">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 12.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 12.5"/><path d="m22 17.5-8.58 3.9a2 2 0 0 1-1.66 0L3.18 17.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Oracle NetSuite</span>
+              <span class="nav-course-card__meta">1 of 26 Weeks</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../llm-ml/index.html">AI &amp; ML Syllabus</a>
+        <span>/</span>
+        <a href="../llm-ml/index.html#timeline">Phase 1 · Math &amp; Python Foundations</a>
+        <span>/</span>
+        <span aria-current="page">Week 1</span>
+      </div>
+
+      <h1>Week 1: Python Data Science Toolchain</h1>
+      <p class="lesson-header__lede">
+        Every dataset you'll touch in this course — from a scikit-learn table in Week 5 to
+        embeddings in Week 22 — passes through the same three tools first: a reproducible
+        Python environment, NumPy arrays, and Pandas DataFrames. This week gets all three
+        genuinely comfortable, including the parts that quietly cause the most bugs later:
+        broadcasting, axis direction, and missing data.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Phase 1 of 8</span>
+        <span class="chip">Week 1 of 26</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this week, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Set up and reproduce a working Python data-science environment</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Manipulate arrays and tabular data confidently with NumPy and Pandas</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Clean, merge and visually inspect a real dataset before modeling it</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#setup"><span>1</span> Environment Setup</a>
+        <a href="#numpy"><span>2</span> NumPy Essentials</a>
+        <a href="#pandas"><span>3</span> Pandas for Tabular Data</a>
+        <a href="#missing-merge"><span>4</span> Missing Data &amp; Merging</a>
+        <a href="#viz"><span>5</span> Exploratory Visualization</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+        <a href="#quiz"><span>7</span> Knowledge Check</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="setup">
+            <h2>1. Setting Up Your Environment</h2>
+            <p>
+              You want an isolated, reproducible Python environment per project — so upgrading a
+              package for one course doesn't silently break another. Two mainstream options:
+              <code>venv</code> (built into Python) and <strong>conda</strong> (a separate package/environment
+              manager popular in data science because it also handles non-Python dependencies).
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — venv</div>
+              <pre><code>python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+pip install numpy pandas jupyterlab matplotlib scikit-learn
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal — conda</div>
+              <pre><code>conda create -n ml-course python=3.11
+conda activate ml-course
+
+conda install numpy pandas jupyterlab matplotlib scikit-learn
+</code></pre>
+            </div>
+
+            <p>
+              Either way, launch <strong>JupyterLab</strong> to get a notebook interface — the format
+              you'll use for almost every exercise in this course, because it lets you run code in
+              small pieces and immediately see the output (including plots) inline.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>jupyter lab
+</code></pre>
+            </div>
+
+            <p>
+              Once JupyterLab opens, freeze your exact package versions into a file — this is what
+              makes an environment <em>reproducible</em> rather than "works on my machine":
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">terminal</div>
+              <pre><code>pip freeze &gt; requirements.txt
+
+# On a fresh machine, later:
+pip install -r requirements.txt
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Which one should you pick?</strong>
+                <p>If you're not sure, use <code>venv</code> — it's built in, and everything in this course is pure Python packages. Reach for conda later if a future package needs system-level dependencies <code>pip</code> struggles with (common in some deep-learning tooling from Week 11 onward).</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="numpy">
+            <h2>2. NumPy Essentials</h2>
+            <p>
+              NumPy's <code>ndarray</code> is the data structure underneath nearly every ML library
+              you'll touch — Pandas, scikit-learn, and PyTorch's tensors are all conceptually
+              extensions of it. The core idea: store numbers in contiguous memory and operate on
+              whole arrays at once, instead of looping in Python.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">numpy_basics.py</div>
+              <pre><code>import numpy as np
+
+a = np.array([1, 2, 3, 4])
+matrix = np.array([[1, 2], [3, 4], [5, 6]])
+
+print(a.shape)        # (4,)
+print(matrix.shape)   # (3, 2)  -> 3 rows, 2 columns
+print(matrix.dtype)   # int64 -- every element shares one type
+
+# Indexing & slicing
+print(matrix[0])      # [1 2]        -- first row
+print(matrix[:, 1])   # [2 4 6]      -- second column, all rows
+
+# Vectorized operations -- no explicit loop
+doubled = a * 2                    # [2 4 6 8]
+row_sums = matrix.sum(axis=1)      # sum across each row: [3 7 11]
+</code></pre>
+            </div>
+
+            <p>
+              That last line — <code>matrix.sum(axis=1)</code> — is worth sitting with:
+              <code>axis=0</code> collapses <em>rows</em> (sums down each column), <code>axis=1</code>
+              collapses <em>columns</em> (sums across each row). Getting this backwards is one of the
+              most common early bugs in ML code, because it fails silently — you just get numbers,
+              the wrong ones.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">broadcasting</div>
+              <pre><code># Broadcasting: NumPy stretches smaller shapes to match, without copying data
+prices = np.array([10.0, 20.0, 30.0])
+tax_rate = 1.08
+
+with_tax = prices * tax_rate   # [10.8, 21.6, 32.4] -- scalar "broadcasts" to every element
+
+# Broadcasting also works between a matrix and a smaller array,
+# as long as their trailing dimensions line up (or are 1)
+matrix = np.array([[1, 2, 3], [4, 5, 6]])   # shape (2, 3)
+col_means = matrix.mean(axis=0)              # shape (3,)  -> [2.5, 3.5, 4.5]
+
+centered = matrix - col_means                # (2, 3) - (3,) broadcasts fine
+</code></pre>
+            </div>
+
+            <p>
+              Vectorized operations aren't just more concise than a Python <code>for</code> loop —
+              they're typically <strong>10–100x faster</strong>, because NumPy pushes the loop down
+              into compiled C code. You'll rely on this constantly once datasets grow past a few
+              thousand rows, and again in Week 11 when a "vectorized operation" becomes "a whole
+              neural network layer."
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">reshaping</div>
+              <pre><code>flat = np.arange(12)          # [0, 1, 2, ..., 11]
+grid = flat.reshape(3, 4)     # same 12 numbers, viewed as 3 rows x 4 columns
+
+# np.newaxis inserts a new length-1 axis -- useful for broadcasting shapes
+column = flat[:, np.newaxis]  # shape (12, 1) instead of (12,)
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why reshape matters later</strong>
+                <p><code>.reshape()</code> doesn't copy data — it just reinterprets the same memory with a different shape. You'll use this constantly to turn a flat list of pixel values into an image grid in Week 13, and to add a "batch dimension" before feeding data into a PyTorch model.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="pandas">
+            <h2>3. Pandas for Tabular Data</h2>
+            <p>
+              Pandas builds on NumPy to give you labeled, tabular data — a <code>DataFrame</code> is
+              essentially a spreadsheet you can manipulate in code, with a <code>Series</code> as its
+              single-column building block.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">pandas_basics.py</div>
+              <pre><code>import pandas as pd
+
+df = pd.read_csv('customers.csv')
+
+df.head()                      # first 5 rows
+df.info()                      # column names, dtypes, non-null counts
+df.describe()                  # count, mean, std, min/max per numeric column
+
+# Selecting
+ages = df['age']                       # a Series (one column)
+subset = df[['name', 'age', 'city']]    # a DataFrame (several columns)
+
+# Filtering
+adults = df[df['age'] &gt;= 18]
+
+# Grouping and aggregating
+avg_age_by_city = df.groupby('city')['age'].mean()
+</code></pre>
+            </div>
+
+            <p>
+              <code>df[df['age'] &gt;= 18]</code> looks unusual the first time you see it: the inner
+              expression produces a Series of <code>True</code>/<code>False</code> values (one per
+              row), and indexing the DataFrame with that boolean Series keeps only the rows where it's
+              <code>True</code>. This "boolean mask" pattern is everywhere in Pandas code.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">sorting &amp; new columns</div>
+              <pre><code># Sort by a column, descending
+df_sorted = df.sort_values('age', ascending=False)
+
+# Derived columns are just assignments -- vectorized, like NumPy
+df['is_adult'] = df['age'] &gt;= 18
+df['age_in_months'] = df['age'] * 12
+</code></pre>
+            </div>
+          </section>
+
+          <section id="missing-merge">
+            <h2>4. Handling Missing Data &amp; Merging Tables</h2>
+            <p>
+              Real datasets almost never arrive clean. Two skills you'll use in nearly every exercise
+              from here on: finding and handling missing values, and combining data that lives across
+              more than one table.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">missing_data.py</div>
+              <pre><code>df.isna().sum()                 # count of missing values per column
+
+# Three common strategies, in increasing order of "aggressiveness":
+df['age'] = df['age'].fillna(df['age'].mean())   # fill with a sensible default
+df_complete = df.dropna(subset=['email'])         # drop rows missing a required field
+df_complete = df.dropna()                          # drop any row with any missing value
+</code></pre>
+            </div>
+
+            <p>
+              Which strategy is right depends entirely on <em>why</em> the value is missing and what
+              you'll do with the column later — filling a numeric column's gaps with its mean is a
+              common default, but it quietly shrinks that column's variance. You'll revisit this
+              tradeoff properly when you build a training pipeline in Week 4.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">merging.py</div>
+              <pre><code>orders = pd.read_csv('orders.csv')       # columns: order_id, customer_id, total
+customers = pd.read_csv('customers.csv') # columns: customer_id, name, city
+
+# Join on a shared key column -- like a SQL JOIN
+enriched = orders.merge(customers, on='customer_id', how='left')
+
+# how='left' keeps every order, even if a matching customer is missing
+# how='inner' would drop orders with no matching customer_id
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong><code>how=</code> is the whole decision</strong>
+                <p><code>'left'</code> keeps every row from the first table regardless of a match; <code>'inner'</code> keeps only rows that match in both; <code>'outer'</code> keeps everything from both sides, filling gaps with <code>NaN</code>. Picking the wrong one is a quiet way to silently drop rows.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="viz">
+            <h2>5. Exploratory Visualization with Matplotlib</h2>
+            <p>
+              Before you model anything, you look at it. A histogram catches a skewed distribution;
+              a scatter plot catches a relationship (or a cluster of outliers) a table of numbers
+              would hide. Matplotlib is the standard plotting library almost every other Python
+              visualization tool builds on.
+            </p>
+
+            <div class="code-block">
+              <div class="code-block__label">exploratory_viz.py</div>
+              <pre><code>import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+# Distribution of a single numeric column
+axes[0].hist(df['age'], bins=20)
+axes[0].set_title('Age distribution')
+
+# Relationship between two numeric columns
+axes[1].scatter(df['hours_studied'], df['score'])
+axes[1].set_xlabel('Hours studied')
+axes[1].set_ylabel('Score')
+
+plt.tight_layout()
+plt.show()
+</code></pre>
+            </div>
+
+            <p>
+              This kind of quick look — called <strong>exploratory data analysis (EDA)</strong> — is
+              the very first thing you'll do with any new dataset in Week 5, before choosing a
+              model or even deciding whether the data needs cleaning. A five-minute histogram now
+              routinely saves an hour of debugging a model that "isn't learning" later.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Hands-on Exercise</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Hands-on
+              </span>
+              <h3>Clean, merge and visualize a messy two-table dataset</h3>
+              <p>You're given student records split across two small tables, with a few missing values thrown in — a shape you'll see constantly in real projects.</p>
+
+              <div class="code-block">
+                <div class="code-block__label">starter data</div>
+                <pre><code>students = [
+    {"student_id": 1, "name": "Ada",    "hours_studied": 5},
+    {"student_id": 2, "name": "Grace",  "hours_studied": 4},
+    {"student_id": 3, "name": "Alan",   "hours_studied": None},
+    {"student_id": 4, "name": "Barbara","hours_studied": 6},
+    {"student_id": 5, "name": "Edsger", "hours_studied": 3},
+]
+
+scores = [
+    {"student_id": 1, "score": 92},
+    {"student_id": 2, "score": 88},
+    {"student_id": 3, "score": 76},
+    {"student_id": 4, "score": 95},
+    # student_id 5 is missing from this table on purpose
+]
+</code></pre>
+              </div>
+
+              <h3>Part A: NumPy warm-up — axis &amp; broadcasting</h3>
+              <p>Before reaching for Pandas, do the column stats by hand in raw NumPy — this is the part of the week that's easy to skip and the easiest to get quietly wrong later.</p>
+              <ol>
+                <li>Stack <code>hours_studied</code> and <code>score</code> into a single NumPy array of shape <code>(5, 2)</code> — one row per student, columns in that order. Use <code>np.nan</code> for both missing values (Alan's hours, Edsger's score).</li>
+                <li>Compute the column-wise mean with <code>np.nanmean(data, axis=0)</code> (NaN-aware, so the missing values don't corrupt the result) — this gives you a shape-<code>(2,)</code> array: <code>[mean_hours, mean_score]</code>. Before moving on, say out loud which axis "disappeared" and why that's the right one for a <em>per-column</em> mean.</li>
+                <li>Use broadcasting to center the data in one line: <code>centered = data - np.nanmean(data, axis=0)</code>. Confirm the result's shape is still <code>(5, 2)</code> even though you subtracted a <code>(2,)</code> array.</li>
+              </ol>
+
+              <div class="code-block">
+                <div class="code-block__label">numpy_warmup.py — shape to fill in</div>
+                <pre><code>import numpy as np
+
+data = np.array([
+    [5, 92],
+    [4, 88],
+    [np.nan, 76],
+    [6, 95],
+    [3, np.nan],
+])  # shape (5, 2): columns are [hours_studied, score]
+
+col_means = np.nanmean(data, axis=0)   # [mean_hours, mean_score]
+col_stds = np.nanstd(data, axis=0)     # [std_hours, std_score]
+centered = data - col_means            # broadcasting: (5, 2) - (2,)
+</code></pre>
+              </div>
+
+              <h3>Part B: Pandas cleanup, merge &amp; visualization</h3>
+              <p><strong>Requirements:</strong></p>
+              <ol>
+                <li>Load both lists into two separate DataFrames.</li>
+                <li>Merge them on <code>student_id</code> using <code>how='left'</code> so every student is kept, then inspect which rows now have missing values with <code>.isna()</code>.</li>
+                <li>Fill missing <code>hours_studied</code> values with the column's mean; decide — and comment in your notebook — whether the row with a missing <code>score</code> should be dropped or filled, and why.</li>
+                <li>Add a <code>score_normalized</code> column using the <code>col_means</code>/<code>col_stds</code> you already computed with NumPy in Part A, rather than calling Pandas' <code>.mean()</code>/<code>.std()</code> again — you should get the same numbers back, which is the point: Pandas' column stats <em>are</em> NumPy under the hood.</li>
+                <li>Plot a histogram of <code>hours_studied</code> and a scatter plot of <code>hours_studied</code> vs. <code>score</code>. Does the scatter plot suggest a relationship?</li>
+              </ol>
+
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint</strong>
+                  <p>Merge first, then check for missing values — merging can <em>introduce</em> new <code>NaN</code>s (from the unmatched student) even though neither original table looked incomplete on its own. And in Part A, reach for <code>np.nanmean</code>/<code>np.nanstd</code> rather than <code>np.mean</code>/<code>np.std</code> — the plain versions propagate <code>NaN</code> into the whole result instead of skipping it.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="quiz">
+            <h2>7. Knowledge Check</h2>
+            <p>Four quick questions. Expand each to check your answer.</p>
+
+            <div class="quiz-list">
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q1</span>
+                  <div class="week-item__heading">
+                    <h4>Why are NumPy's vectorized operations so much faster than an equivalent Python <code>for</code> loop?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>The looping happens inside compiled C code instead of the Python interpreter, and the data is stored in contiguous memory of a single type — no per-element type checks or Python object overhead the way a list of numbers has. The Python loop pays interpreter overhead on every single iteration; a vectorized call pays it once.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q2</span>
+                  <div class="week-item__heading">
+                    <h4>For a 2D array, what's the difference between <code>.sum(axis=0)</code> and <code>.sum(axis=1)</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>axis=0</code> collapses along the rows, producing one sum per column (summing "down"). <code>axis=1</code> collapses along the columns, producing one sum per row (summing "across"). A useful trick: the axis number is the one that <em>disappears</em> from the shape after the operation.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q3</span>
+                  <div class="week-item__heading">
+                    <h4>What's the practical difference between <code>how='left'</code> and <code>how='inner'</code> in <code>df.merge()</code>?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p><code>'left'</code> keeps every row from the first (left) DataFrame, filling in <code>NaN</code> where no match exists in the second table. <code>'inner'</code> keeps only rows whose join key matches in <em>both</em> tables, silently dropping unmatched rows from either side — a common source of "my dataset got smaller and I don't know why" bugs.</p>
+                  </div>
+                </div>
+              </details>
+
+              <details class="week-item quiz-item">
+                <summary>
+                  <span class="week-item__badge">Q4</span>
+                  <div class="week-item__heading">
+                    <h4>Why look at a histogram or scatter plot before training any model on a dataset?</h4>
+                  </div>
+                  <span class="week-item__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+                </summary>
+                <div class="week-item__body week-item__body--single">
+                  <div class="week-item__col">
+                    <p>Summary statistics like mean and standard deviation can hide skew, multiple clusters, or outliers that a plot reveals instantly. Catching a data problem — a skewed distribution, an obviously mismatched join, an outlier that dominates the scale — during EDA is far cheaper than discovering it after a model has already "mysteriously" failed to learn in Week 5.</p>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="../llm-ml/index.html#timeline" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Full Syllabus</span>
+          </a>
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Up next</span>
+            <span class="lesson-pager__title">Week 2: Linear Algebra &amp; Probability for ML →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          CodeVerse Creatives
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/angular/index.html">Angular</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+          <a href="../../courses/devops-cloud/index.html">DevOps &amp; Cloud</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/github/index.html">Git &amp; GitHub</a>
+      <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+          <a href="../../courses/llm-ml/index.html">AI &amp; ML</a>
+          <a href="../../courses/artificial-intelligence/index.html">Artificial Intelligence</a>
+          <a href="../../courses/machine-learning/index.html">Machine Learning</a>
+          <a href="../../courses/data-science/index.html">Data Science</a>
+          <a href="../../courses/node-express/index.html">Node.js &amp; Express</a>
+          <a href="../../courses/aptitude/index.html">Numerical Aptitude</a>
+          <a href="../../courses/php/index.html">PHP</a>
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/react/index.html">React</a>
+          <a href="../../courses/react-native/index.html">React Native</a>
+          <a href="../../courses/servicenow/index.html">ServiceNow</a>
+          <a href="../../courses/spring-boot/index.html">Spring Boot</a>
+          <a href="../../courses/system-design/index.html">System Design</a>
+          <a href="../../courses/mongodb/index.html">MongoDB</a>
+          <a href="../../courses/data-analytics/index.html">Excel, SQL &amp; Power BI</a>
+          <a href="../../courses/golang/index.html">Go</a>
+          <a href="../../courses/flutter/index.html">Flutter</a>
+          <a href="../../courses/coding-practice/index.html">Coding Practice</a>
+          <a href="../../courses/docker-kubernetes/index.html">Docker &amp; Kubernetes</a>
+                  <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+          <a href="../../courses/claude/index.html">Claude</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/kannada/index.html">Kannada Language</a>
+          <a href="../../courses/distributed-systems/index.html">Distributed Systems</a>
+          <a href="../../courses/oracle-netsuite/index.html">Oracle NetSuite</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 CodeVerse Creatives. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>
+
+
