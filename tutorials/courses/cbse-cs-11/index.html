@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CBSE Class 11 Computer Science (083) — Siladitya's Tutorials</title>
+<meta name="description" content="An 11-chapter CBSE Class 11 Computer Science (Code 083) course aligned to the official NCERT textbook — computer systems, number systems, emerging trends, problem solving, and Python fundamentals through flow of control, functions, strings, lists, tuples/dictionaries and societal impact." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero__eyebrow">Board Exam Course</span>
+      <h1>CBSE Class 11 <span>Computer Science (083)</span></h1>
+      <p class="hero__lede">
+        A chapter-by-chapter walkthrough built directly from the official NCERT textbook for
+        Class XI Computer Science — computer systems and memory, number systems and encoding,
+        emerging trends (AI, IoT, blockchain), problem solving with algorithms and flowcharts, and
+        a full introduction to Python: variables, flow of control, functions, strings, lists,
+        tuples/dictionaries, closing with societal impact and digital citizenship. The natural
+        lead-in to the <a href="../cbse-cs-12/index.html">Class 12 course</a>.
+      </p>
+
+      <div class="hero__meta">
+        <span class="chip chip--accent">11 Chapters</span>
+        <span class="chip">NCERT-Aligned</span>
+        <span class="chip">Self-Paced</span>
+        <span class="chip">Python 3</span>
+      </div>
+
+      <div class="hero__actions">
+        <a href="#timeline" class="btn btn--primary">View Full Syllabus</a>
+        <a href="../../index.html" class="btn btn--ghost">See All Courses</a>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat-card">
+          <div class="stat-card__value">11</div>
+          <div class="stat-card__label">NCERT chapters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">5</div>
+          <div class="stat-card__label">Broad themes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">70+30</div>
+          <div class="stat-card__label">Theory + Practical marks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">0 → 1</div>
+          <div class="stat-card__label">No prior programming needed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Prerequisites & stack -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">Before You Start</span>
+        <h2>Prerequisites &amp; tooling</h2>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card reveal">
+          <div class="info-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 21V9"/></svg>
+          </div>
+          <h3>What you should already know</h3>
+          <ul>
+            <li>Comfort using a computer (files, folders, basic typing)</li>
+            <li>No prior programming experience required — Python starts from zero in Chapter 5</li>
+            <li>Basic school-level maths (helps with number systems in Chapter 2)</li>
+            <li>Python 3 and a code editor like VS Code installed for the practical portion</li>
+          </ul>
+        </div>
+
+        <div class="info-card reveal">
+          <div class="info-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>What this course covers</h3>
+          <p style="margin-bottom:0;">The five broad themes the NCERT textbook organises its 11 chapters around.</p>
+          <div class="stack-row">
+            <span class="chip">Computer Fundamentals</span>
+            <span class="chip">Problem Solving</span>
+            <span class="chip">Python Programming</span>
+            <span class="chip">Societal Impact</span>
+            <span class="chip">Emerging Trends</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section" id="timeline">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">Syllabus</span>
+        <h2>11 chapters, straight from the NCERT textbook</h2>
+        <p>Same chapter order and titles as the official book, so Chapter 1 here is Chapter 1 in your copy.</p>
+      </div>
+
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-marker">01</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 1</span>
+            <h3>Computer System</h3>
+            <p>What a computer actually is, from CPU to secondary storage.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>CPU, memory, I/O devices &amp; the evolution of computers</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>RAM/ROM, microprocessors &amp; data vs. information</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Software categories &amp; the operating system</li>
+            </ul>
+            <a href="week-01.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">02</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 2</span>
+            <h3>Encoding Schemes and Number System</h3>
+            <p>How computers represent text and numbers internally.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>ASCII, ISCII &amp; Unicode encoding</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Binary, octal, decimal &amp; hexadecimal number systems</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Conversion between number systems</li>
+            </ul>
+            <a href="week-02.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">03</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 3</span>
+            <h3>Emerging Trends</h3>
+            <p>A survey of the technologies reshaping computing right now.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Artificial Intelligence &amp; Big Data</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Internet of Things, Cloud &amp; Grid Computing</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Blockchains</li>
+            </ul>
+            <a href="week-03.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">04</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 4</span>
+            <h3>Introduction to Problem Solving</h3>
+            <p>Thinking like a programmer before writing a single line of code.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Algorithms &amp; flowcharts</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Flow of control, verifying &amp; comparing algorithms</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Coding &amp; decomposition</li>
+            </ul>
+            <a href="week-04.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">05</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 5</span>
+            <h3>Getting Started with Python</h3>
+            <p>Your first Python code — keywords, variables, data types, operators.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Keywords, identifiers, variables &amp; data types</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Operators, expressions &amp; input/output</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Type conversion &amp; debugging</li>
+            </ul>
+            <a href="week-05.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">06</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 6</span>
+            <h3>Flow of Control</h3>
+            <p>Making decisions and repeating work in a program.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Selection (if/elif/else) &amp; indentation</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Repetition — <code>while</code> &amp; <code>for</code> loops</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><code>break</code>/<code>continue</code> &amp; nested loops</li>
+            </ul>
+            <a href="week-06.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">07</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 7</span>
+            <h3>Functions</h3>
+            <p>Breaking a program into reusable, well-scoped pieces.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>User-defined functions &amp; parameter passing</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Scope of a variable</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>The Python Standard Library</li>
+            </ul>
+            <a href="week-07.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">08</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 8</span>
+            <h3>Strings</h3>
+            <p>Text processing — the most commonly tested Class XI topic.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>String operations &amp; traversal</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>String methods &amp; built-in functions</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Handling strings in real programs</li>
+            </ul>
+            <a href="week-08.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">09</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 9</span>
+            <h3>Lists</h3>
+            <p>Python's workhorse mutable sequence type.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>List operations, traversal &amp; nested lists</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>List methods, built-in functions &amp; copying lists</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Lists as function arguments &amp; manipulation</li>
+            </ul>
+            <a href="week-09.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">10</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 10</span>
+            <h3>Tuples and Dictionaries</h3>
+            <p>The immutable sequence and the key-value mapping.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tuple operations, methods &amp; nested tuples</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Dictionaries — mutability, traversal &amp; operations</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Dictionary methods &amp; manipulation</li>
+            </ul>
+            <a href="week-10.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">11</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 11</span>
+            <h3>Societal Impact</h3>
+            <p>Digital citizenship, privacy, cyber crime and the IT Act.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Digital footprints, digital society &amp; being a netizen</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Data protection &amp; cyber crime</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>The Indian IT Act &amp; health impact of technology use</li>
+            </ul>
+            <a href="week-11.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

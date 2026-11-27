@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 4: Queue — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 4 of CBSE Class 12 Computer Science (083): the Queue data structure, FIFO, ENQUEUE/DEQUEUE, implementing a queue with a Python list, and the double-ended Deque — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Data Structure Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 4</span>
+      </div>
+
+      <h1>Chapter 4: Queue</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Where a stack is Last-In-First-Out,
+        a <strong>Queue</strong> is First-In-First-Out (FIFO) — like a line of people at a bank
+        counter. This chapter covers ENQUEUE and DEQUEUE, implementing a queue with a Python
+        list, and the double-ended variant, <strong>Deque</strong>, which allows insertion and
+        deletion at both ends and can itself emulate either a stack or a queue.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 4 of 13</span>
+        <span class="chip">NCERT pp. 53–66</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain FIFO and implement ENQUEUE/DEQUEUE using a Python list</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Trace a queue's FRONT/REAR state through a sequence of operations</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Implement a deque and use it to check whether a string is a palindrome</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction to Queue</a>
+        <a href="#operations"><span>2</span> Operations on Queue</a>
+        <a href="#implementation"><span>3</span> Implementing a Queue</a>
+        <a href="#deque"><span>4</span> Introduction to Deque</a>
+        <a href="#deque-impl"><span>5</span> Implementing a Deque</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>4.1 Introduction to Queue</h2>
+            <p>
+              A <strong>Queue</strong> is an ordered linear list with different ends for adding
+              and removing elements, following <strong>First-In-First-Out (FIFO)</strong> —
+              also called First-Come-First-Served. New elements are added at the
+              <strong>REAR</strong> (TAIL); elements are removed from the <strong>FRONT</strong>
+              (HEAD). Everyday examples: people at a bank counter, vehicles at a toll booth, a
+              train ticket's waiting list.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>In computer science</strong>
+                <p>A print spooler queues documents from multiple sources and sends them to the printer FIFO. A multitasking OS queues jobs for the processor. A web server with limited concurrent capacity queues incoming requests.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="operations">
+            <h2>4.2 Operations on Queue</h2>
+            <ul>
+              <li><strong>ENQUEUE</strong> — insert a new element at the REAR. Beyond capacity → <strong>Overflow</strong>.</li>
+              <li><strong>DEQUEUE</strong> — remove the element at the FRONT. On an empty queue → <strong>Underflow</strong>.</li>
+              <li><strong>IS EMPTY</strong> — checks for zero elements (avoids Underflow before dequeue).</li>
+              <li><strong>PEEK</strong> — reads the FRONT element without removing it.</li>
+              <li><strong>IS FULL</strong> — checks capacity (avoids Overflow before enqueue).</li>
+            </ul>
+            <div class="code-block">
+              <div class="code-block__label">Figure 4.3 — queue trace (FRONT left, REAR right)</div>
+              <pre><code>enqueue(z)   F[ Z ]R
+enqueue(x)   F[ Z  X ]R
+enqueue(c)   F[ Z  X  C ]R
+dequeue()    F[ X  C ]R        -- removes Z
+enqueue(v)   F[ X  C  V ]R
+dequeue()    F[ C  V ]R        -- removes X
+dequeue()    F[ V ]R           -- removes C
+</code></pre>
+            </div>
+          </section>
+
+          <section id="implementation">
+            <h2>4.3 Implementation of Queue using Python</h2>
+            <p>As with a stack, a Python list works, but a queue needs <em>opposite</em> ends fixed for insertion vs. deletion — <code>append()</code> for ENQUEUE (always adds at the end = REAR), <code>pop(0)</code> for DEQUEUE (always removes from the start = FRONT).</p>
+            <div class="code-block">
+              <div class="code-block__label">Queue functions built on a Python list</div>
+              <pre><code>myQueue = list()
+
+def enqueue(myQueue, element):
+    myQueue.append(element)        # always adds at the REAR
+
+def isEmpty(myQueue):
+    if len(myQueue) == 0:
+        return True
+    else:
+        return False
+
+def dequeue(myQueue):
+    if not (isEmpty(myQueue)):
+        return myQueue.pop(0)      # always removes from the FRONT
+    else:
+        print("Queue is empty")
+
+def size(myQueue):
+    return len(myQueue)
+
+def peek(myQueue):
+    if isEmpty(myQueue):
+        print('Queue is empty')
+        return None
+    else:
+        return myQueue[0]
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>No Is Full needed</strong>
+                <p>Just like the stack chapter, Python's dynamic lists have no fixed size, so there's never a true queue-full condition to check for — unlike in languages with fixed-size arrays.</p>
+              </div>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 4-1 — bank counter queue</div>
+              <pre><code>myQueue = list()
+element = input("enter person's code to enter in queue: ")
+enqueue(myQueue, element)                 # P1
+element = input("enter person's code for insertion in queue: ")
+enqueue(myQueue, element)                 # P2
+print("person removed from queue is:", dequeue(myQueue))   # P1
+print("Number of people in the queue is:", size(myQueue))  # 1
+
+# three more people join...
+for _ in range(3):
+    element = input("enter person's code to enter in queue: ")
+    enqueue(myQueue, element)             # P3, P4, P5
+
+print("Now we are going to remove remaining people from the queue")
+while not isEmpty(myQueue):
+    print("person removed from queue is", dequeue(myQueue))
+</code></pre>
+            </div>
+          </section>
+
+          <section id="deque">
+            <h2>4.4 Introduction to Deque</h2>
+            <p>
+              A <strong>Deque</strong> (pronounced "deck", short for Double-Ended Queue) allows
+              insertion and deletion from <em>either</em> end — front/head or rear/tail. It has
+              no restriction on which side is used for which operation, so it can emulate a pure
+              stack, a pure queue, or something in between.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">4.4.2 — four core operations</div>
+              <pre><code>INSERTFRONT    insert a new element at the front
+INSERTREAR     insert a new element at the rear (same as enqueue)
+DELETIONFRONT  remove an element from the front (same as dequeue)
+DELETIONREAR   remove an element from the rear
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Classic exam application — palindrome check</strong>
+                <p>Insert every character of "madam" at the REAR as a normal queue. Then repeatedly remove one character from the FRONT and one from the REAR and compare them; if they always match until the deque is empty (or one character remains), the string is a palindrome.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="deque-impl">
+            <h2>4.5 Implementation of Deque Using Python</h2>
+            <p><code>insert(0, element)</code> puts something at the front; <code>append()</code> and plain <code>pop()</code> (no index) handle the rear, same as a stack's PUSH/POP.</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 4-2 — deque functions</div>
+              <pre><code>def insertFront(myDeque, element):
+    myDeque.insert(0, element)
+
+def insertRear(myDeque, element):
+    myDeque.append(element)
+
+def isEmpty(myDeque):
+    if len(myDeque) == 0:
+        return True
+    else:
+        return False
+
+def getFront(myDeque):
+    if not (isEmpty(myDeque)):
+        return myDeque[0]
+    else:
+        print("Queue underflow")
+
+def getRear(myDeque):
+    if not (isEmpty(myDeque)):
+        return myDeque[len(myDeque)-1]
+    else:
+        print("Queue underflow")
+
+def deletionFront(myDeque):
+    if isEmpty(myDeque):
+        print("Queue underflow")
+    else:
+        return myDeque.pop(0)
+
+def deletionRear(myDeque):
+    if not isEmpty(myDeque):
+        return myDeque.pop()
+    else:
+        print("Queue underflow")
+</code></pre>
+            </div>
+            <p>With these six functions, the same deque can act as a FIFO queue (insert rear, delete front) or a LIFO stack (insert rear, delete rear) just by choosing which pair of operations to call.</p>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 4
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>
+                  Fill in the blanks:
+                  <ol type="a">
+                    <li>______ is a linear list where insertion and deletion happen at different ends.</li>
+                    <li>Operations on a queue are performed in ______ order.</li>
+                    <li>Insertion in a queue is called ______; deletion is called ______.</li>
+                    <li>Deletion happens from the ______ end of the queue.</li>
+                    <li>Elements A, S, D, F are dequeued one at a time — what sequence is received?</li>
+                    <li>______ is a structure where elements can be added/removed at either end, but not the middle.</li>
+                    <li>A deque contains z, x, c, v, b. Deletions received are z, b, v, x, c — what sequence of deletion operations produced this?</li>
+                  </ol>
+                </li>
+                <li>Compare and contrast queue with stack.</li>
+                <li>How does FIFO describe a queue?</li>
+                <li>Write a menu-driven Python program using a queue to simulate the movement of a shuttlecock in its box.</li>
+                <li>How does the queue data type differ from the deque data type?</li>
+                <li>
+                  Show the queue's status after each operation:
+                  <div class="code-block">
+                    <div class="code-block__label">sequence</div>
+                    <pre><code>enqueue(34); enqueue(54); dequeue(); enqueue(12); dequeue();
+enqueue(61); peek(); dequeue(); dequeue(); dequeue(); dequeue();
+enqueue(1)</code></pre>
+                  </div>
+                </li>
+                <li>
+                  Show the deque's status after each operation:
+                  <div class="code-block">
+                    <div class="code-block__label">sequence</div>
+                    <pre><code>peek(); insertFront(12); insertRear(67); deletionFront();
+insertRear(43); deletionRear(); deletionFront(); deletionRear()</code></pre>
+                  </div>
+                </li>
+                <li>Write a Python program to check whether a given string is a palindrome using a deque (hint: refer to Algorithm 4.1 above).</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 3: Stack</span>
+          </a>
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 5: Sorting</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 7: Functions — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 7 of CBSE Class 11 Computer Science (083): user-defined functions, arguments vs. parameters, default parameters, return values, flow of execution, scope of a variable, and the Python Standard Library — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Python Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 7</span>
+      </div>
+
+      <h1>Chapter 7: Functions</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Using a tent-manufacturer's cost
+        calculation as the running example, this chapter covers why functions exist (modularity
+        and reusability), how to define and call user-defined functions, the difference between
+        an argument and a parameter, default parameters, returning values (including multiple
+        values via a tuple), flow of execution, variable scope (local vs. global), and the Python
+        Standard Library — built-in functions and modules like <code>math</code>, <code>random</code>
+        and <code>statistics</code>.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 7 of 11</span>
+        <span class="chip">NCERT pp. 143–174</span>
+        <span class="chip">~4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Define a function with parameters, default values, and a return statement</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain global vs. local scope, and when the <code>global</code> keyword is needed</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Import and use functions from <code>math</code>, <code>random</code> and <code>statistics</code></li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction &amp; Functions</a>
+        <a href="#userdefined"><span>2</span> User Defined Functions</a>
+        <a href="#argsparams"><span>3</span> Arguments &amp; Parameters</a>
+        <a href="#returning"><span>4</span> Functions Returning Values</a>
+        <a href="#flowexec"><span>5</span> Flow of Execution</a>
+        <a href="#scope"><span>6</span> Scope of a Variable</a>
+        <a href="#stdlib"><span>7</span> Python Standard Library</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>7.1–7.2 Introduction &amp; Functions</h2>
+            <p>
+              Dividing a program into separate, independently-named blocks with specific
+              functionality is called <strong>modular programming</strong>. A <strong>function</strong>
+              is a named group of instructions that performs a specific task when invoked, and can
+              be called repeatedly from anywhere without rewriting its code.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">7.2.1 — Advantages of using functions</div>
+              <pre><code>- Readability: better organised, easier to understand (esp. longer code)
+- Reduces code length: same logic not duplicated at multiple places --
+  also makes debugging easier
+- Reusability: a function can be called from another function or
+  another program entirely
+- Parallel work: different team members can build different functions
+</code></pre>
+            </div>
+          </section>
+
+          <section id="userdefined">
+            <h2>7.3 User Defined Functions</h2>
+            <p>Beyond the Standard Library's ready-made functions, programmers write their own — <strong>user-defined functions</strong> — using <code>def</code>.</p>
+            <div class="code-block">
+              <div class="code-block__label">Syntax</div>
+              <pre><code>def &lt;Function name&gt; ([parameter1, parameter2, ....]):   #Function Header
+    set of instructions to be executed                   #Function Body
+    [return &lt;value&gt;]                                      #(indented)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Rules</div>
+              <pre><code>- [ ] parameters are OPTIONAL -- a function may take none
+- a function may or may not return a value
+- the header always ends with a colon (:)
+- function names follow the same rules as identifiers, and must be unique
+- code outside the function's indentation is NOT part of the function
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 7-3 — a function with no parameters</div>
+              <pre><code>def addnum():
+    fnum = int(input("Enter first number: "))
+    snum = int(input("Enter second number: "))
+    sum = fnum + snum
+    print("The sum of ",fnum,"and ",snum,"is ",sum)
+
+addnum()   # function CALL -- nothing runs until this line
+</code></pre>
+            </div>
+          </section>
+
+          <section id="argsparams">
+            <h2>7.3.2 Arguments and Parameters</h2>
+            <p>
+              An <strong>argument</strong> is the value passed to a function at call-time; a
+              <strong>parameter</strong> is the name in the function header that receives it. Both
+              can even share the same identity (<code>id()</code>) — since both refer to the same
+              object in memory.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 7-4 — n passed as an argument</div>
+              <pre><code>def sumSquares(n):          # n is the PARAMETER
+    sum = 0
+    for i in range(1,n+1):
+        sum = sum + i
+    print("The sum of first",n,"natural numbers is: ",sum)
+
+num = int(input("Enter the value for n: "))
+sumSquares(num)              # num is the ARGUMENT
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>What immutability means for parameters — Program 7-5</strong>
+                <p>If a function changes the value of an immutable parameter (an int, say), a brand-new object is created with a new <code>id()</code> — the argument's original object and id outside the function are untouched.</p>
+              </div>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(B) Default parameter — used when the caller omits an argument</div>
+              <pre><code>def mixedFraction(num, deno = 1):    # deno defaults to 1
+    remainder = num % deno
+    if remainder != 0:
+        quotient = int(num/deno)
+        print("The mixed fraction=", quotient, "(", remainder, "/", deno, ")")
+    else:
+        print("The given fraction evaluates to a whole number")
+
+mixedFraction(17, 2)   # deno overridden with 2 -> "8 ( 1 / 2 )"
+mixedFraction(9)       # deno uses its default, 1
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Default-parameter rule — exam favourite</strong>
+                <p>Default parameters must be the <em>trailing</em> ones — if one parameter has a default, every parameter after it must too. <code>def calcInterest(principal=1000, rate, time=5)</code> is <strong>incorrect</strong>; <code>def calcInterest(rate, principal=1000, time=5)</code> is correct.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="returning">
+            <h2>7.3.3 Functions Returning Value</h2>
+            <p>
+              A function with no <code>return</code> is called a <strong>void function</strong> —
+              it just performs an action. The <code>return</code> statement hands control back to
+              the caller, carrying value(s) (or <code>None</code>). A function may combine
+              parameters and return values in any of four ways: no-argument/no-return,
+              no-argument/with-return, with-argument/no-return, or with-argument/with-return.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 7-10 — a function that returns a value</div>
+              <pre><code>def calcpow(number,power):
+    result = 1
+    for i in range(1,power+1):
+        result = result * number
+    return result
+
+answer = calcpow(5,4)   # answer -> 625
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 7-12 — returning MULTIPLE values via a tuple</div>
+              <pre><code>def calcAreaPeri(Length,Breadth):
+    area = Length * Breadth
+    perimeter = 2 * (Length + Breadth)
+    return (area,perimeter)          # a tuple of 2 values
+
+area,perimeter = calcAreaPeri(l,b)    # unpacked in the SAME order returned
+</code></pre>
+            </div>
+          </section>
+
+          <section id="flowexec">
+            <h2>7.3.4 Flow of Execution</h2>
+            <p>
+              The Python interpreter runs statements top to bottom — but when it hits a function
+              <em>definition</em>, the body is skipped over (not executed) until the function is
+              actually <em>called</em>. Only then does control jump into the function body, run it,
+              then jump back to right after the call.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">A function must be DEFINED before it's CALLED</div>
+              <pre><code>helloPython()                 #Function Call -- comes FIRST here
+
+def helloPython():            #Function definition -- comes AFTER
+    print("I love Programming")
+
+#Result: NameError: name 'helloPython' is not defined
+#The interpreter hasn't seen the def yet when it reaches the call.
+
+#CORRECT order:
+def helloPython():
+    print("I love Programming")
+
+helloPython()                 # now this works
+</code></pre>
+            </div>
+          </section>
+
+          <section id="scope">
+            <h2>7.4 Scope of a Variable</h2>
+            <p>The part of a program where a variable is accessible is its <strong>scope</strong> — global or local.</p>
+            <div class="code-block">
+              <div class="code-block__label">Global vs. Local</div>
+              <pre><code>GLOBAL VARIABLE  defined OUTSIDE any function/block
+                 accessible in any function defined after it
+
+LOCAL VARIABLE   defined INSIDE a function/block
+                 accessible ONLY inside that function/block
+                 exists only while the function is executing
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 7-14 — accessing a local variable outside its function fails</div>
+              <pre><code>num = 5
+def myFunc1():
+    y = num + 5                           # reads the GLOBAL num fine
+    print("Accessing num (global):", num)
+    print("Accessing y (local):", y)
+
+myFunc1()
+print("num outside:", num)   # works -- 5
+print("y outside:", y)       # NameError: name 'y' is not defined
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">The global keyword — updating a global variable FROM inside a function</div>
+              <pre><code>num = 5
+def myfunc1():
+    global num     # without this, 'num = 10' below would create a
+                   # NEW LOCAL variable instead, hiding the global one
+    print("Accessing num =", num)
+    num = 10
+    print("num reassigned =", num)
+
+myfunc1()
+print("Accessing num outside myfunc1", num)   # 10 -- the global WAS changed
+</code></pre>
+            </div>
+          </section>
+
+          <section id="stdlib">
+            <h2>7.5 Python Standard Library</h2>
+            <p>Functions come in three flavours: <strong>built-in</strong> (always available, e.g. <code>print()</code>, <code>int()</code>), <strong>module</strong> functions (need <code>import</code> first), and <strong>user-defined</strong>.</p>
+
+            <h3>7.5.1 — Commonly used built-in functions</h3>
+            <div class="code-block">
+              <div class="code-block__label">abs, divmod, max, min, pow, sum, len</div>
+              <pre><code>abs(-5.7)              # 5.7
+divmod(7, 2)           # (3, 1)  -- (quotient, remainder) as a tuple
+max([1,2,3,4])         # 4         max("Sincerity") -> 'y' (by ASCII)
+min(23, 4, 56)         # 4
+pow(5, 2, 4)           # (5**2) % 4 = 1   -- optional 3rd arg does modulo
+sum([2,4,7,3], 3)      # 19   -- optional 2nd arg adds to the total
+len("Patience")        # 8         len({1:"A",2:"B"}) -> 2 (counts keys)
+</code></pre>
+            </div>
+
+            <h3>7.5.2 — Modules: math, random, statistics</h3>
+            <div class="code-block">
+              <div class="code-block__label">import math</div>
+              <pre><code>math.ceil(9.7)        # 10          math.floor(9.7)       # 9
+math.fabs(-6.7)       # 6.7         math.factorial(5)     # 120
+math.fmod(4.9,-4.9)   # 0.0 (x%y, SIGN OF x)
+math.gcd(10,2)        # 2           math.pow(3,2)         # 9.0 (always float)
+math.sqrt(144)        # 12.0        math.sin(0)           # 0
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">import random</div>
+              <pre><code>random.random()          # random float, 0.0 to 1.0 (exclusive of 1.0)
+random.randint(3,7)     # random INT, x to y INCLUSIVE
+random.randrange(5)     # random int, 0 up to (not including) 5
+random.randrange(2,7)   # random int, 2 up to (not including) 7
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">import statistics</div>
+              <pre><code>statistics.mean([11,24,32,45,51])    # 32.6
+statistics.median([11,24,32,45,51])  # 32
+statistics.mode([11,24,11,45,11])    # 11 (most frequent value)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">from ... import ... — load only specific functions, saves memory</div>
+              <pre><code>from math import ceil, sqrt
+value = ceil(624.7)
+sqrt(value)             # called WITHOUT the "math." prefix now
+
+#Composition: nesting function calls where one depends on another's output
+sqrt(ceil(624.7))       # same idea in one line
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Module facts worth remembering</strong>
+                <p>A module is just a <code>.py</code> file of function definitions. It's loaded only <em>once</em> no matter how many times it's imported. A <code>"""docstring"""</code> at the top of a module/function documents it — read it back later with <code>print(modulename.__doc__)</code>.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook — selected)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 7
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>Spot the error: <code>def findValue(val1 = 1.1, val2, val3):</code> — why is this invalid?</li>
+                <li>How is <code>math.ceil(89.7)</code> different from <code>math.floor(89.7)</code>?</li>
+                <li>Between <code>random.random()</code> and <code>random.randint()</code>, which generates integers between 1 and 5? Justify.</li>
+                <li>How does built-in <code>pow()</code> differ from <code>math.pow()</code>? (Hint: 3-argument form, and int vs. float return.)</li>
+                <li>Using an example, show how a function in Python can return multiple values.</li>
+                <li>Differentiate, with an example: (a) Argument vs. Parameter, (b) Global vs. Local variable.</li>
+                <li>Does a function always return a value? Explain with an example.</li>
+                <li>Write a program to check divisibility of a number by 7, passed as a parameter.</li>
+                <li>Write a program using a function that accepts Principal, Rate, Time and compounding frequency to calculate compound interest: <code>CI = P×(1+r/n)^(nt)</code>.</li>
+                <li>Write a program with a function that accepts 2 numbers; if number1 &lt; number2, swap and return them in reverse order, otherwise return them unchanged.</li>
+                <li>Write a function <code>remark(scorevalue)</code> that maps a quiz score (0-5) to a remark string, following a given mapping table.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 6: Flow of Control</span>
+          </a>
+          <a href="week-08.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 8: Strings</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

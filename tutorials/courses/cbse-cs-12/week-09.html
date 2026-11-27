@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 9: Structured Query Language (SQL) — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 9 of CBSE Class 12 Computer Science (083): MySQL data types/constraints, DDL (CREATE/ALTER/DROP), DML (INSERT/UPDATE/DELETE), SELECT queries, SQL functions, GROUP BY/HAVING, set operations and JOINs — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../sql-postgresql/index.html" class="nav-course-card c-sql-postgresql">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">SQL &amp; PostgreSQL</span>
+              <span class="nav-course-card__meta">10 Weeks</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Database Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 9</span>
+      </div>
+
+      <h1>Chapter 9: Structured Query Language (SQL)</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook — the highest-weightage chapter for
+        the practical exam. Using MySQL and the <code>StudentAttendance</code> database from
+        Chapter 8, this chapter covers data types and constraints, <strong>DDL</strong> (CREATE,
+        ALTER, DROP), <strong>DML</strong> (INSERT, UPDATE, DELETE), the full <code>SELECT</code>
+        query toolkit, built-in functions, <code>GROUP BY</code>/<code>HAVING</code>, set
+        operations, and joining two tables.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 9 of 13</span>
+        <span class="chip">NCERT pp. 131–180</span>
+        <span class="chip">~5–6 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Create, alter and populate tables with the right data types and constraints</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write SELECT queries using WHERE, ORDER BY, LIKE, IN, BETWEEN and NULL checks</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use single-row and aggregate functions, GROUP BY/HAVING, and JOIN two tables</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#basics"><span>1</span> SQL Basics, Data Types &amp; Constraints</a>
+        <a href="#ddl"><span>2</span> SQL for Data Definition</a>
+        <a href="#dml"><span>3</span> SQL for Data Manipulation</a>
+        <a href="#query"><span>4</span> SQL for Data Query</a>
+        <a href="#updel"><span>5</span> Data Updation &amp; Deletion</a>
+        <a href="#functions"><span>6</span> Functions in SQL</a>
+        <a href="#groupby"><span>7</span> GROUP BY Clause</a>
+        <a href="#setops"><span>8</span> Operations on Relations</a>
+        <a href="#join"><span>9</span> Using Two Relations</a>
+        <a href="#exercise"><span>10</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="basics">
+            <h2>9.1–9.3 SQL Basics, Data Types &amp; Constraints</h2>
+            <p>
+              <strong>SQL (Structured Query Language)</strong> is the most popular query language
+              for RDBMS like MySQL, Oracle and SQL Server. It's case-insensitive, statements end
+              with a semicolon, and unfinished multi-line statements continue at the <code>-&gt;</code>
+              prompt. Beyond querying, SQL also defines structure, manipulates data and declares
+              constraints.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Common MySQL data types</div>
+              <pre><code>CHAR(n)      fixed-length string, 0-255 chars (pads with spaces)
+VARCHAR(n)   variable-length string, 0-65535 chars (uses only what's needed)
+INT          integer, 4 bytes (0 to 4,294,967,295 unsigned) -- BIGINT for larger
+FLOAT        decimal number, 4 bytes
+DATE         'YYYY-MM-DD', range '1000-01-01' to '9999-12-31'
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Common SQL constraints</div>
+              <pre><code>NOT NULL      column cannot have NULL (missing/unknown) values
+UNIQUE        all values in the column must be distinct
+DEFAULT       value used when none is provided
+PRIMARY KEY   uniquely identifies each row (implies NOT NULL + UNIQUE)
+FOREIGN KEY   references a PRIMARY KEY column in another table
+</code></pre>
+            </div>
+          </section>
+
+          <section id="ddl">
+            <h2>9.4 SQL for Data Definition (DDL)</h2>
+            <div class="code-block">
+              <div class="code-block__label">CREATE DATABASE, USE, SHOW</div>
+              <pre><code>CREATE DATABASE StudentAttendance;
+USE StudentAttendance;
+SHOW DATABASES;
+SHOW TABLES;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">CREATE TABLE</div>
+              <pre><code>CREATE TABLE STUDENT(
+    RollNumber INT,
+    SName VARCHAR(20),
+    SDateofBirth DATE,
+    GUID CHAR(12),
+    PRIMARY KEY (RollNumber));
+
+DESCRIBE STUDENT;     -- or DESC STUDENT; shows the table's structure
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">ALTER TABLE — the nine common operations</div>
+              <pre><code>-- (A) Add primary key
+ALTER TABLE GUARDIAN ADD PRIMARY KEY (GUID);
+-- composite primary key:
+ALTER TABLE ATTENDANCE ADD PRIMARY KEY(AttendanceDate, RollNumber);
+
+-- (B) Add foreign key (referenced table/column must already exist,
+--     and be a primary key there)
+ALTER TABLE STUDENT ADD FOREIGN KEY(GUID) REFERENCES GUARDIAN(GUID);
+
+-- (C) Add UNIQUE constraint to an existing column
+ALTER TABLE GUARDIAN ADD UNIQUE(GPhone);
+
+-- (D) Add a new column
+ALTER TABLE GUARDIAN ADD income INT;
+
+-- (E) Modify a column's data type
+ALTER TABLE GUARDIAN MODIFY GAddress VARCHAR(40);
+
+-- (F) Modify a column's constraint (NULL -> NOT NULL)
+ALTER TABLE STUDENT MODIFY SName VARCHAR(20) NOT NULL;
+
+-- (G) Add a default value
+ALTER TABLE STUDENT MODIFY SDateofBirth DATE DEFAULT '2000-05-15';
+
+-- (H) Remove a column
+ALTER TABLE GUARDIAN DROP income;
+
+-- (I) Remove the primary key
+ALTER TABLE GUARDIAN DROP PRIMARY KEY;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">DROP — irreversible, use with care</div>
+              <pre><code>DROP TABLE table_name;
+DROP DATABASE database_name;   -- removes ALL tables inside it too
+</code></pre>
+            </div>
+          </section>
+
+          <section id="dml">
+            <h2>9.5 SQL for Data Manipulation (DML — Insert)</h2>
+            <div class="code-block">
+              <div class="code-block__label">INSERT INTO — all values, in column order</div>
+              <pre><code>INSERT INTO GUARDIAN
+VALUES (444444444444, 'Amit Ahuja', 5711492685, 'G-35, Ashok Vihar, Delhi');
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">INSERT INTO — naming specific columns (others get NULL/default)</div>
+              <pre><code>INSERT INTO GUARDIAN (GUID, GName, GAddress)
+VALUES (333333333333, 'Danny Dsouza', 'S-13, Ashok Village, Daman');
+-- GPhone is left NULL since it wasn't specified
+
+INSERT INTO STUDENT VALUES (3, 'Taleem Shah', '2002-02-28', NULL);
+-- explicit NULL works too, but ONLY if you list a value for every column
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Insert order matters</strong>
+                <p>Always populate a <em>referenced</em> table (e.g. GUARDIAN) before the table that holds a foreign key to it (e.g. STUDENT) — otherwise the foreign key check fails.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="query">
+            <h2>9.6 SQL for Data Query — the SELECT statement</h2>
+            <div class="code-block">
+              <div class="code-block__label">Basic syntax</div>
+              <pre><code>SELECT attribute1, attribute2, ...
+FROM table_name
+WHERE condition;        -- optional
+
+SELECT * FROM table_name;   -- all columns
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(B) Renaming columns with AS (alias)</div>
+              <pre><code>SELECT EName AS Name, Salary*12 AS 'Annual Income' FROM EMPLOYEE;
+-- Note: a space in the alias needs quotes. The alias never changes the actual table.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(C) DISTINCT — remove duplicate rows</div>
+              <pre><code>SELECT DISTINCT DeptId FROM EMPLOYEE;</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(D) WHERE — relational &amp; logical operators</div>
+              <pre><code>SELECT * FROM EMPLOYEE WHERE Salary > 5000 AND DeptId = 'D04';
+SELECT * FROM EMPLOYEE WHERE NOT Ename = 'Aaliya';
+SELECT Ename, DeptId FROM EMPLOYEE WHERE Salary >= 20000 AND Salary <= 50000;
+-- operators: =  !=  <  <=  >  >=      logical: AND  OR  NOT
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">BETWEEN — inclusive range (equivalent to the AND query above)</div>
+              <pre><code>SELECT Ename, DeptId FROM EMPLOYEE WHERE Salary BETWEEN 20000 AND 50000;</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(E) IN / NOT IN — membership</div>
+              <pre><code>SELECT * FROM EMPLOYEE WHERE DeptId IN ('D01', 'D02', 'D04');
+SELECT * FROM EMPLOYEE WHERE DeptId NOT IN ('D01', 'D02');
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(F) ORDER BY — sort results (ascending by default)</div>
+              <pre><code>SELECT * FROM EMPLOYEE ORDER BY Salary;        -- ascending
+SELECT * FROM EMPLOYEE ORDER BY Salary DESC;   -- descending
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(G) NULL handling</div>
+              <pre><code>SELECT * FROM EMPLOYEE WHERE Bonus IS NULL;
+SELECT EName FROM EMPLOYEE WHERE Bonus IS NOT NULL AND DeptID = 'D01';
+-- NULL != 0, and NULL combined with arithmetic always gives NULL (5 + NULL = NULL)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(H) LIKE — substring pattern matching</div>
+              <pre><code>SELECT * FROM EMPLOYEE WHERE Ename LIKE 'K%';     -- starts with K
+SELECT * FROM EMPLOYEE WHERE Ename LIKE '%a';      -- ends with a
+SELECT * FROM EMPLOYEE WHERE Ename LIKE '_ANYA';   -- exactly 5 chars, ends ANYA
+SELECT Ename FROM EMPLOYEE WHERE Ename LIKE '%se%'; -- contains 'se' anywhere
+SELECT EName FROM EMPLOYEE WHERE Ename LIKE '_a%';  -- 'a' as 2nd character
+
+-- % = zero, one or many characters      _ = exactly one character
+</code></pre>
+            </div>
+          </section>
+
+          <section id="updel">
+            <h2>9.7 Data Updation and Deletion</h2>
+            <div class="code-block">
+              <div class="code-block__label">UPDATE — modify existing rows</div>
+              <pre><code>UPDATE STUDENT SET GUID = 101010101010 WHERE RollNumber = 3;
+
+-- updating more than one column at once:
+UPDATE GUARDIAN
+SET GAddress = 'WZ-68, Azad Avenue, Bijnour, MP', GPhone = 9010810547
+WHERE GUID = 466444444666;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">DELETE — remove rows</div>
+              <pre><code>DELETE FROM STUDENT WHERE RollNumber = 2;</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Never skip WHERE</strong>
+                <p>Omit <code>WHERE</code> in an <code>UPDATE</code> and <em>every</em> row's column gets the new value; omit it in a <code>DELETE</code> and the <em>entire table</em> is emptied. Both are explicitly flagged as cautions in the textbook.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="functions">
+            <h2>9.8 Functions in SQL</h2>
+            <p>Functions are <strong>Single Row (Scalar)</strong> — one value in, one value out, usable in SELECT/WHERE/ORDER BY — or <strong>Aggregate (Multiple Row)</strong> — act on a whole group, usable only in SELECT.</p>
+
+            <h3>(A) Math functions</h3>
+            <div class="code-block">
+              <div class="code-block__label">POWER, ROUND, MOD</div>
+              <pre><code>SELECT POWER(2,3);          -- 8   (2 to the power 3)
+SELECT ROUND(2912.564, 1);  -- 2912.6
+SELECT ROUND(283.2);        -- 283  (D=0 rounds to nearest integer)
+SELECT MOD(21, 2);          -- 1   (remainder of 21/2)
+</code></pre>
+            </div>
+
+            <h3>(B) String functions</h3>
+            <div class="code-block">
+              <div class="code-block__label">UCASE/LCASE, MID, LENGTH, LEFT/RIGHT, INSTR, TRIM family</div>
+              <pre><code>UCASE("Informatics")           -- INFORMATICS   (also UPPER)
+LCASE("Informatics")           -- informatics   (also LOWER)
+MID("Informatics", 3, 4)       -- form          (substring: pos 3, length 4)
+MID('Informatics', 7)          -- atics         (from pos 7 to the end)
+LENGTH("Informatics")          -- 11
+LEFT("Computer", 4)            -- Comp
+RIGHT("SCIENCE", 3)            -- NCE
+INSTR("Informatics", "ma")     -- 6             (position of first match, 0 if absent)
+LTRIM(" DELHI")                -- "DELHI"       (strip leading spaces)
+RTRIM("PEN ")                  -- "PEN"         (strip trailing spaces)
+TRIM(" MADAM ")                -- "MADAM"       (strip both)
+TRIM(".com" FROM email)        -- removes a specific substring, not just whitespace
+</code></pre>
+            </div>
+
+            <h3>(C) Date functions</h3>
+            <div class="code-block">
+              <div class="code-block__label">NOW, DATE, MONTH(NAME), YEAR, DAY(NAME)</div>
+              <pre><code>NOW()                       -- current date AND time, e.g. 2026-11-24 19:41:17
+DATE(NOW())                 -- just the date part
+MONTH("2003-11-28")         -- 11            (numeric month)
+MONTHNAME("2003-11-28")     -- November
+YEAR("2003-10-03")          -- 2003
+DAY("2003-03-24")           -- 24
+DAYNAME("2019-07-11")       -- Thursday
+</code></pre>
+            </div>
+
+            <h3>Aggregate functions</h3>
+            <div class="code-block">
+              <div class="code-block__label">MAX, MIN, AVG, SUM, COUNT(*), COUNT(column)</div>
+              <pre><code>SELECT MAX(Price) FROM INVENTORY;
+SELECT MIN(Price) FROM INVENTORY;
+SELECT AVG(Price) FROM INVENTORY;
+SELECT SUM(Price) FROM INVENTORY;
+SELECT COUNT(*) FROM EMPLOYEE;                 -- total rows
+SELECT COUNT(MEMNAME) FROM MANAGER;             -- counts rows, SKIPPING NULLs
+SELECT COUNT(DISTINCT Model) FROM INVENTORY;    -- distinct non-null count
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Key exam distinction</strong>
+                <p>Single-row functions return one value <em>per row</em> and work in WHERE/ORDER BY too. Aggregate functions collapse a whole group of rows into <em>one</em> value, and only belong in SELECT (or alongside GROUP BY).</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="groupby">
+            <h2>9.9 GROUP BY Clause</h2>
+            <p>Groups rows sharing the same value in a column, so aggregate functions can be applied <em>per group</em> rather than to the whole table. <code>HAVING</code> filters which <em>groups</em> appear in the result (unlike <code>WHERE</code>, which filters individual rows before grouping).</p>
+            <div class="code-block">
+              <div class="code-block__label">GROUP BY and HAVING</div>
+              <pre><code>SELECT CustID, COUNT(*) "Number of Cars" FROM SALE GROUP BY CustID;
+
+-- only groups matching a condition on the aggregate itself:
+SELECT CustID, COUNT(*) FROM SALE GROUP BY CustID HAVING COUNT(*) > 1;
+
+SELECT PaymentMode, COUNT(PaymentMode) FROM SALE
+GROUP BY PaymentMode ORDER BY PaymentMode;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="setops">
+            <h2>9.10 Operations on Relations</h2>
+            <p>UNION, INTERSECT, MINUS and Cartesian Product are binary operations — both relations need the <strong>same number of attributes</strong>, with corresponding attributes sharing a domain (except Cartesian Product).</p>
+            <div class="code-block">
+              <div class="code-block__label">UNION, INTERSECT, MINUS — set operations between two same-shape relations</div>
+              <pre><code>DANCE ∪ MUSIC   -- UNION: all rows from either table, duplicates shown once
+DANCE ∩ MUSIC   -- INTERSECT: only rows present in BOTH tables
+DANCE − MUSIC   -- MINUS (set difference): rows in DANCE but NOT in MUSIC
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Cartesian Product (X) — every row of table 1 paired with every row of table 2</div>
+              <pre><code>SELECT * FROM DANCE, MUSIC;
+-- degree of result = sum of both degrees
+-- cardinality of result = product of both cardinalities
+-- e.g. DANCE (degree 3, cardinality 4) x MUSIC (degree 3, cardinality 5)
+--      -> result: degree 6, cardinality 20
+</code></pre>
+            </div>
+          </section>
+
+          <section id="join">
+            <h2>9.11 Using Two Relations in a Query</h2>
+            <p>A <strong>JOIN</strong> combines rows from two tables based on a shared/related column — usually a primary key in one, a foreign key in the other — unlike Cartesian Product, which pairs every row with every row regardless of relationship.</p>
+            <div class="code-block">
+              <div class="code-block__label">Three equivalent ways to write the same join</div>
+              <pre><code>-- (a) condition in WHERE, with table aliases to disambiguate the shared column
+SELECT * FROM UNIFORM U, COST C WHERE U.UCode = C.UCode;
+
+-- (b) explicit JOIN ... ON
+SELECT * FROM UNIFORM U JOIN COST C ON U.UCode = C.UCode;
+
+-- (c) NATURAL JOIN -- same result as (a)/(b) but drops the duplicate UCode column
+SELECT * FROM UNIFORM NATURAL JOIN COST;
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>N tables need N−1 joins</strong>
+                <p>Joining 2 tables on equality needs 1 JOIN/NATURAL JOIN; 3 tables need 2; in general, N tables need N−1 joins to connect them all on equality conditions.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>10. Exercise (from the textbook — selected highlights)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 9 (the full textbook exercise has 8 large practical questions — these are a representative subset)
+              </span>
+              <h3>Work through these on a real MySQL install</h3>
+              <ol>
+                <li>Define RDBMS and name two RDBMS. Explain ORDER BY and GROUP BY. Differentiate single-row vs. aggregate functions, and ALTER vs. UPDATE, and DELETE vs. DROP.</li>
+                <li>
+                  Predict the output of:
+                  <div class="code-block">
+                    <div class="code-block__label">quick checks</div>
+                    <pre><code>SELECT POW(2,3);
+SELECT ROUND(342.9234,-1);
+SELECT LENGTH("Informatics Practices");
+SELECT YEAR("1979/11/26"), MONTH("1979/11/26"), DAY("1979/11/26"), MONTHNAME("1979/11/26");
+SELECT LEFT("INDIA",3), RIGHT("Computer Science",4), MID("Informatics",3,4), SUBSTR("Practices",3);</code></pre>
+                  </div>
+                </li>
+                <li>Using a MOVIE table (MovieID, MovieName, Category, ReleaseDate, ProductionCost, BusinessCost): display all rows; compute Total_Earning per movie; list distinct categories; compute NetProfit per movie; filter by a cost range; filter by category IN a list; find movies with a NULL ReleaseDate.</li>
+                <li>Design a Sports database: create a TEAM table (TeamID INT PRIMARY KEY, TeamName VARCHAR with a minimum-length intent) and a MATCH_DETAILS table with foreign keys back to TEAM; insert sample rows into both; describe and query the structure.</li>
+                <li>Using TEAM + MATCH_DETAILS: find matches where both teams scored &gt;70; find matches where only one team crossed 70; find matches a given team won; rename a table and its columns with ALTER.</li>
+                <li>Using a SCHOOLUNIFORM database (UNIFORM, COST): add a new item consistently across both tables; add a foreign-key constraint so COST can't reference a UCode missing from UNIFORM; add a CHECK-style constraint so price is always &gt; 0.</li>
+                <li>Using a Product table (PCode, PName, UPrice, Manufacturer): create it with appropriate types/constraints; order results with a tie-break column; add and populate a Discount column conditionally; apply a percentage increase to one manufacturer's prices; group and count by manufacturer; predict GROUP BY query outputs.</li>
+                <li>Using the CARSHOWROOM database from this chapter: add a Discount column to INVENTORY with model-dependent values via conditional UPDATEs; find the costliest Petrol car; compute average/total discount for one car model; count cars with zero discount.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-08.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 8: Database Concepts</span>
+          </a>
+          <a href="week-10.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 10: Computer Networks</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CBSE Class 10 Computer Applications (165) — Siladitya's Tutorials</title>
+<meta name="description" content="A 6-chapter CBSE Class 10 Computer Applications (Code 165) course aligned to the official CBSE curriculum — Networking, HTML (basics through forms/tables/links), CSS, Cyber Ethics, and a full Practicals/Project guide." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero__eyebrow">Skill Subject · Board Exam Course</span>
+      <h1>CBSE Class 10 <span>Computer Applications (165)</span></h1>
+      <p class="hero__lede">
+        A chapter-by-chapter walkthrough built directly from the official CBSE curriculum for
+        Class X Computer Applications (Code 165) — Internet &amp; networking fundamentals,
+        building web pages with HTML from the ground up through forms and tables, styling them
+        with CSS, cyber ethics, and a full guide to the practical exam's lab test, report file and
+        project component.
+      </p>
+
+      <div class="hero__meta">
+        <span class="chip chip--accent">6 Chapters</span>
+        <span class="chip">CBSE-Aligned (Code 165)</span>
+        <span class="chip">Self-Paced</span>
+        <span class="chip">HTML, CSS &amp; Networking</span>
+      </div>
+
+      <div class="hero__actions">
+        <a href="#timeline" class="btn btn--primary">View Full Syllabus</a>
+        <a href="../../index.html" class="btn btn--ghost">See All Courses</a>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat-card">
+          <div class="stat-card__value">6</div>
+          <div class="stat-card__label">Chapters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">3</div>
+          <div class="stat-card__label">Theory units</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">50 + 50</div>
+          <div class="stat-card__label">Theory + Practical marks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__value">0 → 1</div>
+          <div class="stat-card__label">No prior HTML needed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Prerequisites & stack -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">Before You Start</span>
+        <h2>Prerequisites &amp; tooling</h2>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card reveal">
+          <div class="info-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 21V9"/></svg>
+          </div>
+          <h3>What you should already know</h3>
+          <ul>
+            <li>Basic computer familiarity — files, folders, using a web browser</li>
+            <li>No prior programming or web design experience required</li>
+            <li>A text editor (Notepad, Notepad++, or VS Code) and any web browser</li>
+            <li>No server setup needed — every HTML file in this course runs by just opening it in a browser</li>
+          </ul>
+        </div>
+
+        <div class="info-card reveal">
+          <div class="info-card__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>The three units this course covers</h3>
+          <p style="margin-bottom:0;">Exactly as weighted in the official CBSE curriculum (165).</p>
+          <div class="stack-row">
+            <span class="chip">Unit 1: Networking (15 marks)</span>
+            <span class="chip">Unit 2: HTML (25 marks)</span>
+            <span class="chip">Unit 3: Cyber Ethics (10 marks)</span>
+            <span class="chip">Practicals (50 marks)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section class="section" id="timeline">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="section-head__eyebrow">Syllabus</span>
+        <h2>6 chapters, matched to the official CBSE unit weightage</h2>
+        <p>HTML is the largest unit by far (30 theory + 50 practical periods), so it's split across two lessons here.</p>
+      </div>
+
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-marker">01</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 1 · UNIT 1</span>
+            <h3>Networking</h3>
+            <p>The Internet, its protocols, web services and mobile technologies.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>WWW, web servers/clients/sites/pages/browsers, blogs, downloading/uploading</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Internet protocols — TCP/IP, SMTP, POP3, HTTP/HTTPS, SSH, SFTP, FTP, TELNET</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Web services (e-Learning, e-Banking, e-Governance...) &amp; mobile tech (SMS/MMS/3G/4G)</li>
+            </ul>
+            <a href="week-01.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">02</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 2 · UNIT 2 (PART A)</span>
+            <h3>HTML — Structure &amp; Text Formatting</h3>
+            <p>Your first web page: document structure, headings, text tags, lists, images.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><code>html</code>, <code>head</code>, <code>title</code>, <code>body</code> &amp; the <code>body</code> colour attributes</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Headings, paragraphs, <code>br</code>/<code>hr</code>, bold/italic/underline, <code>font</code></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ordered/unordered/description lists, <code>img</code>, <code>sup</code>/<code>sub</code></li>
+            </ul>
+            <a href="week-02.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">03</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 3 · UNIT 2 (PART B)</span>
+            <h3>HTML — Tables, Forms, Links &amp; Media</h3>
+            <p>The interactive and structural tags that make a real website.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tables — <code>table</code>, <code>tr</code>, <code>th</code>, <code>td</code>, <code>rowspan</code>/<code>colspan</code></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Forms — textbox, radio, checkbox, password, list, combobox</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Anchor links (<code>href</code>, <code>mailto</code>, targets) &amp; embedding audio/video</li>
+            </ul>
+            <a href="week-03.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">04</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 4 · UNIT 2 (PART C)</span>
+            <h3>Cascading Style Sheets (CSS)</h3>
+            <p>Beautifying the web pages built in Chapters 2 and 3.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Inline, internal &amp; external style sheets</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Colour, background-colour, border-style, margin, height, width, outline</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><code>font</code> (family/style/size), <code>align</code>, <code>float</code></li>
+            </ul>
+            <a href="week-04.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">05</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 5 · UNIT 3</span>
+            <h3>Cyber Ethics</h3>
+            <p>Being a responsible, informed user of the Internet.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Netiquettes &amp; software licenses (open source movement)</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>IPR, plagiarism &amp; digital property rights</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Freedom of information, digital divide &amp; e-commerce safety</li>
+            </ul>
+            <a href="week-05.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-marker">06</div>
+          <div class="timeline-card">
+            <span class="timeline-badge">CHAPTER 6 · PRACTICALS (50 MARKS)</span>
+            <h3>Practicals &amp; Project Guide</h3>
+            <p>Exactly how the 50 practical marks are earned, and how to prepare for each part.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Lab Test (20) — designing a web page from a given diagram</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Report File + Viva (20) — at least 10 HTML pages, with viva prep</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Project (10) — a multi-page website combining everything learnt</li>
+            </ul>
+            <a href="week-06.html" class="course-card__cta" style="grid-column:1 / -1;">
+              Start this lesson
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

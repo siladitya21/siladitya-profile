@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 2: Encoding Schemes and Number System — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 2 of CBSE Class 11 Computer Science (083): ASCII, ISCII, Unicode, binary/octal/decimal/hexadecimal number systems, and conversion between them including fractional numbers — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Fundamentals Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 2</span>
+      </div>
+
+      <h1>Chapter 2: Encoding Schemes and Number System</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Every key you press is internally
+        mapped to a code, then converted to binary — this chapter covers how (ASCII, ISCII,
+        Unicode), then builds up the four number systems computers work with (binary, octal,
+        decimal, hexadecimal) and every conversion between them, including numbers with a
+        fractional part.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 2 of 11</span>
+        <span class="chip">NCERT pp. 27–44</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain ASCII, ISCII and Unicode, and why Unicode replaced earlier schemes</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Convert any whole number between binary, octal, decimal and hexadecimal</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Convert numbers WITH a fractional part between number systems</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#encoding"><span>1</span> Encoding Schemes</a>
+        <a href="#numbersystem"><span>2</span> Number System</a>
+        <a href="#decimal-to-other"><span>3</span> Decimal → Others</a>
+        <a href="#other-to-decimal"><span>4</span> Others → Decimal</a>
+        <a href="#binary-octal-hex"><span>5</span> Binary ↔ Octal/Hex</a>
+        <a href="#fractional"><span>6</span> Numbers with Fractions</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="encoding">
+            <h2>2.1 Introduction to Encoding</h2>
+            <p>
+              The computer understands only binary (0/1). When key 'A' is pressed, it's internally
+              mapped to a <strong>code value</strong> (decimal 65), then converted to binary
+              (0100 0001). <strong>Encoding</strong> is the mechanism of converting data into an
+              equivalent cipher using a specific code.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">2.1.1 ASCII — American Standard Code for Information Interchange</div>
+              <pre><code>Developed in the early 1960s to standardise character representation.
+7-bit ASCII: 2^7 = 128 characters -- English keyboard only.
+
+ASCII value of D = 68 -> binary 1000100
+ASCII value of A = 65 -> binary 1000001
+ASCII value of T = 84 -> binary 1010100
+(so "DATA" encodes as 68 65 84 65, in binary 1000100 1000001 1010100 1000001)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">2.1.2 ISCII — Indian Script Code for Information Interchange</div>
+              <pre><code>Developed in India, mid-1980s. 8-bit code = 2^8 = 256 characters.
+Retains all 128 ASCII codes; uses the remaining 128 (160-255) for
+the 'aksharas' of Indian languages.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">2.1.3 UNICODE — the universal standard</div>
+              <pre><code>Different encoding schemes couldn't talk to each other -- text made
+with one wasn't recognised on a machine using a different one.
+UNICODE gives a unique number to EVERY character of EVERY written
+language, regardless of device, OS or application.
+
+Common encodings: UTF-8, UTF-16, UTF-32
+It is a SUPERSET of ASCII -- values 0-128 are identical to ASCII.
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Exam point</strong>
+                <p>'अ' on a Hindi keyboard maps to hexadecimal 0905 (binary 0000100100000101) under Unicode's Devanagari block — a concrete cross-reference between encoding and the number systems covered next.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="numbersystem">
+            <h2>2.2 Number System</h2>
+            <p>
+              A number system is a method to represent numbers. The count of unique symbols it
+              uses is called its <strong>radix</strong> or <strong>base</strong>. Number systems
+              are <strong>positional</strong> — each symbol's value depends on its position. The
+              rightmost integer-part position is 0, increasing leftward; the first fractional
+              position is −1, decreasing rightward.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Table — the four number systems used in computing</div>
+              <pre><code>Binary       Base 2,  digits: 0,1
+Octal        Base 8,  digits: 0-7
+Decimal      Base 10, digits: 0-9
+Hexadecimal  Base 16, digits: 0-9, A-F  (A=10, B=11, ... F=15)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Positional value example — (123.45)₁₀</div>
+              <pre><code>Digit:            1      2      3    .   4      5
+Position:         2      1      0        -1     -2
+Positional value: 10^2   10^1   10^0     10^-1  10^-2
+
+1x10^2 + 2x10^1 + 3x10^0 + 4x10^-1 + 5x10^-2 = (123.45)10
+</code></pre>
+            </div>
+            <p>
+              <strong>Binary</strong> maps directly to a transistor's ON/OFF (high/low) state.
+              <strong>Octal</strong> (base 8 = 2³) and <strong>hexadecimal</strong> (base 16 = 2⁴)
+              exist purely to compactly represent long binary numbers — 3 bits always map to
+              exactly one octal digit, 4 bits to exactly one hex digit.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">2.2.5 — Why hexadecimal shows up constantly</div>
+              <pre><code>MEMORY ADDRESSES: a 16-bit address like 1100000011110001
+  is C0F1 in hex -- far easier to remember than 16 raw bits.
+
+COLOUR CODES (RGB, web design): 24-bit colour (8 bits each for
+  Red/Green/Blue) is written compactly in hex.
+  RED   = 11111111,00000000,00000000  ->  (FF,00,00)
+  WHITE = 11111111,11111111,11111111  ->  (FF,FF,FF)
+  GREY  = 10000000,10000000,10000000  ->  (80,80,80)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="decimal-to-other">
+            <h2>2.3.1 Conversion from Decimal to Other Number Systems</h2>
+            <div class="code-block">
+              <div class="code-block__label">The universal 4-step method (divide by the base)</div>
+              <pre><code>Step 1: Divide the number by the target base (b)
+Step 2: Note the remainder
+Step 3: Keep dividing the quotient by b, noting each remainder,
+        until the quotient is 0
+Step 4: Read the remainders BOTTOM TO TOP -- that's your answer
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.3 — (122)₁₀ to binary (divide by 2)</div>
+              <pre><code>2 | 122           2 | 15   r=7
+2 |  61   r=0      2 |  7   r=1
+2 |  30   r=1      2 |  3   r=1
+2 |  15   r=0      2 |  1   r=1
+...                      0   r=1
+(122)10 = (1111010)2       (122)10 = (172)8  [base 8]
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.5 — (122)₁₀ to hexadecimal (divide by 16)</div>
+              <pre><code>16 | 122
+16 |   7   remainder A  (10 in hex is 'A')
+         0   remainder 7
+
+(122)10 = (7A)16
+</code></pre>
+            </div>
+          </section>
+
+          <section id="other-to-decimal">
+            <h2>2.3.2 Conversion from Other Number Systems to Decimal</h2>
+            <div class="code-block">
+              <div class="code-block__label">The universal method (multiply by positional value, sum)</div>
+              <pre><code>Step 1: Write the position number of each digit (0, 1, 2... from
+        the right)
+Step 2: Positional value = base^position
+Step 3: Multiply each digit by its positional value
+Step 4: Add them all up
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.6 — (1101)₂ to decimal</div>
+              <pre><code>1x2^3 + 1x2^2 + 0x2^1 + 1x2^0 = 8+4+0+1 = (13)10</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.8 — (3A5)₁₆ to decimal (A = 10)</div>
+              <pre><code>3x16^2 + 10x16^1 + 5x16^0 = 768+160+5 = (933)10</code></pre>
+            </div>
+          </section>
+
+          <section id="binary-octal-hex">
+            <h2>2.3.3 Binary ↔ Octal/Hexadecimal (the shortcut both ways)</h2>
+            <p>Because 8 = 2³ and 16 = 2⁴, this conversion skips decimal entirely — just group bits.</p>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.9 — binary → octal (group in 3s, right to left)</div>
+              <pre><code>(10101100)2  ->  010 101 100  ->  2   5   4
+Therefore (10101100)2 = (254)8
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 2.11 — binary → hex (group in 4s, right to left)</div>
+              <pre><code>(0110101100)2 -> 0001 1010 1100 -> 1   A   C
+Therefore (0110101100)2 = (1AC)16
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Reverse direction: each octal/hex digit → fixed-width binary group</div>
+              <pre><code>(705)8: 7->111, 0->000, 5->101  =>  (705)8 = (111000101)2
+(23D)16: 2->0010, 3->0011, D->1101 => (23D)16 = (001000111101)2
+</code></pre>
+            </div>
+          </section>
+
+          <section id="fractional">
+            <h2>2.3.4 Conversion of a Number with Fractional Part</h2>
+            <div class="code-block">
+              <div class="code-block__label">Decimal fraction → other base (MULTIPLY, not divide)</div>
+              <pre><code>Repeatedly MULTIPLY the fractional part by the target base.
+Take the INTEGER part produced each time, top to bottom, as the answer.
+Stop when the fraction reaches 0, or starts repeating.
+
+Example 2.14 -- (0.675)10 to binary:
+0.675x2=1.350 -> 1    0.400x2=0.800 -> 1   (then .400 repeats -- STOP)
+0.350x2=0.700 -> 0    0.800x2=1.600 -> 1
+0.700x2=1.400 -> 1    0.600x2=1.200 -> 1
+0.400x2=0.800 -> 0    0.200x2=0.400 -> 0
+
+(0.675)10 = (0.1010110)2
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Non-decimal fraction → decimal (same positional method, negative exponents)</div>
+              <pre><code>Example 2.17 -- (100101.101)2 to decimal:
+Integer: 1x2^5+0x2^4+0x2^3+1x2^2+0x2^1+1x2^0 = 32+0+0+4+0+1 = 37
+Fraction: 1x2^-1+0x2^-2+1x2^-3 = 0.5+0+0.125 = 0.625
+
+(100101.101)2 = (37.625)10
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Fractional binary → octal/hex (group each side of the point separately)</div>
+              <pre><code>Example 2.19 -- (10101100.01011)2 to octal:
+Integer: group right-to-left: 010 101 100 -> 2 5 4
+Fraction: group LEFT-TO-RIGHT, pad with 0s: 010 110 -> 2 6
+
+(10101100.01011)2 = (254.26)8
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 2
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>Write the base values of binary, octal and hexadecimal number systems. Give the full forms of ASCII and ISCII.</li>
+                <li>Convert: (514)₈ to decimal; (220)₈ to binary; (76F)₁₆ to decimal; (4D9)₁₆ to decimal; (11001010)₂ to decimal; (1010111)₂ to decimal.</li>
+                <li>Convert these decimals to binary/octal/hexadecimal: (54)₁₀, (120)₁₀, (76)₁₀ to octal, (889)₁₀ to octal, (789)₁₀ to hex, (108)₁₀ to hex.</li>
+                <li>Express these octal numbers as decimal: 145, 6760, 455, 10.75.</li>
+                <li>Express these decimals as hexadecimal: 548, 4052, 58, 100.25.</li>
+                <li>Express these hexadecimal numbers as decimal: 4A2, 9E1A, 6BD, 6C.34.</li>
+                <li>Convert these binary numbers to octal and hexadecimal: 1110001000, 110110101, 1010100, 1010.1001.</li>
+                <li>Write the binary equivalent of these octal numbers: 2306, 5610, 742, 65.203.</li>
+                <li>Write the binary representation of these hexadecimal numbers: 4026, BCA1, 98E, 132.45.</li>
+                <li>How does the computer understand these texts (hint: 7-bit ASCII code)? (i) HOTS (ii) Main (iii) CaSe</li>
+                <li>Let X be a number system with B symbols only — write down its base value.</li>
+                <li>What is the advantage of preparing digital content in an Indian language using a UNICODE font? Encode the word 'COMPUTER' using ASCII and convert it to binary.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-01.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 1: Computer System</span>
+          </a>
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 3: Emerging Trends</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

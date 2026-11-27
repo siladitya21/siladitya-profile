@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 1: Exception Handling in Python — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 1 of CBSE Class 12 Computer Science (083): syntax errors vs. exceptions, built-in exceptions, raise and assert, and try/except/else/finally — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 1</span>
+      </div>
+
+      <h1>Chapter 1: Exception Handling in Python</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. This chapter covers what happens
+        when a syntactically correct Python program still fails at runtime — the difference
+        between syntax errors and exceptions, the standard built-in exceptions you'll meet
+        again and again, how to deliberately raise one with <code>raise</code> or <code>assert</code>,
+        and the full <code>try</code>/<code>except</code>/<code>else</code>/<code>finally</code> toolkit for
+        handling them gracefully.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 1 of 13</span>
+        <span class="chip">NCERT pp. 1–18</span>
+        <span class="chip">~2–3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tell a syntax error apart from a runtime exception, and name the common built-in exceptions</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Deliberately raise exceptions using <code>raise</code> and <code>assert</code></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write a complete <code>try</code>/<code>except</code>/<code>else</code>/<code>finally</code> block, including multiple <code>except</code> clauses</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction</a>
+        <a href="#syntax-errors"><span>2</span> Syntax Errors</a>
+        <a href="#exceptions"><span>3</span> Exceptions</a>
+        <a href="#builtin"><span>4</span> Built-in Exceptions</a>
+        <a href="#raising"><span>5</span> Raising Exceptions</a>
+        <a href="#handling"><span>6</span> Handling Exceptions</a>
+        <a href="#finally"><span>7</span> Finally Clause</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>1.1 Introduction</h2>
+            <p>
+              Sometimes while executing a Python program, the program does not execute at all,
+              or it executes but generates unexpected output or behaves abnormally. These occur
+              when there are syntax errors, runtime errors or logical errors in the code. In
+              Python, <strong>exceptions</strong> are errors that get triggered automatically.
+              However, exceptions can also be forcefully triggered and handled through program
+              code.
+            </p>
+          </section>
+
+          <section id="syntax-errors">
+            <h2>1.2 Syntax Errors</h2>
+            <p>
+              Syntax errors are detected when we have not followed the rules of the Python
+              language while writing a program — they are also called <strong>parsing
+              errors</strong>. On encountering a syntax error, the interpreter does not execute
+              the program at all until the error is rectified, saved and rerun.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; marks = 10
+&gt;&gt;&gt; if marks &gt; 20:
+        print "GOOD SCORE"
+
+SyntaxError: Missing parentheses in call to 'print'. Did you mean print("GOOD SCORE")?
+</code></pre>
+            </div>
+            <p>A syntax error is reported with the name of the error and a brief description to help you rectify it — whether you're working in shell mode or running a saved script.</p>
+          </section>
+
+          <section id="exceptions">
+            <h2>1.3 Exceptions</h2>
+            <p>
+              Even if a statement or expression is syntactically correct, an error can still
+              arise while it executes — trying to open a file that does not exist, dividing by
+              zero, and so on. Such errors are called <strong>exceptions</strong>.
+            </p>
+            <p>
+              An exception is a Python object that represents an error. When an error occurs
+              during execution, the exception is said to have been <strong>raised</strong>. The
+              programmer anticipates such situations and includes code to handle them so the
+              program doesn't terminate abnormally.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Exam point</strong>
+                <p><code>SyntaxError</code> is itself an exception — but every other exception type only ever occurs when the program is syntactically correct to begin with. A common exam question asks you to justify exactly this.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="builtin">
+            <h2>1.4 Built-in Exceptions</h2>
+            <p>
+              Python's standard library ships an extensive set of <strong>built-in
+              exceptions</strong> for commonly occurring errors. When one is raised, the
+              appropriate handler code runs and displays the reason along with the exception's
+              name.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Table 1.1 — common built-in exceptions</div>
+              <pre><code>SyntaxError        Error in the syntax of the Python code
+ValueError         Right data type, but an inappropriate/mismatched value
+IOError            The file specified cannot be opened
+KeyboardInterrupt  User hits Delete/Esc during execution
+ImportError        The requested module definition is not found
+EOFError           End of file reached without input() reading any data
+ZeroDivisionError  Denominator in a division operation is zero
+IndexError         Index/subscript in a sequence is out of range
+NameError          A local or global variable name is not defined
+IndentationError   Incorrect indentation in the program code
+TypeError          An operator is supplied a value of the wrong data type
+OverFlowError      Result of a calculation exceeds the numeric type's limit
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; print(50/0)
+ZeroDivisionError: division by zero
+
+&gt;&gt;&gt; print(var+40)
+NameError: name 'var' is not defined
+
+&gt;&gt;&gt; 10+'5'
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+</code></pre>
+            </div>
+            <p>A programmer can also create custom exceptions for their own requirements — these are called <strong>user-defined exceptions</strong>.</p>
+          </section>
+
+          <section id="raising">
+            <h2>1.5 Raising Exceptions</h2>
+            <p>
+              Each time an error is detected, the Python interpreter raises (throws) an
+              exception. Programmers can also forcefully raise exceptions using the
+              <code>raise</code> and <code>assert</code> statements. Once raised, no further
+              statement in the current block executes — control jumps straight to the exception
+              handler.
+            </p>
+
+            <h3>1.5.1 The <code>raise</code> statement</h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>raise exception-name[(optional argument)]</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; raise Exception("OOPS!! An Exception has occurred")
+Traceback (most recent call last):
+Exception: OOPS!! An Exception has occurred
+</code></pre>
+            </div>
+            <p>The error raised may be built-in or user-defined. Python also prints a <strong>stack traceback</strong> — a structured block of text describing the sequence of calls in which the exception occurred.</p>
+
+            <h3>1.5.2 The <code>assert</code> statement</h3>
+            <p>
+              An <code>assert</code> statement tests an expression; if it evaluates to false, an
+              <code>AssertionError</code> is raised. It's commonly used at the start of a
+              function, or after a function call, to validate input.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">assert_example.py</div>
+              <pre><code>print("use of assert statement")
+
+def negativecheck(number):
+    assert(number &gt;= 0), "OOPS... Negative Number"
+    print(number*number)
+
+print(negativecheck(100))
+print(negativecheck(-350))
+# -350 fails the assertion:
+# AssertionError: OOPS... Negative Number
+</code></pre>
+            </div>
+          </section>
+
+          <section id="handling">
+            <h2>1.6 Handling Exceptions</h2>
+            <p>
+              Every exception has to be handled by the programmer to prevent the program from
+              crashing abruptly — writing the extra code that gives a proper message or
+              instruction when an exception occurs is called <strong>exception handling</strong>.
+            </p>
+
+            <h3>1.6.2 How handling works</h3>
+            <p>
+              When an error occurs, Python creates an <strong>exception object</strong> holding
+              information about the error — its type, file name, and position. Handing this
+              object over to the runtime system is called <strong>throwing</strong> the
+              exception. The runtime searches the <strong>call stack</strong> in reverse order
+              for a matching handler; when one is found and executed, that's called
+              <strong>catching</strong> the exception. If no handler is found anywhere in the
+              call stack, the program terminates.
+            </p>
+
+            <h3>1.6.3 Catching exceptions — <code>try</code>/<code>except</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>try:
+    # program statements where exceptions might occur
+except [exception-name]:
+    # code for exception handling if exception-name occurs
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-2</div>
+              <pre><code>print("Practicing for try block")
+try:
+    numerator = 50
+    denom = int(input("Enter the denominator"))
+    quotient = (numerator/denom)
+    print(quotient)
+    print("Division performed successfully")
+except ZeroDivisionError:
+    print("Denominator as ZERO.... not allowed")
+print("OUTSIDE try..except block")
+</code></pre>
+            </div>
+            <p>If <code>denom</code> is non-zero, the <code>except</code> clause is skipped entirely and the quotient prints normally. If <code>denom</code> is 0, execution of the <code>try</code> block stops immediately and control shifts to the matching <code>except</code> block.</p>
+
+            <h3>Multiple <code>except</code> clauses</h3>
+            <p>A single <code>try</code> block can be followed by several <code>except</code> clauses, each handling a different exception type:</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-3</div>
+              <pre><code>try:
+    numerator = 50
+    denom = int(input("Enter the denominator: "))
+    print(numerator/denom)
+    print("Division performed successfully")
+except ZeroDivisionError:
+    print("Denominator as ZERO is not allowed")
+except ValueError:
+    print("Only INTEGERS should be entered")
+</code></pre>
+            </div>
+            <p>A bare <code>except:</code> clause (no exception named) can be added last to catch anything not matched by an earlier, more specific clause:</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-4</div>
+              <pre><code>try:
+    numerator = 50
+    denom = int(input("Enter the denominator"))
+    quotient = (numerator/denom)
+    print("Division performed successfully")
+except ValueError:
+    print("Only INTEGERS should be entered")
+except:
+    print("OOPS.....SOME EXCEPTION RAISED")
+</code></pre>
+            </div>
+
+            <h3>1.6.4 <code>try...except...else</code></h3>
+            <p>An optional <code>else</code> clause runs only when <strong>no</strong> exception was raised in the <code>try</code> block:</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-5</div>
+              <pre><code>try:
+    numerator = 50
+    denom = int(input("Enter the denominator: "))
+    quotient = (numerator/denom)
+except ZeroDivisionError:
+    print("Denominator as ZERO is not allowed")
+except ValueError:
+    print("Only INTEGERS should be entered")
+else:
+    print("The result of division operation is ", quotient)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="finally">
+            <h2>1.7 Finally Clause</h2>
+            <p>
+              The <code>try</code> statement can also have an optional <code>finally</code>
+              clause. Statements inside <code>finally</code> run <strong>regardless</strong> of
+              whether an exception occurred — it's commonly used to guarantee a file object gets
+              closed. If used, <code>finally</code> must come last, after every <code>except</code>
+              and the <code>else</code> block.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-6</div>
+              <pre><code>try:
+    numerator = 50
+    denom = int(input("Enter the denominator: "))
+    quotient = (numerator/denom)
+except ZeroDivisionError:
+    print("Denominator as ZERO is not allowed")
+except ValueError:
+    print("Only INTEGERS should be entered")
+else:
+    print("The result of division operation is ", quotient)
+finally:
+    print("OVER AND OUT")
+</code></pre>
+            </div>
+
+            <h3>1.7.1 Recovering and continuing with <code>finally</code></h3>
+            <p>
+              If the exception that occurs doesn't match any <code>except</code> clause present,
+              the <code>finally</code> block still executes first — and only then is the
+              unhandled exception re-raised. Unlike <code>except</code>, <code>finally</code>
+              does not itself terminate the exception.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 1-7 — only a ZeroDivisionError handler exists</div>
+              <pre><code>try:
+    numerator = 50
+    denom = int(input("Enter the denominator"))
+    quotient = (numerator/denom)
+except ZeroDivisionError:
+    print("Denominator as ZERO is not allowed")
+else:
+    print("The result of division operation is ", quotient)
+finally:
+    print("OVER AND OUT")
+
+# Entering non-numeric input (e.g. "var") raises a ValueError,
+# which has no handler here:
+# OVER AND OUT              <- finally still runs first
+# ValueError: invalid literal for int() with base 10: 'var'   <- then re-raised
+</code></pre>
+            </div>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Chapter summary</strong>
+                <p>Code with a possibility of error goes in <code>try</code>. Each <code>except</code> clause handles one matching exception type raised inside it. The optional <code>else</code> runs only when nothing went wrong. The optional <code>finally</code> runs no matter what, and is placed last.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 1
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>"Every syntax error is an exception, but every exception cannot be a syntax error." Justify the statement.</li>
+                <li>When are the following raised — give an example for each: <code>ImportError</code>, <code>IOError</code>, <code>NameError</code>, <code>ZeroDivisionError</code>.</li>
+                <li>What is the use of a <code>raise</code> statement? Write code to accept two numbers and display the quotient, raising an appropriate exception if the denominator entered is zero.</li>
+                <li>Rework Question 3 using an <code>assert</code> statement to test the division expression instead.</li>
+                <li>Define: (a) Exception Handling, (b) Throwing an exception, (c) Catching an exception.</li>
+                <li>Explain catching exceptions using <code>try</code> and <code>except</code> block.</li>
+                <li>
+                  Fill in the blanks:
+                  <div class="code-block">
+                    <div class="code-block__label">fill-in-the-blanks.py</div>
+                    <pre><code>try:
+    num1 = int(input("Enter the first number"))
+    num2 = int(input("Enter the second number"))
+    quotient = (num1/num2)
+    print("Both the numbers entered were correct")
+except _____________:   # to enter only integers
+    print("Please enter only numbers")
+except _____________:   # Denominator should not be zero
+    print("Number 2 should not be zero")
+else:
+    print("Great .. you are a good programmer")
+_____________:           # to be executed at the end
+    print("JOB OVER... GO GET SOME REST")
+</code></pre>
+                  </div>
+                </li>
+                <li>Using the Class XI <code>math</code> module, write code that calls <code>sqrt()</code> or <code>pow()</code> with the wrong number of arguments, and catch the resulting exception.</li>
+                <li>What is the use of the <code>finally</code> clause? Add one to your answer for Question 7.</li>
+              </ol>
+              <div class="callout callout--tip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+                <div>
+                  <strong>Hint for Q7</strong>
+                  <p>Blank 1 is <code>ValueError</code>, blank 2 is <code>ZeroDivisionError</code>, blank 3 is <code>finally</code>.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="../cbse-cs-12/index.html#timeline" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Full Syllabus</span>
+          </a>
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 2: File Handling in Python</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

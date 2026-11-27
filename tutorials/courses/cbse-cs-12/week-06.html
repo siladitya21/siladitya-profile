@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 6: Searching — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 6 of CBSE Class 12 Computer Science (083): linear search, binary search, and search by hashing — with Python code and worked traces — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Data Structure Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 6</span>
+      </div>
+
+      <h1>Chapter 6: Searching</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Searching means locating a
+        particular element — the <strong>key</strong> — in a collection. This chapter covers
+        <strong>linear search</strong> (check everything, one at a time), <strong>binary
+        search</strong> (repeatedly halve a sorted list), and <strong>search by hashing</strong>
+        (compute the position directly, in one step).
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 6 of 13</span>
+        <span class="chip">NCERT pp. 81–96</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Implement linear search and explain its best/worst case comparison counts</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Trace binary search on a sorted list, iteration by iteration</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a hash table with the remainder method and explain collision</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction</a>
+        <a href="#linear"><span>2</span> Linear Search</a>
+        <a href="#binary"><span>3</span> Binary Search</a>
+        <a href="#hashing"><span>4</span> Search by Hashing</a>
+        <a href="#exercise"><span>5</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>6.1 Introduction</h2>
+            <p>
+              Searching means trying to locate a particular element, called the <strong>key</strong>,
+              in a collection of elements. A search tells us whether the key is present, and if
+              so, at what position.
+            </p>
+          </section>
+
+          <section id="linear">
+            <h2>6.2 Linear Search</h2>
+            <p>
+              The simplest technique: compare the key against every element in order, starting
+              from the first, until a match is found or the list is exhausted. Also called
+              <strong>sequential</strong> or <strong>serial search</strong> — useful for small,
+              unordered collections.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 6.1 — LinearSearch(numList, key, n)</div>
+              <pre><code>SET index = 0
+WHILE index &lt; n:
+    IF numList[index] == key:
+        PRINT "Element found at position", index+1
+        STOP
+    ELSE:
+        index = index + 1
+PRINT "Search unsuccessful"
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-1</div>
+              <pre><code>def linearSearch(list, key):
+    for index in range(0, len(list)):
+        if list[index] == key:
+            return index+1        # position of key in list
+    return None                   # key is not in list
+
+list1 = []
+maximum = int(input("How many elements in your list? "))
+for i in range(0, maximum):
+    list1.append(int(input()))
+
+key = int(input("Enter the number to be searched:"))
+position = linearSearch(list1, key)
+if position is None:
+    print("Number", key, "is not present in the list")
+else:
+    print("Number", key, "is present at position", position)
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Best/worst case</strong>
+                <p>If the key is the <em>first</em> element, linear search makes just 1 comparison — the minimum possible. If it's the <em>last</em> element, or not present at all, it must make n comparisons — the maximum possible.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="binary">
+            <h2>6.3 Binary Search</h2>
+            <p>
+              Just like looking up "Zoology" near the end of a dictionary rather than from page
+              one, binary search exploits a <strong>sorted</strong> list: compare the key against
+              the <strong>middle</strong> element. If it matches, done. If the middle element is
+              greater than the key, the key (if present) must be in the first half — discard the
+              second half entirely. If smaller, discard the first half. Repeat on the remaining
+              half until the key is found or only one element remains.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 6.2 — BinarySearch(numList, key)</div>
+              <pre><code>SET first = 0, last = n-1
+Calculate mid = (first+last)//2
+WHILE first &lt;= last:
+    IF numList[mid] == key:
+        PRINT "Element found at position", mid+1
+        STOP
+    ELSE:
+        IF numList[mid] &gt; key: last = mid - 1
+        ELSE: first = mid + 1
+    mid = (first+last)//2
+PRINT "Search unsuccessful"
+</code></pre>
+            </div>
+            <p>Searching for key 2 in <code>[2,3,5,7,10,11,12,17,19,23,29,31,37,41,43]</code> (15 elements) takes 4 iterations — each time the search area roughly halves: 15 → 7 → 3 → 1 elements:</p>
+            <div class="code-block">
+              <div class="code-block__label">Trace</div>
+              <pre><code>Iteration  first  last  mid  numList[mid]  key&lt;mid?  result
+1          0      14    7    17            2&lt;17 T    search first half
+2          0      6     3    7             2&lt;7  T     search first half
+3          0      2     1    3             2&lt;3  T     search first half
+4          0      0     0    2             match -- found at position 1
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-2</div>
+              <pre><code>def binarySearch(list, key):
+    first = 0
+    last = len(list) - 1
+    while first &lt;= last:
+        mid = (first + last)//2
+        if list[mid] == key:
+            return mid
+        elif key &gt; list[mid]:
+            first = mid + 1
+        elif key &lt; list[mid]:
+            last = mid - 1
+    return -1
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Iterations, not comparisons</strong>
+                <p>The textbook deliberately says "iteration" for binary search rather than "comparison" — each unsuccessful comparison redefines first/mid/last before the next one. Applications include dictionary/directory lookups, finding min/max in a sorted list, database indexing, and router routing tables.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="hashing">
+            <h2>6.4 Search by Hashing</h2>
+            <p>
+              Hashing finds a key in <strong>one step</strong> by computing its position directly
+              with a formula, rather than comparing against other elements. A <strong>hash
+              function</strong> maps each element to an index in a new list called the <strong>hash
+              table</strong>. The simplest hash function — the <strong>remainder method</strong>:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Remainder-method hash function</div>
+              <pre><code>h(element) = element % size(hash_table)</code></pre>
+            </div>
+            <p>For <code>[34, 16, 2, 93, 80, 77, 51]</code> hashed into a 10-slot table using <code>element % 10</code>:</p>
+            <div class="code-block">
+              <div class="code-block__label">Resulting hash table</div>
+              <pre><code>index:  0    1    2   3    4    5     6    7    8     9
+value: 80   51    2  93   34   None  16   77   None  None
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-3 — building and searching a hash table</div>
+              <pre><code>def hashFind(key, hashTable):
+    if hashTable[key % 10] == key:
+        return (key % 10) + 1     # position
+    else:
+        return None
+
+hashTable = [None]*10
+L = [34, 16, 2, 93, 80, 77, 51]
+for i in range(0, len(L)):
+    hashTable[L[i] % 10] = L[i]
+
+key = int(input("Enter the number to be searched:"))
+position = hashFind(key, hashTable)
+</code></pre>
+            </div>
+
+            <h3>6.4.1 Collision</h3>
+            <p>
+              If two elements hash to the same index (e.g. 16 and 26 both give <code>%10</code> = 6),
+              that's a <strong>collision</strong> — the mechanism for placing the second item
+              elsewhere is called <strong>collision resolution</strong> (methods beyond this
+              book's scope). A <strong>perfect hash function</strong> maps every key to a unique
+              index, so collisions never occur with it.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why hashing wins</strong>
+                <p>The time to compute a hash index is independent of how many elements are in the list — so a hash lookup takes the same (small, constant) time whether there are 10 elements or 10 million, as long as the cost of computing the hash itself stays small.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>5. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 6
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>Using linear search, find the position of 8, 1, 99 and 44 in <code>[1, -2, 32, 8, 17, 19, 42, 13, 0, 44]</code>. Draw a table of each pass's variable values and decisions.</li>
+                <li>Search for key 8 in a list with duplicates: <code>[42, -2, 32, 8, 17, 19, 42, 13, 8, 44]</code>. What position is returned, and what does that mean?</li>
+                <li>Write a program that takes a mix of 10 positive and negative numbers and a key, and applies linear search. Run it for at least 3 different keys.</li>
+                <li>Write a program that takes 10 integers and a key, and applies binary search. Run it for at least 3 different keys.</li>
+                <li>
+                  For the unsorted list <code>[50, 31, 21, 28, 72, 41, 73, 93, 68, 43, 45, 78, 5, 17, 97, 71, 69, 61, 88, 75, 99, 44, 55, 9]</code>:
+                  <ul>
+                    <li>Linear-search for 1, 5, 55, 99 and note comparisons needed for each.</li>
+                    <li>Sort the list, repeat the linear search and note comparisons.</li>
+                    <li>Binary-search the sorted list for the same keys and record iterations.</li>
+                  </ul>
+                </li>
+                <li>Repeat a similar comparison exercise using the word list <code>[Perfect, Stupendous, Wondrous, Gorgeous, Awesome, Mirthful, Fabulous, Splendid, Incredible, Outstanding, Propitious, Remarkable, Stellar, Unbelievable, Super, Amazing]</code>, searching for Amazing, Perfect, Great and Wondrous.</li>
+                <li>Estimate key comparisons for binary vs. linear search in a sorted database of 2³⁰ (1,073,741,824) records, when the target is at the middle position. What does this tell you?</li>
+                <li>Use <code>h(element) = element % 11</code> to store <code>[44, 121, 55, 33, 110, 77, 22, 66]</code> in a hash table. Display it, then search for 11, 44, 88 and 121.</li>
+                <li>
+                  Given <code>CountryCapital = {'India':'New Delhi', 'UK':'London', 'France':'Paris', 'Switzerland':'Berne', 'Australia':'Canberra'}</code>, using the length of the country name as the hash function, build parallel key/value lists (hash index = name length − 1) and search for the capitals of India, France and the USA.
+                </li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 5: Sorting</span>
+          </a>
+          <a href="week-07.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 7: Understanding Data</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

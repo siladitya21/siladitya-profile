@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 5: Cyber Ethics — CBSE Class 10 Computer Applications</title>
+<meta name="description" content="Chapter 5 of CBSE Class 10 Computer Applications (165): netiquettes, software licenses and open source, intellectual property rights, plagiarism, digital property rights, the digital divide, and e-commerce safety — based on the official CBSE curriculum, Unit 3 (10 marks)." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-10/index.html#timeline">Unit 3</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 5</span>
+      </div>
+
+      <h1>Chapter 5: Cyber Ethics</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum, Unit 3 — 10 marks.
+        Having learnt to build and style web pages, this chapter covers the conduct and legal
+        awareness expected of anyone putting content online: netiquettes, software licensing,
+        intellectual property, plagiarism, the digital divide, and staying safe while shopping or
+        banking online.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 5 of 6</span>
+        <span class="chip">Unit 3 — 10 Marks</span>
+        <span class="chip">~2 Hours</span>
+        <span class="chip">Exam-style Questions Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>List the core netiquettes for respectful online communication</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Distinguish software license types, and explain plagiarism vs. copyright</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Name the risks of e-commerce and the basic safeguards against them</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#netiquettes"><span>1</span> Netiquettes</a>
+        <a href="#licenses"><span>2</span> Software Licenses &amp; Open Source</a>
+        <a href="#ipr"><span>3</span> IPR, Plagiarism &amp; Digital Property</a>
+        <a href="#divide"><span>4</span> Freedom of Information &amp; the Digital Divide</a>
+        <a href="#ecommerce"><span>5</span> E-commerce: Privacy, Fraud &amp; Secure Transmission</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="netiquettes">
+            <h2>5.1 Netiquettes</h2>
+            <p>
+              <strong>Netiquette</strong> ("network etiquette") is the set of unwritten rules for
+              behaving courteously and responsibly online.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Core netiquette rules</div>
+              <pre><code>- Be respectful; avoid insults, harassment or cyber bullying
+- Don't share others' private information/photos without consent
+- Avoid ALL CAPS in messages -- it reads as SHOUTING
+- Verify facts before forwarding/sharing news or messages
+- Don't spam -- avoid repeated unwanted messages or promotions
+- Respect others' time and bandwidth -- keep messages/attachments reasonable
+- Be careful what you say about others -- it can be screenshotted/forwarded
+- Admit and correct your own mistakes gracefully online
+</code></pre>
+            </div>
+          </section>
+
+          <section id="licenses">
+            <h2>5.2 Software Licenses and the Open Source Software Movement</h2>
+            <div class="code-block">
+              <div class="code-block__label">Three broad categories of software license</div>
+              <pre><code>PROPRIETARY SOFTWARE
+  Source code is CLOSED; must usually be purchased.
+  Copying/modifying/redistributing is restricted by copyright law.
+  E.g. Microsoft Windows, Adobe Photoshop.
+
+FREEWARE
+  Free to USE, but source code is still CLOSED (not shared).
+  Usually can't be modified or sold commercially.
+  E.g. Skype, Adobe Acrobat Reader.
+
+FREE AND OPEN SOURCE SOFTWARE (FOSS)
+  Source code is OPEN -- anyone can view, modify and redistribute it,
+  usually under a license like the GNU GPL.
+  E.g. Linux, LibreOffice, Mozilla Firefox, GIMP.
+</code></pre>
+            </div>
+            <p>
+              The <strong>open source movement</strong> is built on the idea that sharing source
+              code publicly leads to faster bug-fixing, wider collaboration and more innovation,
+              since any capable developer can inspect, improve, or build on existing code.
+            </p>
+          </section>
+
+          <section id="ipr">
+            <h2>5.3 Intellectual Property Rights, Plagiarism and Digital Property Rights</h2>
+            <div class="code-block">
+              <div class="code-block__label">Intellectual Property Rights (IPR) — three main forms</div>
+              <pre><code>COPYRIGHT   protects original creative works (writing, images, music,
+            software code) -- granted automatically to the creator
+PATENT      protects an INVENTION -- must be formally applied for,
+            gives exclusive rights for a fixed period (usually 20 years)
+TRADEMARK   protects a BRAND identity -- name, logo, slogan
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Plagiarism vs. Copyright Infringement</div>
+              <pre><code>PLAGIARISM
+  Presenting someone else's work/idea as your own -- an ETHICAL
+  violation. Even content you're legally allowed to use is
+  plagiarism if you don't credit the original author/source.
+
+COPYRIGHT INFRINGEMENT
+  Using someone's copyrighted work WITHOUT permission (or without
+  paying, if it's sold) -- a LEGAL violation. Crediting the source
+  does NOT make it legal if usage itself wasn't authorised.
+</code></pre>
+            </div>
+            <p>
+              <strong>Digital property rights</strong> extend these same ownership protections to
+              digital content specifically — e-books, digital art, software, music files — which
+              can be copied and distributed far more easily (and anonymously) than physical
+              property, making enforcement harder.
+            </p>
+          </section>
+
+          <section id="divide">
+            <h2>5.4 Freedom of Information and the Digital Divide</h2>
+            <div class="code-block">
+              <div class="code-block__label">Two balancing concepts</div>
+              <pre><code>FREEDOM OF INFORMATION
+  The principle that people have a right to access information,
+  especially public/government information -- promotes transparency
+  and informed citizenship.
+
+DIGITAL DIVIDE
+  The gap between those who have ready access to computers/the
+  Internet (and the skills to use them) and those who don't --
+  due to cost, location, infrastructure, or education. This gap
+  can reinforce existing social and economic inequalities.
+</code></pre>
+            </div>
+          </section>
+
+          <section id="ecommerce">
+            <h2>5.5 E-commerce: Privacy, Fraud, Secure Data Transmission</h2>
+            <div class="code-block">
+              <div class="code-block__label">The three risk areas named in the syllabus</div>
+              <pre><code>PRIVACY
+  E-commerce sites collect personal/payment data -- users should
+  check a site's privacy policy and avoid oversharing information.
+
+FRAUD
+  Fake shopping sites, phishing emails, and card-skimming attempts
+  try to steal payment details. Shop only on well-known, reputable
+  sites; verify the seller before paying.
+
+SECURE DATA TRANSMISSION
+  Always check for HTTPS (and the padlock icon) before entering
+  payment details -- it means the connection is ENCRYPTED, so data
+  can't be read if intercepted in transit.
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Ties straight back to Chapter 1</strong>
+                <p>The HTTPS protocol from Chapter 1 is exactly the mechanism behind "secure data transmission" here — this is a good example of how the three units of this course (Networking, HTML, Cyber Ethics) connect to each other.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 3 Practice Questions
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>List any five netiquettes you should follow on a class WhatsApp/email group.</li>
+                <li>Differentiate between proprietary software, freeware, and FOSS, giving one example of each.</li>
+                <li>What is the open source software movement, and why does it encourage faster innovation?</li>
+                <li>Differentiate between copyright, patent and trademark.</li>
+                <li>Riya copies a paragraph from a website into her project, adds a citation, but never asked the site's permission to reuse it. Is this plagiarism, copyright infringement, both, or neither? Justify.</li>
+                <li>What is meant by "digital property rights," and how do digital goods differ from physical property in terms of protecting ownership?</li>
+                <li>What is the "digital divide"? Suggest two steps that could help reduce it in rural India.</li>
+                <li>You're about to enter your card details on a shopping website. Name two things you should check first to confirm the transaction will be secure.</li>
+                <li>Differentiate between privacy risk and fraud risk in e-commerce, with an example of each.</li>
+                <li>Why does HTTPS matter specifically for e-commerce transactions?</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 4: Cascading Style Sheets (CSS)</span>
+          </a>
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 6: Practicals &amp; Project Guide</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

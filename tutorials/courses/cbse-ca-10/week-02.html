@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 2: HTML — Structure &amp; Text Formatting — CBSE Class 10 Computer Applications</title>
+<meta name="description" content="Chapter 2 of CBSE Class 10 Computer Applications (165): html/head/title/body tags and attributes, br/hr, headings, text formatting tags, lists (ul/ol/li, dl/dt/dd), font tags, images, sup/sub — based on the official CBSE curriculum, Unit 2." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-10/index.html#timeline">Unit 2</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 2</span>
+      </div>
+
+      <h1>Chapter 2: HTML — Structure &amp; Text Formatting</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum, Unit 2 — the largest
+        unit in the syllabus (25 marks, 30 theory + 50 practical periods). This chapter builds
+        your very first web page: the <code>html</code>/<code>head</code>/<code>body</code>
+        skeleton, headings and text formatting, lists, and images — everything needed before
+        tables, forms and CSS in the chapters that follow.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 2 of 6</span>
+        <span class="chip">Unit 2, Part A</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write the correct <code>html</code>/<code>head</code>/<code>body</code> skeleton and save/open it as a web page</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Format text with headings, bold/italic/underline, and the <code>font</code> tag's attributes</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build ordered, unordered and description lists, and insert images correctly</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#firstpage"><span>1</span> Your First HTML Page</a>
+        <a href="#bodytag"><span>2</span> The body Tag's Attributes</a>
+        <a href="#brhr"><span>3</span> br, hr &amp; Comments</a>
+        <a href="#headings"><span>4</span> Headings &amp; Text Formatting</a>
+        <a href="#font"><span>5</span> The font Tag</a>
+        <a href="#lists"><span>6</span> Lists</a>
+        <a href="#images"><span>7</span> Images, Superscript &amp; Subscript</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="firstpage">
+            <h2>2.1 Introduction to Web Page Designing Using HTML</h2>
+            <p>
+              <strong>HTML (HyperText Markup Language)</strong> describes a web page's structure
+              using <strong>tags</strong> — keywords in angle brackets. Most tags come in pairs: an
+              <strong>opening tag</strong> <code>&lt;tag&gt;</code> and a matching
+              <strong>closing tag</strong> <code>&lt;/tag&gt;</code>, with content in between. A
+              few tags (like <code>&lt;br&gt;</code>) are <strong>empty/self-closing</strong> — no
+              closing tag needed.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">The minimum skeleton every HTML page needs</div>
+              <pre><code>&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My First Web Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;p&gt;Hello, World! This is my first web page.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">What each tag does</div>
+              <pre><code>&lt;html&gt;   the ROOT tag -- everything on the page goes inside it
+&lt;head&gt;   holds information ABOUT the page (not shown in the page body)
+&lt;title&gt;  the text shown in the browser tab / window title bar
+&lt;body&gt;   holds everything that's actually DISPLAYED on the page
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Create, save and open — the practical workflow</strong>
+                <p>Type the code in any plain text editor (Notepad is fine), save the file with a <code>.html</code> extension (e.g. <code>myfirstpage.html</code>), then double-click the saved file — it opens directly in your default browser. No server or installation needed.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="bodytag">
+            <h2>2.2 The body Tag's Colour Attributes</h2>
+            <div class="code-block">
+              <div class="code-block__label">Attributes that control the whole page's appearance</div>
+              <pre><code>&lt;body text="blue" bgcolor="lightyellow" link="green" vlink="purple" alink="red"&gt;
+
+text        colour of all ordinary page text
+background  an IMAGE used as the page's background
+bgcolor     a plain COLOUR used as the page's background
+link        colour of an UNVISITED hyperlink
+vlink       colour of a VISITED hyperlink
+alink       colour of a link at the moment it's being ACTIVELY clicked
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Worked example</div>
+              <pre><code>&lt;body bgcolor="#f0f8ff" text="navy" link="darkgreen" vlink="purple"&gt;
+    &lt;p&gt;Welcome to my homepage.&lt;/p&gt;
+&lt;/body&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="brhr">
+            <h2>2.3 br, hr and Comments</h2>
+            <div class="code-block">
+              <div class="code-block__label">br (line break) and hr (horizontal rule) — both empty tags</div>
+              <pre><code>&lt;p&gt;Line one&lt;br&gt;Line two&lt;br&gt;Line three&lt;/p&gt;
+&lt;!-- &lt;br&gt; forces a new line WITHOUT starting a new paragraph --&gt;
+
+&lt;hr&gt;
+&lt;!-- &lt;hr&gt; draws a horizontal line across the page, often used
+     to visually separate sections of content --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Inserting comments — never shown on the rendered page</div>
+              <pre><code>&lt;!-- This is a comment. The browser ignores everything inside it. --&gt;
+&lt;p&gt;This text IS shown.&lt;/p&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="headings">
+            <h2>2.4 Headings and Text Formatting Tags</h2>
+            <div class="code-block">
+              <div class="code-block__label">Six levels of heading — h1 (largest/most important) to h6 (smallest)</div>
+              <pre><code>&lt;h1&gt;This is a Main Heading&lt;/h1&gt;
+&lt;h2&gt;This is a Sub-heading&lt;/h2&gt;
+&lt;h3&gt;A smaller heading still&lt;/h3&gt;
+...
+&lt;h6&gt;The smallest heading&lt;/h6&gt;
+
+&lt;p&gt;This is a normal paragraph of body text.&lt;/p&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Character-level formatting — bold, italics, underline</div>
+              <pre><code>&lt;b&gt;This text is bold&lt;/b&gt;
+&lt;i&gt;This text is italic&lt;/i&gt;
+&lt;u&gt;This text is underlined&lt;/u&gt;
+
+&lt;p&gt;You can &lt;b&gt;combine &lt;i&gt;bold and italic&lt;/i&gt; together&lt;/b&gt; in one line.&lt;/p&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="font">
+            <h2>2.5 The font Tag</h2>
+            <div class="code-block">
+              <div class="code-block__label">font (face, size, color) — three attributes</div>
+              <pre><code>&lt;font face="Arial" size="5" color="crimson"&gt;
+    Styled text using the font tag.
+&lt;/font&gt;
+
+face   the font FAMILY to use (e.g. Arial, Times New Roman, Verdana)
+size   a number from 1 (smallest) to 7 (largest) -- NOT a pixel value
+color  the text colour, as a named colour ("red") or a hex code ("#FF0000")
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Worth knowing, even though it's in the syllabus</strong>
+                <p>The <code>font</code> tag still appears in the CBSE 165 syllabus and will be asked in the exam — but in modern real-world web development, text styling (family/size/colour) is done with CSS instead (Chapter 4), which is far more flexible.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="lists">
+            <h2>2.6 Lists — Ordered, Unordered &amp; Description</h2>
+            <div class="code-block">
+              <div class="code-block__label">Unordered list (ul) — bulleted, no inherent order</div>
+              <pre><code>&lt;ul type="square"&gt;
+    &lt;li&gt;Apples&lt;/li&gt;
+    &lt;li&gt;Bananas&lt;/li&gt;
+    &lt;li&gt;Cherries&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- ul's type attribute: disc (default), circle, square --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Ordered list (ol) — numbered, sequence matters</div>
+              <pre><code>&lt;ol start="3" type="A"&gt;
+    &lt;li&gt;Third item&lt;/li&gt;
+    &lt;li&gt;Fourth item&lt;/li&gt;
+    &lt;li&gt;Fifth item&lt;/li&gt;
+&lt;/ol&gt;
+&lt;!-- renders as: C. Third item  D. Fourth item  E. Fifth item --&gt;
+
+&lt;!-- ol's start attribute: the number/letter to begin counting from
+     ol's type attribute: 1 (default numbers), A, a, I, i (roman numerals) --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Description list (dl, dt, dd) — term + definition pairs</div>
+              <pre><code>&lt;dl&gt;
+    &lt;dt&gt;HTML&lt;/dt&gt;
+    &lt;dd&gt;HyperText Markup Language -- used to structure web pages.&lt;/dd&gt;
+    &lt;dt&gt;CSS&lt;/dt&gt;
+    &lt;dd&gt;Cascading Style Sheets -- used to style web pages.&lt;/dd&gt;
+&lt;/dl&gt;
+
+dl  wraps the WHOLE description list
+dt  the TERM being described
+dd  the DESCRIPTION/definition of that term (usually indented)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="images">
+            <h2>2.7 Images, Superscript and Subscript</h2>
+            <div class="code-block">
+              <div class="code-block__label">img (src, width, height, alt) — an empty tag</div>
+              <pre><code>&lt;img src="logo.png" width="200" height="100" alt="Company Logo"&gt;
+
+src     the image file's PATH or URL (required)
+width   display width in pixels
+height  display height in pixels
+alt     ALTERNATE TEXT shown if the image fails to load, and read
+        aloud by screen readers for accessibility
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">sup (superscript) and sub (subscript)</div>
+              <pre><code>E = mc&lt;sup&gt;2&lt;/sup&gt;          &lt;!-- renders as: E = mc² --&gt;
+H&lt;sub&gt;2&lt;/sub&gt;O               &lt;!-- renders as: H₂O --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Putting it together — a complete small page</div>
+              <pre><code>&lt;html&gt;
+&lt;head&gt;&lt;title&gt;About Water&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="white" text="black"&gt;
+    &lt;h1&gt;Facts About Water&lt;/h1&gt;
+    &lt;hr&gt;
+    &lt;p&gt;Water's chemical formula is &lt;b&gt;H&lt;sub&gt;2&lt;/sub&gt;O&lt;/b&gt;.&lt;/p&gt;
+    &lt;img src="water.jpg" width="300" height="200" alt="A glass of water"&gt;
+    &lt;h2&gt;States of Water&lt;/h2&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Solid (ice)&lt;/li&gt;
+        &lt;li&gt;Liquid&lt;/li&gt;
+        &lt;li&gt;Gas (water vapour)&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 2 Practice Questions (Part A)
+              </span>
+              <h3>Work through these, then verify by opening the HTML in a browser</h3>
+              <ol>
+                <li>Name the three mandatory tags every HTML page should have, and explain the role of each.</li>
+                <li>What is the difference between the <code>head</code> and <code>body</code> sections of an HTML page?</li>
+                <li>Write the <code>body</code> tag with attributes to set the text colour to white and the background colour to black.</li>
+                <li>What is the difference between <code>&lt;br&gt;</code> and <code>&lt;hr&gt;</code>?</li>
+                <li>Write HTML to display your name as a heading, followed by a horizontal rule, followed by a short paragraph about yourself.</li>
+                <li>Write the <code>font</code> tag to display the text "Welcome" in Verdana, size 6, in blue.</li>
+                <li>Write an ordered list of your top 3 favourite subjects, numbered using roman numerals, starting from 1.</li>
+                <li>Write a description list (<code>dl</code>/<code>dt</code>/<code>dd</code>) defining any three HTML tags covered in this chapter.</li>
+                <li>Write the <code>img</code> tag to insert an image named <code>photo.jpg</code>, 150px wide, 150px tall, with appropriate alternate text.</li>
+                <li>Write the HTML to correctly display the chemical formula for carbon dioxide (CO₂) and the mathematical expression a³.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-01.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 1: Networking</span>
+          </a>
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 3: HTML — Tables, Forms, Links &amp; Media</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

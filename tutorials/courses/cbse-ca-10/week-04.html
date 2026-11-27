@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 4: Cascading Style Sheets (CSS) — CBSE Class 10 Computer Applications</title>
+<meta name="description" content="Chapter 4 of CBSE Class 10 Computer Applications (165): inline/internal/external CSS, colour, background-colour, border-style, margin, height, width, outline, font properties, align and float — based on the official CBSE curriculum, Unit 2." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-10/index.html#timeline">Unit 2</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 4</span>
+      </div>
+
+      <h1>Chapter 4: Cascading Style Sheets (CSS)</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum, Unit 2 (final part).
+        Every page built in Chapters 2–3 used HTML's own colour/font attributes — CSS replaces
+        all of that with one proper styling language. This chapter covers how to attach CSS to a
+        page three ways, and the exact property list the syllabus names: colour,
+        background-colour, border-style, margin, height, width, outline, font, align and float.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 4 of 6</span>
+        <span class="chip">Unit 2, Part C</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write inline, internal and external CSS, and explain when to use each</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Apply every CSS property named in the CBSE 165 syllabus correctly</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Restyle a Chapter 2/3 page using CSS instead of HTML colour attributes</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#whatiscss"><span>1</span> What is CSS?</a>
+        <a href="#threeways"><span>2</span> Three Ways to Add CSS</a>
+        <a href="#colorbg"><span>3</span> Colour &amp; Background-colour</a>
+        <a href="#boxmodel"><span>4</span> Border, Margin, Height, Width, Outline</a>
+        <a href="#fonttext"><span>5</span> Font, Align &amp; Float</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="whatiscss">
+            <h2>4.1 What is CSS?</h2>
+            <p>
+              <strong>Cascading Style Sheets (CSS)</strong> describes how HTML elements should
+              <em>look</em> — colours, fonts, spacing, borders, layout — kept separate from the
+              HTML that describes a page's <em>content and structure</em>. The word "cascading"
+              means styles can come from multiple places at once, with clear rules deciding which
+              one wins when they conflict.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">CSS rule syntax</div>
+              <pre><code>selector {
+    property: value;
+    property: value;
+}
+
+/* example */
+p {
+    color: blue;
+    font-size: 16px;
+}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="threeways">
+            <h2>4.2 Three Ways to Attach CSS to a Page</h2>
+            <div class="code-block">
+              <div class="code-block__label">Inline CSS — directly on ONE element, via the style attribute</div>
+              <pre><code>&lt;p style="color: red; font-size: 20px;"&gt;This paragraph is styled inline.&lt;/p&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Internal CSS — inside a style tag in the head, affects the WHOLE page</div>
+              <pre><code>&lt;head&gt;
+&lt;style&gt;
+    body { background-color: #f4f4f4; }
+    h1 { color: darkblue; text-align: center; }
+&lt;/style&gt;
+&lt;/head&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">External CSS — a separate .css file, linked to ANY number of pages</div>
+              <pre><code>&lt;!-- in the HTML file's &lt;head&gt; --&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;
+
+/* in the separate file style.css */
+body { background-color: #f4f4f4; }
+h1 { color: darkblue; text-align: center; }
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Which one to use — and which wins when they clash</strong>
+                <p><strong>External</strong> is best for a multi-page site (one file styles every page). <strong>Internal</strong> suits a single, self-contained page. <strong>Inline</strong> is for one-off overrides. When styles conflict: Inline beats Internal, which beats External — the more specific/closer-to-the-element rule wins.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="colorbg">
+            <h2>4.3 Colour and Background-colour</h2>
+            <div class="code-block">
+              <div class="code-block__label">Setting text colour vs. background colour</div>
+              <pre><code>h1 {
+    color: white;              /* the TEXT colour */
+    background-color: teal;    /* the colour BEHIND the text/element */
+}
+
+/* colours can be named, hex, or rgb() */
+p { color: #336699; }
+div { background-color: rgb(240, 240, 240); }
+</code></pre>
+            </div>
+          </section>
+
+          <section id="boxmodel">
+            <h2>4.4 Border, Margin, Height, Width, Outline</h2>
+            <div class="code-block">
+              <div class="code-block__label">border-style — the line drawn around an element</div>
+              <pre><code>div {
+    border-style: solid;   /* also: dashed, dotted, double, none */
+    border-width: 2px;
+    border-color: black;
+}
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">margin — space OUTSIDE an element's border</div>
+              <pre><code>div {
+    margin: 20px;              /* same 20px on all 4 sides */
+    margin: 10px 20px;         /* 10px top/bottom, 20px left/right */
+}
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">height and width — the element's dimensions</div>
+              <pre><code>img {
+    width: 300px;
+    height: 200px;
+}
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">outline — a line drawn AROUND the border (doesn't affect layout space)</div>
+              <pre><code>input {
+    outline: 2px dotted blue;
+}
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Border vs. outline — the exact difference</strong>
+                <p><strong>Border</strong> sits right at the edge of an element and takes up layout space (pushes neighbouring content). <strong>Outline</strong> is drawn on top, around the border, but never affects the page's layout — it can even overlap neighbouring elements.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="fonttext">
+            <h2>4.5 Font, Align and Float</h2>
+            <div class="code-block">
+              <div class="code-block__label">font — family, style, size (replaces HTML's font tag)</div>
+              <pre><code>p {
+    font-family: "Times New Roman", serif;
+    font-style: italic;       /* also: normal, oblique */
+    font-size: 18px;
+}
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">align (text-align) — horizontal alignment of content</div>
+              <pre><code>h1 { text-align: center; }    /* also: left, right, justify */
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">float — pulls an element to one side, letting content flow around it</div>
+              <pre><code>img {
+    float: left;      /* also: right, none */
+    margin-right: 10px;   /* a little spacing so text doesn't touch it */
+}
+&lt;!-- A classic use: a small image floated left, with a paragraph of
+     text wrapping around it on the right, newspaper-style. --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">A complete worked example — restyling Chapter 2's water page with CSS</div>
+              <pre><code>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;About Water&lt;/title&gt;
+&lt;style&gt;
+    body { background-color: #eaf6ff; font-family: Arial, sans-serif; }
+    h1 { color: navy; text-align: center; }
+    img { float: left; margin-right: 15px; border-style: solid;
+          border-width: 2px; border-color: navy; width: 150px; height: 100px; }
+    ul { color: darkslategray; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Facts About Water&lt;/h1&gt;
+    &lt;img src="water.jpg" alt="A glass of water"&gt;
+    &lt;p&gt;Water's chemical formula is H&lt;sub&gt;2&lt;/sub&gt;O.&lt;/p&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Solid (ice)&lt;/li&gt;
+        &lt;li&gt;Liquid&lt;/li&gt;
+        &lt;li&gt;Gas (water vapour)&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 2 Practice Questions (Part C)
+              </span>
+              <h3>Work through these, then verify by opening the HTML in a browser</h3>
+              <ol>
+                <li>Differentiate between inline, internal and external CSS, with an example of when you'd choose each.</li>
+                <li>If an element has both an inline style and an internal style conflicting, which one applies? Why?</li>
+                <li>Write internal CSS to make all <code>h2</code> headings green, centre-aligned, in the Verdana font.</li>
+                <li>Write CSS to give a <code>div</code> a 3px dashed red border, 15px margin on all sides, and a width of 400px.</li>
+                <li>What is the difference between <code>border</code> and <code>outline</code>?</li>
+                <li>Write CSS to float an image to the right of a paragraph, with a 10px left margin so text doesn't touch it.</li>
+                <li>Create an external stylesheet file that sets the page background colour to light grey and all paragraph text to dark blue; then write the HTML line that links this stylesheet to a page.</li>
+                <li>Rewrite this HTML-attribute-styled line using CSS instead: <code>&lt;font face="Arial" size="5" color="red"&gt;Notice&lt;/font&gt;</code>.</li>
+                <li>Write CSS to give all form <code>input</code> elements a 2px solid blue outline and a 5px margin.</li>
+                <li>Take your table + form page from Chapter 3's exercises and add an internal style sheet that: centres the table headings, colours the table border, and right-aligns the form's labels.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 3: HTML — Tables, Forms, Links &amp; Media</span>
+          </a>
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 5: Cyber Ethics</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

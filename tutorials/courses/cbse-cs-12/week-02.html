@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 2: File Handling in Python — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 2 of CBSE Class 12 Computer Science (083): text vs. binary files, opening/closing files, write()/writelines(), read()/readline()/readlines(), seek()/tell(), and the pickle module — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 2</span>
+      </div>
+
+      <h1>Chapter 2: File Handling in Python</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Everything a program holds in
+        memory disappears the moment it stops running — this chapter covers how to make data
+        outlive the program by storing it in text and binary files: opening and closing files,
+        the <code>write()</code>/<code>writelines()</code> and <code>read()</code>/<code>readline()</code>/<code>readlines()</code>
+        methods, moving around a file with <code>seek()</code> and <code>tell()</code>, and
+        serializing whole Python objects with the <code>pickle</code> module.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 2 of 13</span>
+        <span class="chip">NCERT pp. 19–38</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Open a text file in the right mode, write to it, and read it back three different ways</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Move the file object around with <code>seek()</code> and <code>tell()</code> for random access</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Pickle and unpickle a Python object to and from a binary file</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction &amp; Types of Files</a>
+        <a href="#open-close"><span>2</span> Opening &amp; Closing</a>
+        <a href="#writing"><span>3</span> Writing to a Text File</a>
+        <a href="#reading"><span>4</span> Reading from a Text File</a>
+        <a href="#offsets"><span>5</span> seek() &amp; tell()</a>
+        <a href="#traversing"><span>6</span> Creating &amp; Traversing a File</a>
+        <a href="#pickle"><span>7</span> The Pickle Module</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>2.1–2.2 Introduction &amp; Types of Files</h2>
+            <p>
+              Variables in a program only live as long as the program is running. To store input
+              and output <strong>permanently</strong>, so it can be reused without re-entering it,
+              we need a <strong>file</strong> — a named location on a secondary storage media
+              where data are permanently stored for later access.
+            </p>
+            <p>Every file on disk is ultimately just a series of bytes. Python works with two broad kinds:</p>
+            <ul>
+              <li><strong>Text files</strong> — human-readable characters (<code>.txt</code>, <code>.py</code>, <code>.csv</code>, <code>.html</code>). Each byte is the ASCII/Unicode value of one character, and each line ends with an <strong>End of Line (EOL)</strong> character — <code>\n</code> by default in Python.</li>
+              <li><strong>Binary files</strong> — bytes that represent actual content (images, audio, executables) rather than character codes. They aren't human-readable and need specific software to open; even a single flipped bit can corrupt one.</li>
+            </ul>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>NCERT Activity 2.1</strong>
+                <p>Save your name in Notepad as a .txt file, then in Word as a .docx file. The .txt file's size is in bytes; the .docx is in KBs — because a .docx also stores author name, page settings, fonts and edit history, while a text file stores only the ASCII equivalent of the characters themselves.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="open-close">
+            <h2>2.3 Opening and Closing a Text File</h2>
+            <h3>2.3.1 Opening a file — <code>open()</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>file_object = open(file_name, access_mode)</code></pre>
+            </div>
+            <p>
+              This returns a <strong>file object</strong> (file handle) used for every later
+              read/write call. If the file doesn't exist, Python creates a new empty one with
+              that name. Three useful attributes: <code>file.closed</code>, <code>file.mode</code>
+              and <code>file.name</code>.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Table 2.1 — file open modes</div>
+              <pre><code>r          read-only                        offset: beginning of file
+rb         binary, read-only                offset: beginning of file
+r+ / +r    read and write                   offset: beginning of file
+w          write (overwrites if exists, else creates new) offset: beginning
+wb+ / +wb  read, write &amp; binary (overwrites or creates new) offset: beginning
+a          append (creates new if missing)  offset: end of file
+a+ / +a    append and read (creates new if missing) offset: end of file
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>myObject = open("myfile.txt", "a+")
+# opened in append + read mode -- file object starts at the END of the file
+</code></pre>
+            </div>
+
+            <h3>2.3.2 Closing a file — <code>close()</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>file_object.close()</code></pre>
+            </div>
+            <p>Closing frees the memory allocated to the file and <strong>flushes</strong> any unwritten data from the buffer to the file on disk — always close a file once you're done with it.</p>
+
+            <h3>2.3.3 Opening a file using <code>with</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>with open(file_name, access_mode) as file_object:
+    # work with file_object here</code></pre>
+            </div>
+            <p>A file opened via <code>with</code> is closed <strong>automatically</strong> once control leaves the block — even if the user forgets <code>close()</code>, or an exception occurs partway through.</p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>with open("myfile.txt", "r+") as myObject:
+    content = myObject.read()
+# myObject is already closed here -- no explicit close() needed
+</code></pre>
+            </div>
+          </section>
+
+          <section id="writing">
+            <h2>2.4 Writing to a Text File</h2>
+            <p>To write, open the file in write (<code>w</code>) or append (<code>a</code>) mode. Write mode erases any existing content first; append mode adds after it.</p>
+
+            <h3>2.4.1 <code>write()</code></h3>
+            <p>Takes a single string and writes it, returning the number of characters written. You must add <code>\n</code> yourself to end a line.</p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; myobject = open("myfile.txt", 'w')
+&gt;&gt;&gt; myobject.write("Hey I have started using files in Python\n")
+41
+&gt;&gt;&gt; myobject.close()
+</code></pre>
+            </div>
+            <p>Numeric data must be converted to a string first, e.g. <code>myobject.write(str(marks))</code>. Internally, <code>write()</code> fills a buffer; <code>close()</code> (or <code>flush()</code>) is what actually moves that buffer's contents onto permanent storage.</p>
+
+            <h3>2.4.2 <code>writelines()</code></h3>
+            <p>Writes an iterable of strings (list/tuple) in one call. Unlike <code>write()</code>, it does not return a character count.</p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; myobject = open("myfile.txt", 'w')
+&gt;&gt;&gt; lines = ["Hello everyone\n", "Writing multiline strings\n", "This is the third line"]
+&gt;&gt;&gt; myobject.writelines(lines)
+&gt;&gt;&gt; myobject.close()
+</code></pre>
+            </div>
+          </section>
+
+          <section id="reading">
+            <h2>2.5 Reading from a Text File</h2>
+            <p>The file must be opened in <code>r</code>, <code>r+</code>, <code>w+</code> or <code>a+</code> mode first. Three methods:</p>
+
+            <h3>2.5.1 <code>read(n)</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; myobject = open("myfile.txt", 'r')
+&gt;&gt;&gt; myobject.read(10)
+'Hello ever'
+&gt;&gt;&gt; myobject.close()
+
+&gt;&gt;&gt; myobject = open("myfile.txt", 'r')
+&gt;&gt;&gt; print(myobject.read())    # no argument (or negative) reads the whole file
+Hello everyone
+Writing multiline strings
+This is the third line
+</code></pre>
+            </div>
+
+            <h3>2.5.2 <code>readline([n])</code></h3>
+            <p>Reads one line, up to and including the <code>\n</code>. With <code>n</code> given, it reads at most <code>n</code> bytes, never crossing past the newline. Returns an empty string at end-of-file — the common way to loop over a file line by line.</p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; myobject = open("myfile.txt", 'r')
+&gt;&gt;&gt; myobject.readline(10)
+'Hello ever'
+
+&gt;&gt;&gt; myobject = open("myfile.txt", 'r')
+&gt;&gt;&gt; print(myobject.readline())
+'Hello everyone\n'
+</code></pre>
+            </div>
+
+            <h3>2.5.3 <code>readlines()</code></h3>
+            <p>Reads every line into a list of strings, each ending with <code>\n</code>.</p>
+            <div class="code-block">
+              <div class="code-block__label">Python shell</div>
+              <pre><code>&gt;&gt;&gt; myobject = open("myfile.txt", 'r')
+&gt;&gt;&gt; print(myobject.readlines())
+['Hello everyone\n', 'Writing multiline strings\n', 'This is the third line']
+
+&gt;&gt;&gt; d = myobject.readlines()
+&gt;&gt;&gt; for line in d:
+...     print(line.split())        # splits each line into a list of words
+['Hello', 'everyone']
+['Writing', 'multiline', 'strings']
+['This', 'is', 'the', 'third', 'line']
+
+&gt;&gt;&gt; for line in d:
+...     print(line.splitlines())   # splitlines() keeps each whole line as one element
+['Hello everyone']
+['Writing multiline strings']
+['This is the third line']
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">Program 2-1 — write, then read back</div>
+              <pre><code>fobject = open("testfile.txt", "w")
+sentence = input("Enter the contents to be written in the file: ")
+fobject.write(sentence)
+fobject.close()
+
+print("Now reading the contents of the file: ")
+fobject = open("testfile.txt", "r")
+for str in fobject:      # looping over the file object itself
+    print(str)
+fobject.close()
+</code></pre>
+            </div>
+          </section>
+
+          <section id="offsets">
+            <h2>2.6 Setting Offsets in a File — <code>seek()</code> &amp; <code>tell()</code></h2>
+            <p>The methods above read sequentially. For random access, Python gives us two more:</p>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>file_object.tell()                              # current byte position
+file_object.seek(offset[, reference_point])     # move to a byte position
+
+# reference_point: 0 = beginning (default), 1 = current position, 2 = end of file
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-2 — application of seek() and tell()</div>
+              <pre><code>fileobject = open("testfile.txt", "r+")
+str = fileobject.read()
+print(str)
+print("Initial position:", fileobject.tell())
+
+fileobject.seek(0)
+print("Back at beginning:", fileobject.tell())
+
+fileobject.seek(10)
+print("Moved to byte 10:", fileobject.tell())
+str = fileobject.read()
+print(str)
+</code></pre>
+            </div>
+            <p>With a file holding <code>roll_numbers = [1, 2, 3, 4, 5, 6]</code> (33 bytes), <code>tell()</code> reports 33 after reading it all; <code>seek(0)</code> resets to 0; <code>seek(10)</code> jumps to byte 10, and reading from there returns <code>rs = [1, 2, 3, 4, 5, 6]</code> — everything from the 11th character onward.</p>
+          </section>
+
+          <section id="traversing">
+            <h2>2.7 Creating and Traversing a Text File</h2>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-3 — create a file and write data</div>
+              <pre><code>fileobject = open("practice.txt", "w+")
+while True:
+    data = input("Enter data to save in the text file: ")
+    fileobject.write(data)
+    ans = input("Do you wish to enter more data?(y/n): ")
+    if ans == 'n':
+        break
+fileobject.close()
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-4 — traverse and display, line by line</div>
+              <pre><code>fileobject = open("practice.txt", "r")
+str = fileobject.readline()
+while str:
+    print(str)
+    str = fileobject.readline()   # returns "" at end-of-file, ending the loop
+fileobject.close()
+</code></pre>
+            </div>
+            <p>
+              Program 2-5 in the textbook combines both into one <code>w+</code> file object:
+              it writes several sentences, calls <code>fileobject.tell()</code> to report the byte
+              position reached, then <code>fileobject.seek(0)</code> to rewind to the start before
+              reading everything back with <code>read()</code> — all through the same file handle.
+            </p>
+          </section>
+
+          <section id="pickle">
+            <h2>2.8 The Pickle Module</h2>
+            <p>
+              Everything in Python — lists, tuples, dictionaries, any object — can be saved to a
+              binary file exactly as it is, using the <code>pickle</code> module.
+              <strong>Serialization</strong> (also called <strong>pickling</strong>) converts an
+              in-memory object into a stream of bytes that can be stored in a file; <strong>deserialization</strong>
+              (<strong>unpickling</strong>) reverses it. With pickle, data is <code>dump</code>ed,
+              not written, and <code>load</code>ed, not read — always against a file opened in
+              binary mode (<code>wb</code> / <code>rb</code>).
+            </p>
+
+            <h3>2.8.1 <code>dump()</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>pickle.dump(data_object, file_object)</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-6 — pickling data</div>
+              <pre><code>import pickle
+listvalues = [1, "Geetika", 'F', 26]
+fileobject = open("mybinary.dat", "wb")
+pickle.dump(listvalues, fileobject)
+fileobject.close()
+</code></pre>
+            </div>
+
+            <h3>2.8.2 <code>load()</code></h3>
+            <div class="code-block">
+              <div class="code-block__label">syntax</div>
+              <pre><code>store_object = pickle.load(file_object)</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-7 — unpickling data</div>
+              <pre><code>import pickle
+fileobject = open("mybinary.dat", "rb")
+objectvar = pickle.load(fileobject)
+fileobject.close()
+print(objectvar)
+# [1, 'Geetika', 'F', 26]
+</code></pre>
+            </div>
+
+            <h3>2.8.3 File handling with pickle — records in a loop</h3>
+            <p>
+              The textbook's full example appends employee records (<code>[eno, ename, ebasic, allow, totsal]</code>)
+              one at a time to a binary file, then reads them back by calling <code>pickle.load()</code>
+              repeatedly inside a loop — catching <code>EOFError</code> to know when the file has been fully read:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 2-8 — reading records until EOFError</div>
+              <pre><code>import pickle
+
+readrec = 1
+try:
+    with open("empfile.dat", "rb") as bfile:
+        while True:
+            edata = pickle.load(bfile)
+            print("Record Number:", readrec)
+            print(edata)
+            readrec = readrec + 1
+except EOFError:
+    pass
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why <code>except EOFError</code>?</strong>
+                <p>Unlike <code>readline()</code> on a text file, <code>pickle.load()</code> has no "empty string" signal for end-of-file — it raises <code>EOFError</code> instead once there's nothing left to unpickle. This ties directly back to Chapter 1's exception handling.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 2
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>Differentiate between: (a) text file and binary file, (b) <code>readline()</code> and <code>readlines()</code>, (c) <code>write()</code> and <code>writelines()</code>.</li>
+                <li>Write the use and syntax for: (a) <code>open()</code>, (b) <code>read()</code>, (c) <code>seek()</code>, (d) <code>dump()</code>.</li>
+                <li>
+                  Write the file mode and the Python statement to open each of these:
+                  <ol type="a">
+                    <li>a text file "example.txt" in both read and write mode</li>
+                    <li>a binary file "bfile.dat" in write mode</li>
+                    <li>a text file "try.txt" in append and read mode</li>
+                    <li>a binary file "btry.dat" in read-only mode</li>
+                  </ol>
+                </li>
+                <li>Why is it advised to close a file after read/write operations? What happens if you don't — will an error be flashed?</li>
+                <li>
+                  What is the difference between:
+                  <div class="code-block">
+                    <div class="code-block__label">(a) vs (b)</div>
+                    <pre><code># (a)
+P = open("practice.txt", "r")
+P.read(10)
+
+# (b)
+with open("practice.txt", "r") as P:
+    x = P.read()
+</code></pre>
+                  </div>
+                </li>
+                <li>Write command(s) to append these three lines to <code>hello.txt</code>: "Welcome my class", "It is a fun place", "You will learn and play".</li>
+                <li>Open <code>hello.txt</code> from Question 6 in read mode and display its contents. What would differ if it had been opened in write mode instead of append mode?</li>
+                <li>Accept strings from the user until they type "END", save them to a text file, then display only the sentences that begin with an uppercase letter.</li>
+                <li>Define pickling. Explain serialization and deserialization of a Python object.</li>
+                <li>Write a program that accepts <code>Item_No</code> (int), <code>Item_Name</code> (string), <code>Qty</code> (int) and <code>Price</code> (float) records into a binary file, then reads them back and prints each with a computed <code>Amount = Price * Qty</code>.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-01.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 1: Exception Handling in Python</span>
+          </a>
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 3: Stack</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

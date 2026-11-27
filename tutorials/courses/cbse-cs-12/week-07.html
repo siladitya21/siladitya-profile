@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 7: Understanding Data — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 7 of CBSE Class 12 Computer Science (083): structured vs. unstructured data, the data processing cycle, and statistical techniques — mean, median, mode, range, standard deviation — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Database Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 7</span>
+      </div>
+
+      <h1>Chapter 7: Understanding Data</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Before databases and SQL, this
+        chapter steps back to ask what data actually is: structured vs. unstructured, how it's
+        collected, stored and processed, and the <strong>statistical techniques</strong> —
+        mean, median, mode, range and standard deviation — used to summarise it into something a
+        human can actually act on.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 7 of 13</span>
+        <span class="chip">NCERT pp. 97–110</span>
+        <span class="chip">~2–3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Classify data as structured or unstructured, and explain metadata</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Walk through the input → processing → output data cycle for a real scenario</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Calculate mean, median, mode, range and standard deviation by hand</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction to Data</a>
+        <a href="#collection"><span>2</span> Data Collection</a>
+        <a href="#storage"><span>3</span> Data Storage</a>
+        <a href="#processing"><span>4</span> Data Processing</a>
+        <a href="#stats"><span>5</span> Statistical Techniques</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>7.1 Introduction to Data</h2>
+            <p>
+              <strong>Data</strong> is a collection of characters, numbers and other symbols
+              representing values of some situation or variable — the singular of "data" is
+              "datum." On its own, raw data (like 2,000 placement records) doesn't tell you
+              anything; it has to be <strong>processed and analysed</strong> before it supports a
+              decision.
+            </p>
+
+            <h3>7.1.2 Types of Data</h3>
+            <ul>
+              <li><strong>Structured data</strong> — organised in a well-defined, tabular (rows/columns) format; each column is an <strong>attribute</strong>, each row an <strong>observation</strong>. E.g. a shop's inventory table, or <code>StudentName, Class, RollNo, FeesAmount, DepositDate</code> for fee records.</li>
+              <li><strong>Unstructured data</strong> — no fixed row/column pattern: newspaper layouts, emails, web pages, social media posts, documents, audio/video. Described using <strong>metadata</strong> ("data about data") — e.g. an email's subject/recipient/attachment fields, or an image's size/type/resolution.</li>
+            </ul>
+          </section>
+
+          <section id="collection">
+            <h2>7.2 Data Collection</h2>
+            <p>
+              Before processing, data must be gathered — either digitising paper records (diary →
+              spreadsheet), using data already in digital form (a CSV file), or building new
+              software (in Python, say) to collect and store it via a CSV file or a DBMS like
+              MySQL. Hospitals, shopping malls, social media platforms, the World Bank and IMF all
+              continuously collect data for their own decision-making.
+            </p>
+          </section>
+
+          <section id="storage">
+            <h2>7.3 Data Storage</h2>
+            <p>
+              Data is kept for future use on storage devices — HDD, SSD, CD/DVD, tape drive, pen
+              drive, memory card. We store it as <strong>files</strong>, but plain file processing
+              has limitations (covered properly in Chapter 8) that a <strong>Database Management
+              System (DBMS)</strong> overcomes.
+            </p>
+          </section>
+
+          <section id="processing">
+            <h2>7.4 Data Processing</h2>
+            <p>The <strong>data processing cycle</strong> turns raw data into usable information:</p>
+            <div class="code-block">
+              <div class="code-block__label">The data process cycle</div>
+              <pre><code>INPUT                   PROCESSING              OUTPUT
+Data Collection    →    Store, Retrieve,    →    Reports,
+Data Preparation        Classify, Update         Results,
+Data Entry                                       Processing System
+
+RAW DATA (numbers/text/image) --Data Processing--&gt; INFORMATION (table/chart/text)
+</code></pre>
+            </div>
+            <p>Example — issuing a train ticket: <strong>Input</strong> = journey details, class, berth preference, payment info. <strong>Processing</strong> = verify login, check berth availability, deduct from available tickets, allocate PNR. <strong>Output</strong> = a confirmed ticket with berth/coach number, or a waiting-list number.</p>
+          </section>
+
+          <section id="stats">
+            <h2>7.5 Statistical Techniques for Data Processing</h2>
+
+            <h3>7.5.1 Measures of Central Tendency</h3>
+            <p>A single value that summarises a data set — mean, median or mode.</p>
+
+            <div class="code-block">
+              <div class="code-block__label">(A) Mean — the average</div>
+              <pre><code>mean = (sum of all n values) / n
+
+Heights (cm): [90,102,110,115,85,90,100,110,110]
+mean = (90+102+110+115+85+90+100+110+110) / 9 = 912/9 = 101.33 cm
+</code></pre>
+            </div>
+            <p>Mean is unsuitable when the data has <strong>outliers</strong> (exceptionally large/small values) — remove them first, then compute mean on the rest.</p>
+
+            <div class="code-block">
+              <div class="code-block__label">(B) Median — the middle value, once sorted</div>
+              <pre><code>Sorted heights: [85,90,90,100,102,110,110,110,115]   (9 values, odd count)
+median = value at position 5 = 102 cm
+
+-- even count: median = average of the two middle values
+</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-block__label">(C) Mode — the most frequent value</div>
+              <pre><code>In [90,102,110,115,85,90,100,110,110], 110 occurs 3 times --
+more than any other value, so mode = 110.
+-- A data set with every value appearing once has no mode.
+-- More than one value can tie for mode (multimodal).
+</code></pre>
+            </div>
+
+            <h3>7.5.2 Measures of Variability</h3>
+            <p>How spread out the data is — Range and Standard Deviation.</p>
+
+            <div class="code-block">
+              <div class="code-block__label">(A) Range</div>
+              <pre><code>Range = Maximum - Minimum
+
+Heights: max = 115, min = 85  →  Range = 115 - 85 = 30 cm
+</code></pre>
+            </div>
+            <p>Range only uses the two extremes, so an outlier badly distorts it.</p>
+
+            <div class="code-block">
+              <div class="code-block__label">(B) Standard deviation — spread around the mean, using every value</div>
+              <pre><code>σ = sqrt( Σ(xi - mean)^2 / n )
+
+For the 9 heights (mean = 101.33):
+Σ(xi - mean)^2 = 938.00
+σ = sqrt(938.00 / 9) = sqrt(104.22) ≈ 10.2 cm
+</code></pre>
+            </div>
+            <p>Smaller σ → data clustered tightly around the mean. Larger σ → data more spread out. Unlike Range, standard deviation accounts for <em>every</em> value, not just the extremes.</p>
+
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Picking the right technique — exam pattern</strong>
+                <p>"Disparity in salaries" → Standard Deviation or Range. "Average class performance" → Mean. "Dominant/most common value" → Mode. "Middle-ranked value, resistant to outliers" → Median.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 7
+              </span>
+              <h3>Work through these conceptually</h3>
+              <ol>
+                <li>Identify the data needed for: (a) declaring exam results/e-certificates, (b) registering exhibition participants with biometric IDs, (c) an image search engine, (d) booking a hospital OPD appointment.</li>
+                <li>A school of 500 students wants a merit-cum-means scholarship list (&gt;75% for 2 consecutive years, family income &lt; ₹5 lakh/year). Describe the data processing steps.</li>
+                <li>A bank wants to gauge its popularity in a city by accounts-per-family and average monthly balance. Describe the data collection steps and what the processing could reveal.</li>
+                <li>Classify the data type generated by: (a) recording a video, (b) a teacher marking attendance, (c) writing tweets, (d) filling an online application form.</li>
+                <li>For a week's temperatures (°C): 34, 34, 27, 28, 27, 34, 34 — find (a) the average, (b) the range, (c) the standard deviation.</li>
+                <li>A teacher wants to: (a) compare division secured between two equal-strength classes, (b) compare class performance across five monthly unit tests. Identify the right statistical technique for each, with justification.</li>
+                <li>For a school honouring parents who are alumni: (a) which technique counts students with both parents as alumni? (b) which technique measures how varied the parents' ages are?</li>
+                <li>Selecting an anchor from 42 students by singing/writing/monitoring skill: (a) what data collection mode would you use? (b) how would you represent "skill" as data?</li>
+                <li>
+                  Differentiate structured vs. unstructured data with an example. Then, for a school canteen's purchase/sale data:
+                  <ul>
+                    <li>Compare purchase vs. sale price of fruit juice and biscuits.</li>
+                    <li>Compare sales of fruit juice, biscuits and samosa.</li>
+                    <li>Compare sale-price variation of fruit juices across companies for the same quantity.</li>
+                  </ul>
+                  Create a sample dataset and apply the right statistical technique to each comparison.
+                </li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 6: Searching</span>
+          </a>
+          <a href="week-08.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 8: Database Concepts</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

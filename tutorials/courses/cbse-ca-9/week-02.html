@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 2: Cyber Safety — CBSE Class 9 Computer Applications</title>
+<meta name="description" content="Chapter 2 of CBSE Class 9 Computer Applications (165): safe web browsing and social network use, protecting identity, passwords, privacy, confidentiality, cyberstalking, reporting cybercrime, and malware (viruses and adware) — based on the official CBSE curriculum, Unit 2 (15 marks)." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-9">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-9/index.html" class="nav-course-card c-cbse-ca-9" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 9 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-9/index.html">CBSE Class 9 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-9/index.html#timeline">Unit 2</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 2</span>
+      </div>
+
+      <h1>Chapter 2: Cyber Safety</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum, Unit 2 — 15 marks.
+        With networking and software covered, this chapter addresses the risks that come with
+        actually using the Internet day to day: browsing safely, protecting your identity and
+        accounts, respecting others' privacy, recognising cyberstalking, knowing how to report
+        cybercrime, and the two malware types this syllabus names specifically.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 2 of 6</span>
+        <span class="chip">Unit 2 — 15 Marks</span>
+        <span class="chip">~2 Hours</span>
+        <span class="chip">Exam-style Questions Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>List practical steps for safe browsing and social network use</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Create a strong password and explain why privacy/confidentiality matter online</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Recognise cyberstalking, know how to report cybercrime, and tell a virus from adware</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#browsing"><span>1</span> Safe Web Browsing &amp; Social Networks</a>
+        <a href="#identity"><span>2</span> Protecting Your Identity &amp; Passwords</a>
+        <a href="#privacy"><span>3</span> Privacy &amp; Confidentiality</a>
+        <a href="#stalking"><span>4</span> Cyberstalking &amp; Reporting Cybercrime</a>
+        <a href="#malware"><span>5</span> Malware — Viruses &amp; Adware</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="browsing">
+            <h2>2.1 Safe Web Browsing and Social Network Use</h2>
+            <div class="code-block">
+              <div class="code-block__label">Habits that keep browsing safe</div>
+              <pre><code>- Check for "https://" and a padlock icon before entering any
+  personal or payment information on a website
+- Don't click links or download attachments from unknown senders
+- Keep your browser and antivirus software updated
+- Download software/apps only from official, trusted sources
+- Think before you post -- once something is online, it can be
+  copied, screenshotted, or shared beyond your control
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Safe social network habits</div>
+              <pre><code>- Keep your profile/posts private, or visible only to people you
+  actually know
+- Don't accept friend/follow requests from strangers
+- Never share your home address, school name, or daily schedule
+  publicly
+- Be cautious about tagging your exact location in posts/photos
+</code></pre>
+            </div>
+          </section>
+
+          <section id="identity">
+            <h2>2.2 Protecting Your Identity and Using Passwords Properly</h2>
+            <div class="code-block">
+              <div class="code-block__label">What makes a password strong</div>
+              <pre><code>- At least 8-12 characters long
+- A MIX of uppercase, lowercase, numbers AND special characters
+- NOT a common word, your name, or an easily guessed date (like a
+  birthday)
+- DIFFERENT for every important account -- so one leaked password
+  doesn't unlock everything else
+- Changed periodically, and immediately if you suspect it's been
+  seen by someone else
+- NEVER shared with anyone, even a friend
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Weak vs. strong password — exam example</strong>
+                <p>Weak: <code>password123</code> or <code>rahul2010</code> (predictable, personal, no variety). Strong: something like <code>Tr#9kLm!2qW</code> — unrelated to personal details, mixing character types, hard to guess or crack.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="privacy">
+            <h2>2.3 Privacy and Confidentiality of Information</h2>
+            <div class="code-block">
+              <div class="code-block__label">Two related but distinct ideas</div>
+              <pre><code>PRIVACY        your right to control who sees YOUR personal
+               information (photos, location, messages, habits)
+
+CONFIDENTIALITY  the obligation to keep information someone SHARED
+                 WITH YOU protected, and not disclose it without
+                 their permission (a friend's private message, a
+                 classmate's phone number)
+</code></pre>
+            </div>
+            <p>
+              Respecting both means thinking twice before posting photos that include other
+              people, forwarding someone's private message, or sharing information a friend
+              trusted you with.
+            </p>
+          </section>
+
+          <section id="stalking">
+            <h2>2.4 Cyberstalking and Reporting Cybercrime</h2>
+            <div class="code-block">
+              <div class="code-block__label">Cyberstalking</div>
+              <pre><code>Using the Internet (messages, social media, tracking apps, repeated
+unwanted contact) to harass, intimidate, or monitor a person
+persistently -- causing them fear or distress.
+
+Warning signs: repeated unwanted messages, someone tracking your
+online activity/location, fake accounts created to watch or
+contact you after being blocked.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">What to do — reporting cybercrime</div>
+              <pre><code>- Do NOT respond to or engage with the harasser
+- SAVE evidence -- screenshots, messages, usernames, dates/times
+- BLOCK the person on the platform where it's happening
+- Tell a trusted adult (parent/teacher) immediately
+- Report it through the platform's own reporting tool
+- For serious cases, India has a dedicated National Cyber Crime
+  Reporting Portal where incidents can be formally reported
+</code></pre>
+            </div>
+          </section>
+
+          <section id="malware">
+            <h2>2.5 Malware — Viruses and Adware</h2>
+            <div class="code-block">
+              <div class="code-block__label">The two malware types named in this syllabus</div>
+              <pre><code>VIRUS
+  Malicious code that attaches itself to a legitimate file/program
+  and SPREADS by copying itself to other files/computers when that
+  infected file is opened or shared. Can delete/corrupt data, slow
+  the system down, or cause programs to malfunction.
+
+ADWARE
+  Software that automatically displays or downloads unwanted
+  advertisements (pop-ups, banners) on your device. Usually less
+  destructive than a virus, but can slow performance, track
+  browsing habits without consent, or create an opening for other
+  malware via unsafe ad links.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Basic protection</div>
+              <pre><code>- Install and regularly update antivirus software
+- Don't install pirated or unknown free software
+- Avoid clicking pop-up ads, especially ones promising free prizes
+- Scan any USB/pen drive before opening its files
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 2 Practice Questions
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>List any four safe browsing practices you should follow.</li>
+                <li>What makes a password strong? Write one weak and one strong example password, and explain why.</li>
+                <li>Differentiate between privacy and confidentiality with an example of each.</li>
+                <li>What is cyberstalking? List three warning signs that someone might be a victim of it.</li>
+                <li>You suspect a classmate is being cyberstalked online. List the steps you'd advise them to take.</li>
+                <li>Differentiate between a computer virus and adware.</li>
+                <li>Why should you avoid sharing your home address or daily schedule on a public social media profile?</li>
+                <li>What information should you NEVER share with anyone, even a friend, regarding your online accounts?</li>
+                <li>Name the official Indian portal where a cybercrime incident can be formally reported.</li>
+                <li>List two precautions to take before inserting an unknown pen drive into your computer.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-01.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 1: Basics of Information Technology</span>
+          </a>
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 3: Office Tools — Word Processor</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-9/index.html">CBSE Class 9 Computer Applications</a>
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

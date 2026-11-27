@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 1: Computer System — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 1 of CBSE Class 11 Computer Science (083): CPU, input/output devices, evolution of computers, memory types, system bus, microprocessors, data types, software categories and the operating system — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Fundamentals Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 1</span>
+      </div>
+
+      <h1>Chapter 1: Computer System</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Before any programming, the
+        syllabus starts with the machine itself — the CPU and its registers, input/output
+        devices, how computing evolved from the abacus to the smartphone, the memory hierarchy
+        (RAM, ROM, cache, secondary storage), how data actually moves around a system bus,
+        microprocessors vs. microcontrollers, the three types of data, and the software stack
+        that makes hardware usable — ending with the operating system itself.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 1 of 11</span>
+        <span class="chip">NCERT pp. 1–26</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Draw and label a computer system's block diagram, and explain each component</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Distinguish RAM from ROM, and primary from secondary memory</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Classify any piece of software as system, programming tool, or application software</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction to Computer System</a>
+        <a href="#evolution"><span>2</span> Evolution of Computer</a>
+        <a href="#memory"><span>3</span> Computer Memory</a>
+        <a href="#bus"><span>4</span> Data Transfer: Memory &amp; CPU</a>
+        <a href="#microprocessors"><span>5</span> Microprocessors</a>
+        <a href="#data"><span>6</span> Data and Information</a>
+        <a href="#software"><span>7</span> Software</a>
+        <a href="#os"><span>8</span> Operating System</a>
+        <a href="#exercise"><span>9</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>1.1 Introduction to Computer System</h2>
+            <p>
+              A <strong>computer</strong> is an electronic device programmed to accept data
+              (input), process it, and generate a result (output). A computer along with
+              additional hardware and software together is called a <strong>computer
+              system</strong> — it primarily comprises a CPU, memory, input/output devices and
+              storage devices, all working together as one unit.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Block diagram of a computer system</div>
+              <pre><code>Input Device --&gt; [ CPU: Control Unit (CU) &lt;-&gt; Arithmetic Logic Unit (ALU)
+                       &lt;-&gt; Primary Memory ] --&gt; Output Device
+                                   |
+                        Secondary Storage Devices
+</code></pre>
+            </div>
+            <h3>1.1.1 Central Processing Unit (CPU)</h3>
+            <p>
+              The "brain of the computer" — carries out actual processing, physically placed on
+              one or more microchips (integrated circuits). The CPU fetches program and data from
+              memory, performs operations per the instructions, and stores results back. While
+              processing, it uses its own local memory called <strong>registers</strong> (limited
+              in size and number). Two main components: <strong>ALU</strong> (performs arithmetic
+              and logic operations) and <strong>CU</strong> (controls sequential instruction
+              execution and guides data flow). CPU is popularly called a <strong>microprocessor</strong>.
+            </p>
+            <h3>1.1.2 &amp; 1.1.3 Input and Output Devices</h3>
+            <p>
+              <strong>Input devices</strong> send control signals/data to a computer, converting
+              it into digital form — keyboard, mouse, scanner, touch screen, braille keyboards,
+              voice input. Data entered is temporarily stored in RAM; for permanent storage it
+              goes to secondary memory. <strong>Output devices</strong> convert digital
+              information into human-understandable form — monitor, projector, speaker, printer
+              (inkjet/laserjet/dot matrix), 3D printer, braille display monitor.
+            </p>
+          </section>
+
+          <section id="evolution">
+            <h2>1.2 Evolution of Computer</h2>
+            <div class="code-block">
+              <div class="code-block__label">Timeline of key inventions</div>
+              <pre><code>500 BC   Abacus -- mechanical device, simple arithmetic only
+1642     Pascaline -- Blaise Pascal's mechanical calculator
+1834     Analytical Engine -- Charles Babbage's design: input, process,
+         store, display -- considered the basis of modern computers
+1890     Tabulating Machine -- Herman Hollerith, summarised punched-card
+         data; first real step toward programming
+1937     Turing Machine -- Alan Turing's general-purpose programmable
+         concept: solve any problem by executing a program from punched cards
+1945     EDVAC/ENIAC -- John Von Neumann's STORED PROGRAM concept:
+         data AND program both held in memory
+1947     Transistor -- replaced vacuum tubes (Bell Labs, semiconductors)
+1970     Integrated Circuit (IC) -- entire circuit on one silicon chip;
+         computers shrank drastically
+</code></pre>
+            </div>
+            <p>
+              The <strong>Von Neumann architecture</strong> (CPU + memory + I/O + communication
+              channels) underlies ENIAC, the first binary programmable computer built on it.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Later milestones</div>
+              <pre><code>1970s   Large Scale Integration (LSI) -- full CPU on one chip = microprocessor
+1980s   Very Large Scale Integration (VLSI) -- ~3 million components/chip
+Later   Super Large Scale Integration (SLSI) -- ~10^6 components/chip
+1981    IBM's first home-user PC
+1984    Apple Macintosh
+1990s   GUI-based OSes (replacing command-line UNIX/DOS) + growth of WWW
+Later   Laptops, smartphones, tablets, wearables, IoT + AI-powered appliances
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Moore's Law</strong>
+                <p>Intel co-founder Gordon Moore (1965) predicted the number of transistors on a chip would double every two years while cost halved — an exam-favourite fact.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="memory">
+            <h2>1.3 Computer Memory</h2>
+            <h3>1.3.1 Units of Memory</h3>
+            <div class="code-block">
+              <div class="code-block__label">Bit → Nibble → Byte → bigger units</div>
+              <pre><code>Bit     a single binary digit, 0 or 1
+Nibble  4 bits   (e.g. 1001)
+Byte    8 bits = 2 nibbles (e.g. 01000110)
+
+1 KB = 1024 Bytes       1 PB = 1024 TB
+1 MB = 1024 KB          1 EB = 1024 PB
+1 GB = 1024 MB          1 ZB = 1024 EB
+1 TB = 1024 GB          1 YB = 1024 ZB
+</code></pre>
+            </div>
+            <h3>1.3.2 Types of Memory</h3>
+            <div class="code-block">
+              <div class="code-block__label">Primary, Cache &amp; Secondary memory</div>
+              <pre><code>RAM (Random Access Memory)
+  VOLATILE -- contents wiped when power is off
+  stores data/programs temporarily while the computer works
+  faster than secondary storage; usually called "main memory"
+
+ROM (Read Only Memory)
+  NON-VOLATILE -- contents survive power-off
+  small, fast, permanent storage for rarely-changed content
+  e.g. the boot loader that loads the OS into RAM
+
+CACHE MEMORY
+  very high-speed memory BETWEEN the CPU and RAM
+  stores copies of frequently-accessed RAM locations
+  CPU checks cache FIRST; only falls back to RAM on a miss
+
+SECONDARY MEMORY (storage devices)
+  non-volatile, larger capacity, slower, cheaper than RAM
+  CANNOT be accessed directly by the CPU -- must first be
+  brought into main memory
+  e.g. HDD, SSD, CD/DVD, memory card, pen drive, tape drive
+</code></pre>
+            </div>
+          </section>
+
+          <section id="bus">
+            <h2>1.4 Data Transfer between Memory and CPU</h2>
+            <p>
+              Components transfer data using physical wires called a <strong>bus</strong>. Three
+              types combine into the <strong>system bus</strong>:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Data bus, Address bus, Control bus</div>
+              <pre><code>DATA BUS      transfers data between components -- BIDIRECTIONAL
+              (CPU both reads from and writes to memory)
+ADDRESS BUS   carries the memory address to read/write -- UNIDIRECTIONAL
+CONTROL BUS   carries control signals (read/write commands) -- UNIDIRECTIONAL
+</code></pre>
+            </div>
+            <p>
+              To write: CPU puts data on the data bus and the target address on the address bus.
+              To read: CPU specifies the address; a dedicated hardware component called the
+              <strong>memory controller</strong> places the requested data onto the data bus.
+            </p>
+          </section>
+
+          <section id="microprocessors">
+            <h2>1.5 Microprocessors</h2>
+            <p>A CPU implemented on a single microchip is a <strong>microprocessor</strong> — today the two terms are used interchangeably.</p>
+            <div class="code-block">
+              <div class="code-block__label">Table 1.2 — Microprocessor generations (condensed)</div>
+              <pre><code>Gen 1 (1971-73)  LSI,  4/8-bit,  1 KB      -- Intel 8080
+Gen 2 (1974-78)  LSI,  8-bit,    1 MB      -- Motorola 6800, Intel 8085
+Gen 3 (1979-80)  VLSI, 16-bit,   16 MB     -- Intel 8086
+Gen 4 (1981-95)  VLSI, 32-bit,   4 GB      -- Intel 80386
+Gen 5 (1995-now) SLSI, 64-bit,   64 GB, Multicore -- Pentium, Celeron, Xeon
+</code></pre>
+            </div>
+            <h3>1.5.1 Microprocessor Specifications</h3>
+            <div class="code-block">
+              <div class="code-block__label">Word size, memory size, clock speed, cores</div>
+              <pre><code>WORD SIZE    max bits processed at once (now 16-64 bits)
+MEMORY SIZE  RAM scales with word size (e.g. 64-bit -&gt; up to 16 EB)
+CLOCK SPEED  pulses/second from the internal clock; now in GHz
+CORES        independent computation units -- dual/quad/octa-core CPUs
+             run multiple tasks truly in parallel
+</code></pre>
+            </div>
+            <h3>1.5.2 Microcontrollers</h3>
+            <p>
+              A <strong>microcontroller</strong> packs a CPU + fixed RAM + ROM + peripherals all
+              on ONE chip (vs. a microprocessor, which has only the CPU). Embedded in devices for
+              one specific job — keyboard, mouse, washing machine, digital camera, remote
+              controller, microwave — reducing both size and cost.
+            </p>
+          </section>
+
+          <section id="data">
+            <h2>1.6 Data and Information</h2>
+            <p>A computer treats everything — instructions, pictures, songs, documents — as data: raw, unorganised facts that become meaningful information once processed.</p>
+            <div class="code-block">
+              <div class="code-block__label">1.6.1 — Three types of data</div>
+              <pre><code>STRUCTURED DATA
+  strict, pre-specified tabular (row/column) format -- easy to sort/
+  comprehend. E.g. sales transactions, ATM transactions, attendance
+  tables.
+
+UNSTRUCTURED DATA
+  no pre-defined record format. E.g. audio/video files, graphics,
+  text documents, social media posts, satellite images, a report
+  card combining text + graphics.
+
+SEMI-STRUCTURED DATA
+  no fixed structure, but uses TAGS/markers to separate data elements.
+  E.g. email documents, HTML pages, CSV files.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">1.6.2–1.6.3 — Data lifecycle</div>
+              <pre><code>CAPTURING    gathering data digitally (keyboard, barcode reader,
+             social media, remote sensors)
+STORAGE      saving captured data for later processing (data servers
+             for large organisations)
+RETRIEVAL    fetching stored data for processing on demand
+DELETION     usually just marks the space as "free" -- doesn't
+             actually erase the bits, which is why RECOVERY is often
+             possible (if not yet overwritten)
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Two data security concerns — exam favourite</strong>
+                <p>Unauthorised <em>deletion</em> (mitigated by passwords, access limits, encryption) vs. unauthorised <em>recovery</em> from discarded storage devices (mitigated by properly shredding/wiping data before disposal).</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="software">
+            <h2>1.7 Software</h2>
+            <p>Hardware is useless without software — the set of instructions and data that make it functional. Three broad categories:</p>
+            <div class="code-block">
+              <div class="code-block__label">1.7.2–1.7.4 — System software, Programming tools, Application software</div>
+              <pre><code>SYSTEM SOFTWARE  interacts directly with hardware, provides basic
+  functionality. Includes:
+    - Operating System (manages everything)
+    - System Utilities (disk defrag, antivirus, disk cleaner)
+    - Device Drivers (interface between OS and a specific device)
+
+PROGRAMMING TOOLS  for writing/translating code:
+  Low-level languages (machine-dependent): machine language, assembly
+  High-level languages (machine-independent, e.g. C++/Java/Python)
+  Translators: ASSEMBLER (assembly -&gt; machine code), COMPILER
+    (whole high-level program -&gt; machine code, THEN runs), INTERPRETER
+    (translates and runs ONE line at a time -- always needed at runtime)
+  IDE: text editor + build tools + debugger in one (e.g. Python IDLE)
+
+APPLICATION SOFTWARE  built ON TOP of system software, for end users:
+  - General purpose (ready-made, broad audience): LibreOffice Calc,
+    Photoshop, a web browser
+  - Customised (tailor-made for one org/individual): a school
+    management system, a custom accounting tool
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">1.7.5 — Proprietary vs. Freeware vs. FOSS</div>
+              <pre><code>FOSS (Free and Open Source Software)  source code + software BOTH
+  free -- e.g. Python, LibreOffice, Ubuntu, Mozilla Firefox
+
+FREEWARE  software is free to USE, but source code is NOT available
+  -- e.g. Skype, Adobe Reader
+
+PROPRIETARY SOFTWARE  must be purchased from the copyright holder
+  -- e.g. Microsoft Windows, Tally, Quick Heal
+</code></pre>
+            </div>
+          </section>
+
+          <section id="os">
+            <h2>1.8 Operating System</h2>
+            <p>
+              The OS is a <strong>resource manager</strong> — it manages CPU, RAM, disk, network
+              and I/O devices, controls application software and device drivers, and handles
+              security/user access. Two primary objectives: (1) run application programs, and (2)
+              provide the user interface.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">1.8.1 — Five types of user interface</div>
+              <pre><code>COMMAND-BASED   type exact commands (keyboard); e.g. MS-DOS, UNIX
+GRAPHICAL (GUI) icons/menus/windows; mouse + keyboard; Windows, Ubuntu
+TOUCH-BASED     touchscreen taps/swipes; Android, iOS
+VOICE-BASED     spoken commands; Siri, "OK Google", Cortana
+GESTURE-BASED   waving/tilting/eye motion; emerging smartphone/laptop tech
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">1.8.2 — Four core functions of an OS</div>
+              <pre><code>PROCESS MANAGEMENT  allocate CPU among running "processes"
+                     (Ctrl+Alt+Delete opens the process/task monitor)
+MEMORY MANAGEMENT    allocate/free RAM to processes dynamically,
+                     without disturbing other running processes
+FILE MANAGEMENT      create/update/delete/PROTECT files on secondary
+                     storage (stops one user accessing another's files)
+DEVICE MANAGEMENT    coordinate I/O devices via their drivers; also
+                     restricts device access to authorised users
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>9. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 1
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>Name the software required to make a computer functional. What are its two primary services?</li>
+                <li>How does the computer understand a program written in a high-level language? Why is machine-code execution time shorter than source-code "execution"?</li>
+                <li>What is the need for RAM? How does it differ from ROM? Why is secondary memory needed at all?</li>
+                <li>How do different components of the computer communicate with each other? Draw the block diagram of a computer system and briefly describe each component.</li>
+                <li>What is the primary role of a system bus? Why is the data bus bidirectional while the address bus is unidirectional?</li>
+                <li>Differentiate between proprietary and freeware software, naming two examples of each.</li>
+                <li>What's the main difference between a microcontroller and a microprocessor? Why do smart home appliances embed a microcontroller rather than a microprocessor?</li>
+                <li>Name the types of data you deal with while browsing the Internet. Categorise these as structured/semi-structured/unstructured: Newspaper, Cricket Match Score, HTML Page, Patient records in a hospital.</li>
+                <li>Name the input/output device used to: (a) output audio, (b) enter textual data, (c) make a hard copy of a text file, (d) display data, (e) enter an audio-based command, (f) build 3D models, (g) assist a visually-impaired person entering data.</li>
+                <li>Identify the category (system/application/programming tool) of: (a) Compiler, (b) Assembler, (c) Ubuntu, (d) Text editor.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="../cbse-cs-11/index.html#timeline" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Full Syllabus</span>
+          </a>
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 2: Encoding Schemes and Number System</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 9: Lists — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 9 of CBSE Class 11 Computer Science (083): list operations, traversal, built-in list methods, nested lists, copying lists, lists as function arguments, and list manipulation — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Python Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 9</span>
+      </div>
+
+      <h1>Chapter 9: Lists</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Lists are Python's mutable,
+        general-purpose sequence — this chapter covers list operations (concatenation, repetition,
+        membership, slicing), traversal, the full table of built-in list methods, nested lists,
+        the three ways to properly copy a list, the surprising behaviour of passing a list as a
+        function argument, and a complete menu-driven list manipulation program.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 9 of 11</span>
+        <span class="chip">NCERT pp. 189–206</span>
+        <span class="chip">~4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use every core list method correctly: <code>append</code>, <code>insert</code>, <code>remove</code>, <code>pop</code>, <code>sort</code>, <code>reverse</code></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain why <code>list2 = list1</code> is an alias, and name three ways to make a true copy</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Predict whether a function's changes to a list argument will be visible to the caller</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction to List</a>
+        <a href="#operations"><span>2</span> List Operations</a>
+        <a href="#traversal"><span>3</span> Traversing a List</a>
+        <a href="#methods"><span>4</span> Methods &amp; Built-in Functions</a>
+        <a href="#nested"><span>5</span> Nested Lists</a>
+        <a href="#copying"><span>6</span> Copying Lists</a>
+        <a href="#argument"><span>7</span> List as Argument to a Function</a>
+        <a href="#manipulation"><span>8</span> List Manipulation</a>
+        <a href="#exercise"><span>9</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>9.1 Introduction to List</h2>
+            <p>
+              A <strong>list</strong> is an ordered, <strong>mutable</strong> sequence that can mix
+              data types — integers, floats, strings, tuples, even other lists — all in one list.
+              Elements sit in square brackets, comma-separated; indexing starts at 0, exactly like strings.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">9.1.1–9.1.2 — Accessing elements &amp; mutability</div>
+              <pre><code>list1 = [2,4,6,8,10,12]
+list1[0]     # 2         list1[-1]  # 12 (first from the right)
+list1[15]    # IndexError: list index out of range
+n = len(list1); list1[n-1]  # 12 (last element)
+
+#UNLIKE strings, lists CAN be changed after creation:
+list1 = ['Red','Green','Blue','Orange']
+list1[3] = 'Black'
+# list1 -> ['Red', 'Green', 'Blue', 'Black']
+</code></pre>
+            </div>
+          </section>
+
+          <section id="operations">
+            <h2>9.2 List Operations</h2>
+            <div class="code-block">
+              <div class="code-block__label">9.2.1–9.2.3 — Concatenation, Repetition, Membership</div>
+              <pre><code>list1 = [1,3,5,7,9]
+list2 = [2,4,6,8,10]
+list1 + list2        # [1,3,5,7,9,2,4,6,8,10] -- list1, list2 themselves unchanged
+
+list1 = [1,2,3]
+str1 = "abc"
+list1 + str1         # TypeError: can only concatenate list (not "str") to list
+
+['Hello'] * 4         # ['Hello','Hello','Hello','Hello']
+
+list1 = ['Red','Green','Blue']
+'Green' in list1      # True
+'Cyan' not in list1   # True
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">9.2.4 — Slicing (identical rules to strings)</div>
+              <pre><code>list1 = ['Red','Green','Blue','Cyan','Magenta','Yellow','Black']
+list1[2:6]     # ['Blue','Cyan','Magenta','Yellow']
+list1[2:20]    # truncates to the end, no error
+list1[7:2]     # []   -- first index > second -> empty list
+list1[:5]      # from the start up to (not incl.) index 5
+list1[0:6:2]   # ['Red','Blue','Magenta']        -- step size 2
+list1[::-1]    # whole list, REVERSED
+</code></pre>
+            </div>
+          </section>
+
+          <section id="traversal">
+            <h2>9.3 Traversing a List</h2>
+            <div class="code-block">
+              <div class="code-block__label">for loop (two styles) and while loop</div>
+              <pre><code>list1 = ['Red','Green','Blue','Yellow','Black']
+for item in list1:
+    print(item)
+
+for i in range(len(list1)):   # when you need the INDEX too
+    print(list1[i])
+
+i = 0
+while i < len(list1):
+    print(list1[i])
+    i += 1
+</code></pre>
+            </div>
+          </section>
+
+          <section id="methods">
+            <h2>9.4 List Methods and Built-in Functions</h2>
+            <div class="code-block">
+              <div class="code-block__label">Adding elements — append, extend, insert</div>
+              <pre><code>list1 = [10,20,30,40]
+list1.append(50)            # [10,20,30,40,50]
+list1.append([50,60])       # adds the WHOLE list as ONE nested element!
+
+list2 = [40,50]
+list1.extend(list2)         # appends EACH element of list2 individually
+
+list1.insert(2,25)          # inserts 25 at index 2, shifting the rest right
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Finding &amp; removing — count, index, remove, pop</div>
+              <pre><code>list1 = [10,20,30,10,40,10]
+list1.count(10)        # 3
+list1.index(20)        # 1  (first occurrence)
+list1.index(90)        # ValueError: 90 is not in list
+
+list1 = [10,20,30,40,50,30]
+list1.remove(30)        # removes the FIRST 30 only -> [10,20,40,50,30]
+list1.remove(90)        # ValueError: list.remove(x): x not in list
+
+list1 = [10,20,30,40,50,60]
+list1.pop(3)             # returns AND removes element at index 3 -> 40
+list1.pop()              # no arg -> returns/removes the LAST element
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Sorting &amp; aggregate — reverse, sort, sorted, min/max/sum</div>
+              <pre><code>list1 = [34,66,12,89,28,99]
+list1.reverse()              # reverses IN PLACE -> [99,28,89,12,66,34]
+
+list1 = ['Tiger','Zebra','Lion','Cat','Elephant','Dog']
+list1.sort()                 # sorts IN PLACE, alphabetically
+list1.sort(reverse = True)   # sorts IN PLACE, descending
+
+list1 = [23,45,11,67,85,56]
+list2 = sorted(list1)        # returns a NEW sorted list -- list1 UNCHANGED
+
+min(list1)   # smallest       max(list1)   # largest       sum(list1)  # total
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong><code>sort()</code> vs. <code>sorted()</code> — a classic exam distinction</strong>
+                <p><code>list.sort()</code> is a <em>method</em> that sorts the list in place and returns <code>None</code>. <code>sorted(list)</code> is a <em>built-in function</em> that leaves the original untouched and returns a brand-new sorted list.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="nested">
+            <h2>9.5 Nested Lists</h2>
+            <p>A list inside another list is a <strong>nested list</strong>. Access an element two levels deep with two indices, <code>list1[i][j]</code> — the first index selects the inner list, the second selects the element within it.</p>
+            <div class="code-block">
+              <div class="code-block__label">Example 9.2</div>
+              <pre><code>list1 = [1,2,'a','c',[6,7,8],4,9]
+list1[4]      # [6, 7, 8]   -- the 5th element IS a list
+list1[4][1]   # 7            -- its 2nd element
+</code></pre>
+            </div>
+          </section>
+
+          <section id="copying">
+            <h2>9.6 Copying Lists</h2>
+            <div class="code-block">
+              <div class="code-block__label">The trap: list2 = list1 does NOT make a copy</div>
+              <pre><code>list1 = [1,2,3]
+list2 = list1          # list2 becomes an ALIAS -- same object, not a copy
+
+list1.append(10)
+# BOTH list1 AND list2 now show [1, 2, 3, 10] -- they share one object
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Three ways to make a REAL, independent copy</div>
+              <pre><code># Method 1 -- slicing
+list2 = list1[:]
+
+# Method 2 -- the list() built-in
+list2 = list(list1)
+
+# Method 3 -- the copy module
+import copy
+list2 = copy.copy(list1)
+
+# Any of these three: changing list1 afterward does NOT affect list2
+</code></pre>
+            </div>
+          </section>
+
+          <section id="argument">
+            <h2>9.7 List as Argument to a Function</h2>
+            <p>Two scenarios, and they behave very differently:</p>
+            <div class="code-block">
+              <div class="code-block__label">(A) Modifying ELEMENTS IN PLACE — changes ARE reflected back</div>
+              <pre><code>def increment(list2):
+    for i in range(0,len(list2)):
+        list2[i] += 5     # modifies the SAME object list1 points to
+    print(id(list2))       # same id() as outside!
+
+list1 = [10,20,30,40,50]
+increment(list1)
+print(list1)   # [15, 25, 35, 45, 55] -- the ORIGINAL list1 changed
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">(B) Assigning a WHOLE NEW list inside — changes are NOT reflected back</div>
+              <pre><code>def increment(list2):
+    print(id(list2))          # same id as list1, initially
+    list2 = [15,25,35,45,55]  # this REBINDS list2 to a NEW object
+    print(id(list2))          # a DIFFERENT id now
+
+list1 = [10,20,30,40,50]
+increment(list1)
+print(list1)   # [10, 20, 30, 40, 50] -- UNCHANGED! list1 never touched
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The rule in one line</strong>
+                <p>A list argument passes a <em>reference</em>. Mutating it in place (<code>list2[i] = ...</code>, <code>.append()</code>, etc.) changes the caller's list too. <em>Reassigning</em> the parameter name to a whole new list only rebinds the local name — the caller's original is untouched.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="manipulation">
+            <h2>9.8 List Manipulation — a complete example</h2>
+            <p>Program 9-3 in the textbook is a full menu-driven program combining everything in this chapter — append, insert, extend, modify, delete by position, delete by value, sort ascending/descending, and display — wrapped in a <code>while True</code> loop with numbered choices 1–10 and a safe <code>pop(i)</code>/<code>remove(element)</code> pattern that checks bounds/membership first to avoid errors.</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 9-5 — linear search returning position (or None)</div>
+              <pre><code>def linearSearch(num,list1):
+    for i in range(0,len(list1)):
+        if list1[i] == num:
+            return i          # found -- return its position
+    return None                # exhausted the list, not found
+
+result = linearSearch(num,list1)
+if result is None:
+    print("Number",num,"is not present in the list")
+else:
+    print("Number",num,"is present at",result + 1, "position")
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>9. Exercise (from the textbook — selected)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 9
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>
+                  Predict the output:
+                  <div class="code-block">
+                    <div class="code-block__label">(iii)</div>
+                    <pre><code>list1 = [1,2,3,4,5,6,7,8,9,10]
+list1[::-2]
+list1[:3] + list1[3:]</code></pre>
+                  </div>
+                </li>
+                <li>
+                  Given <code>myList = [10,20,30,40]</code>, what are its elements after: <code>myList.append([50,60])</code> then <code>myList.extend([80,90])</code>?
+                </li>
+                <li>
+                  Give the output:
+                  <div class="code-block">
+                    <div class="code-block__label">del and slicing</div>
+                    <pre><code>myList = [1,2,3,4,5,6,7,8,9,10]
+del myList[3:]
+print(myList)
+#repeat for del myList[:5] and del myList[::2] separately</code></pre>
+                  </div>
+                </li>
+                <li>Differentiate between <code>append()</code> and <code>extend()</code>.</li>
+                <li>
+                  For <code>list1 = [6,7,8,9]</code>, what's the difference between <code>list1 * 2</code>, <code>list1 *= 2</code>, and <code>list1 = list1 * 2</code>?
+                </li>
+                <li>
+                  Given <code>stRecord = ['Raman','A-36',[56,98,99,72,69], 78.8]</code>, write statements to retrieve: percentage, marks in the 5th subject, maximum subject marks, roll number, and change the name to 'Raghav'.
+                </li>
+                <li>Write a program to find how many times an element occurs in a list.</li>
+                <li>Write a program that reads n integers and splits them into two new lists — positives and negatives.</li>
+                <li>Write a function that returns the largest element of a list passed as a parameter.</li>
+                <li>Write a function to return the second-largest number from a list.</li>
+                <li>Write a program to find the median of n integers (sort first, then take the middle value — or average the two middle values if n is even).</li>
+                <li>Write a program that removes duplicate elements from a list so each value appears only once.</li>
+                <li>Write a program that reverses a list of n elements <em>in-place</em>, without creating a new list.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-08.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 8: Strings</span>
+          </a>
+          <a href="week-10.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 10: Tuples and Dictionaries</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

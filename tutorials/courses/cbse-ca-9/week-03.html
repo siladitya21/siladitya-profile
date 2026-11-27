@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 3: Office Tools — Word Processor — CBSE Class 9 Computer Applications</title>
+<meta name="description" content="Chapter 3 of CBSE Class 9 Computer Applications (165): formatting text, headers/footers, page numbering, spell check, pictures, bullets, tables, borders/shading, track changes, review comments and drawing tools in a word processor — Unit 3, Part A." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-9">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-9/index.html" class="nav-course-card c-cbse-ca-9" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 9 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-9/index.html">CBSE Class 9 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-9/index.html#timeline">Unit 3</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 3</span>
+      </div>
+
+      <h1>Chapter 3: Office Tools — Word Processor</h1>
+      <p class="lesson-header__lede">
+        Unit 3 of the CBSE curriculum covers three office tools; this chapter is the first —
+        the word processor (Microsoft Word or LibreOffice Writer — the skills transfer directly
+        between the two). We'll go from a blank page to a fully formatted, print-ready document
+        with pictures, tables, and reviewer comments.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 3 of 6</span>
+        <span class="chip">Unit 3, Part A</span>
+        <span class="chip">~2.5 Hours</span>
+        <span class="chip">Exam-style Questions Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Format text, spacing, headers/footers and page numbers in a document</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Insert pictures, bullets/numbering, tables, borders and shading</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use spell check, track changes, review comments and drawing tools</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#basics"><span>1</span> Creating &amp; Formatting Text</a>
+        <a href="#layout"><span>2</span> Headers, Footers &amp; Page Numbering</a>
+        <a href="#proof"><span>3</span> Spell Check &amp; Special Characters</a>
+        <a href="#objects"><span>4</span> Pictures, Bullets, Borders &amp; Tables</a>
+        <a href="#review"><span>5</span> Auto-format, Track Changes &amp; Comments</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="basics">
+            <h2>3.1 Creating, Saving and Formatting a Document</h2>
+            <div class="code-block">
+              <div class="code-block__label">Text styles and formatting controls</div>
+              <pre><code>Bold (B), Italic (I), Underline (U)   -- emphasise text
+Font type (e.g. Calibri, Times New Roman)
+Font size (measured in points, e.g. 12pt body text)
+Text colour -- change via the font colour tool
+Text alignment -- Left / Centre / Right / Justify
+Line spacing -- e.g. single, 1.5, double
+Paragraph spacing -- extra space before/after a paragraph
+</code></pre>
+            </div>
+            <p>
+              Save your work regularly with <strong>File &rarr; Save</strong> (or Ctrl+S), and give the
+              document a clear, descriptive file name the very first time you save it.
+            </p>
+          </section>
+
+          <section id="layout">
+            <h2>3.2 Headers, Footers and Page Numbering</h2>
+            <div class="code-block">
+              <div class="code-block__label">Where these live on the page</div>
+              <pre><code>HEADER   text repeated at the TOP of every page
+         (e.g. a chapter title or your name)
+
+FOOTER   text repeated at the BOTTOM of every page
+         (e.g. a date, or the page number)
+
+PAGE NUMBERING  automatically numbers each page; can be inserted
+                into the header or footer and updates itself as
+                you add/remove pages
+</code></pre>
+            </div>
+          </section>
+
+          <section id="proof">
+            <h2>3.3 Spell/Grammar Check and Special Characters</h2>
+            <div class="code-block">
+              <div class="code-block__label">Proofing and symbols</div>
+              <pre><code>Spell &amp; grammar check   wavy red/blue underlines flag likely
+                         errors; right-click for suggested fixes
+
+Subscript (e.g. H2O)    text sits slightly BELOW the baseline
+Superscript (e.g. x2)   text sits slightly ABOVE the baseline
+
+Inserting symbols        Insert -&gt; Symbol, for characters not on
+                          the keyboard (&copy; &reg; &deg; &alpha; &beta; etc.)
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Print preview before printing</strong>
+                <p>Always check Print Preview before sending a document to the printer — it shows exactly how each page will look, catching margin, spacing or page-break mistakes before you waste paper.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="objects">
+            <h2>3.4 Pictures, Bullets/Numbering, Borders/Shading and Tables</h2>
+            <div class="code-block">
+              <div class="code-block__label">Adding visual structure</div>
+              <pre><code>INSERTING PICTURES
+  Insert -&gt; Picture -&gt; choose a file; resize by dragging a corner
+  handle (hold Shift to keep the aspect ratio)
+
+PAGE SETTINGS
+  Layout -&gt; Size / Margins / Orientation (Portrait or Landscape)
+
+BULLETS &amp; NUMBERING
+  Bulleted lists for unordered items; numbered lists for sequential
+  steps -- both available from the Home/Format toolbar
+
+BORDERS &amp; SHADING
+  Add a border or background fill colour to a paragraph, table
+  cell, or the whole page via Format -&gt; Borders and Shading
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Working with tables</div>
+              <pre><code>Insert -&gt; Table -&gt; choose rows x columns
+
+Insert/delete a row or column  right-click inside the table ->
+                                 Insert/Delete
+
+Merge cells   select two or more cells -> right-click -> Merge Cells
+              (combines them into one, e.g. for a table title row)
+
+Split a cell  select one cell -> right-click -> Split Cell
+              (divides it into multiple cells)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="review">
+            <h2>3.5 Auto-format, Track Changes, Review Comments and Drawing Tools</h2>
+            <div class="code-block">
+              <div class="code-block__label">Collaboration and finishing touches</div>
+              <pre><code>AUTO-FORMAT      automatically applies consistent styling (like
+                 turning straight quotes into curly ones, or a
+                 typed web address into a clickable link) as you
+                 type
+
+TRACK CHANGES    Review -&gt; Track Changes; every edit a reviewer
+                 makes is shown as a marked-up insertion/deletion
+                 instead of silently changing the text, so the
+                 original author can accept or reject each one
+
+REVIEW COMMENTS  Review -&gt; New Comment; attaches a note to a
+                 highlighted bit of text without altering the
+                 document itself
+
+DRAWING TOOLS    shapes (rectangles, arrows, callouts) and
+                 mathematical symbols can be inserted via
+                 Insert -&gt; Shapes / Insert -&gt; Equation
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 3 (Part A) Practice Questions
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>Differentiate between a header and a footer.</li>
+                <li>What is the use of page numbering in a long document?</li>
+                <li>Differentiate between subscript and superscript, with one example of each.</li>
+                <li>Why should you check Print Preview before printing a document?</li>
+                <li>Explain how to merge two table cells, and give one real situation where you'd need to.</li>
+                <li>What is the purpose of the Track Changes feature? Who benefits from using it?</li>
+                <li>How is a review comment different from a tracked change?</li>
+                <li>List the steps to insert a picture into a document and resize it correctly.</li>
+                <li>What is auto-format? Give one example of what it automatically changes.</li>
+                <li>Name two tools you could use to add a shape or mathematical symbol into a document.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 2: Cyber Safety</span>
+          </a>
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 4: Office Tools — Presentation Software</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-9/index.html">CBSE Class 9 Computer Applications</a>
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

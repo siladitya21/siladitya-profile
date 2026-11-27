@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 8: Strings — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 8 of CBSE Class 11 Computer Science (083): string indexing and slicing, immutability, concatenation/repetition/membership, traversal, string methods, and handling strings with user-defined functions — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Python Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 8</span>
+      </div>
+
+      <h1>Chapter 8: Strings</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. The most commonly tested Class XI
+        topic — indexing (positive and negative), why strings are immutable, the four core string
+        operations (concatenation, repetition, membership, slicing), traversal with for/while, the
+        full table of built-in string methods, and user-defined functions that put them to work
+        (character counting, vowel replacement, reversal, palindrome checking).
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 8 of 11</span>
+        <span class="chip">NCERT pp. 175–206</span>
+        <span class="chip">~4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Slice a string correctly using <code>[n:m:k]</code>, including negative indices and step</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain why strings are immutable, and predict the output of common string methods</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write functions that reverse a string or check for a palindrome without extra libraries</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction &amp; Indexing</a>
+        <a href="#immutable"><span>2</span> Strings are Immutable</a>
+        <a href="#operations"><span>3</span> String Operations</a>
+        <a href="#slicing"><span>4</span> Slicing</a>
+        <a href="#traversal"><span>5</span> Traversing a String</a>
+        <a href="#methods"><span>6</span> Methods &amp; Built-in Functions</a>
+        <a href="#handling"><span>7</span> Handling Strings</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>8.1–8.2 Introduction &amp; Accessing Characters</h2>
+            <p>
+              A <strong>string</strong> is a sequence of one or more Unicode characters — letters,
+              digits, whitespace, symbols — enclosed in single, double, or triple quotes (triple
+              quotes allow the string to span multiple lines). Python has no separate "character"
+              type; a string of length one IS the character.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">8.2.1 — Indexing (positive and negative)</div>
+              <pre><code>str1 = 'Hello World!'
+str1[0]    # 'H'  -- first char, index 0
+str1[6]    # 'W'  -- index n-1 is the LAST char (n = length)
+str1[15]   # IndexError: string index out of range
+str1[1.5]  # TypeError: string indices must be integers
+
+str1[-1]   # '!'  -- first char counting from the RIGHT
+str1[-12]  # 'H'  -- last char counting from the right (index -n)
+len(str1)  # 12
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Table 8.1 — positive vs. negative index map for 'Hello World!'</div>
+              <pre><code>Positive:   0  1  2  3  4  5  6  7  8  9  10 11
+String:     H  e  l  l  o     W  o  r  l  d  !
+Negative:  -12-11-10-9 -8 -7 -6 -5 -4 -3 -2 -1
+</code></pre>
+            </div>
+          </section>
+
+          <section id="immutable">
+            <h2>8.2.2 Strings are Immutable</h2>
+            <div class="code-block">
+              <div class="code-block__label">Contents cannot change after creation</div>
+              <pre><code>str1 = "Hello World!"
+str1[1] = 'a'
+#TypeError: 'str' object does not support item assignment
+</code></pre>
+            </div>
+            <p>Any "modification" (via a method like <code>.replace()</code>) actually builds and returns a brand-new string — the original is never touched.</p>
+          </section>
+
+          <section id="operations">
+            <h2>8.3 String Operations</h2>
+            <div class="code-block">
+              <div class="code-block__label">8.3.1–8.3.3 — Concatenation, Repetition, Membership</div>
+              <pre><code>str1 = 'Hello'
+str2 = 'World!'
+str1 + str2          # 'HelloWorld!'  -- str1, str2 themselves unchanged
+str1 * 5             # 'HelloHelloHelloHelloHello'
+
+str1 = 'Hello World!'
+'W' in str1          # True
+'My' in str1         # False
+'My' not in str1     # True
+</code></pre>
+            </div>
+          </section>
+
+          <section id="slicing">
+            <h2>8.3.4 Slicing</h2>
+            <p><code>str1[n:m]</code> returns characters from index <code>n</code> (inclusive) up to <code>m</code> (exclusive) — the substring length always equals <code>m-n</code>.</p>
+            <div class="code-block">
+              <div class="code-block__label">The full slicing toolkit — str1 = 'Hello World!'</div>
+              <pre><code>str1[1:5]      # 'ello'       -- index 1 up to (not incl.) 5
+str1[3:20]     # 'lo World!'  -- an out-of-range end is truncated, not an error
+str1[7:2]      # ''           -- first index > second -> empty string
+str1[:5]       # 'Hello'      -- missing start -> defaults to 0
+str1[6:]       # 'World!'     -- missing end -> defaults to end of string
+str1[0:10:2]   # 'HloWr'      -- third index = STEP SIZE (default 1)
+str1[-6:-1]    # 'World'      -- negative indices work the same way
+str1[::-1]     # '!dlroW olleH'  -- the classic "reverse a string" trick
+</code></pre>
+            </div>
+          </section>
+
+          <section id="traversal">
+            <h2>8.4 Traversing a String</h2>
+            <div class="code-block">
+              <div class="code-block__label">for loop vs. while loop traversal</div>
+              <pre><code>str1 = 'Hello World!'
+for ch in str1:
+    print(ch, end='')     # loop auto-starts/ends with the string -- simplest
+
+index = 0
+while index < len(str1):
+    print(str1[index], end='')
+    index += 1             # must manually track position and bound it
+</code></pre>
+            </div>
+          </section>
+
+          <section id="methods">
+            <h2>8.5 String Methods and Built-in Functions</h2>
+            <div class="code-block">
+              <div class="code-block__label">Case &amp; classification methods</div>
+              <pre><code>'hello WORLD!'.title()      # 'Hello World!'   (first letter of each word caps)
+'hello WORLD!'.lower()      # 'hello world!'
+'hello WORLD!'.upper()      # 'HELLO WORLD!'
+'HelloWorld'.isalnum()      # True (only letters/digits, no spaces/symbols)
+'hello world!'.islower()    # True (at least 1 lowercase letter, rest non-alpha ok)
+'HELLO 1234'.isupper()      # True
+' \n \t \r'.isspace()       # True
+'Hello World!'.istitle()    # True
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Searching methods</div>
+              <pre><code>str1 = 'Hello World! Hello Hello'
+str1.count('Hello')           # 3   (counts all occurrences)
+str1.count('Hello',12,25)     # 2   (within a start:end range)
+str1.find('Hello',15,25)      # 19  (first occurrence's index, or -1 if absent)
+str1.index('Hee')             # ValueError: substring not found (find()'s stricter cousin)
+'Hello World!'.endswith('!')  # True
+'Hello World!'.startswith('He')  # True
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Cleaning &amp; transforming methods</div>
+              <pre><code>' Hello World! '.lstrip()        # 'Hello World! '  (left spaces only)
+' Hello World! '.rstrip()        # ' Hello World!'  (right spaces only)
+' Hello World! '.strip()         # 'Hello World!'   (both sides)
+'Hello World!'.replace('o','*')  # 'Hell* W*rld!'   (ALL occurrences replaced)
+'-'.join('HelloWorld!')          # 'H-e-l-l-o-W-o-r-l-d-!'
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">partition() and split()</div>
+              <pre><code>str1 = 'India is a Great Country'
+str1.partition('is')   # ('India ', 'is', ' a Great Country')  -- 3-way tuple
+str1.partition('are')  # whole string unchanged if separator not found
+
+str1.split()      # ['India','is','a','Great','Country']  -- default: split on space
+str1.split('a')   # ['Indi', ' is ', ' Gre', 't Country']  -- split on ANY substring
+</code></pre>
+            </div>
+          </section>
+
+          <section id="handling">
+            <h2>8.6 Handling Strings — user-defined functions</h2>
+            <div class="code-block">
+              <div class="code-block__label">Program 8-1 — count occurrences of a character</div>
+              <pre><code>def charCount(ch,st):
+    count = 0
+    for character in st:
+        if character == ch:
+            count += 1
+    return count
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 8-2 — replace all vowels with '*'</div>
+              <pre><code>def replaceVowel(st):
+    newstr = ''
+    for character in st:
+        if character in 'aeiouAEIOU':
+            newstr += '*'
+        else:
+            newstr += character
+    return newstr
+# 'Hello World' -> 'H*ll* W*rld'
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 8-3/8-4 — reversing without (and with) a new string</div>
+              <pre><code># WITHOUT creating a new string -- just print backwards
+st = input("Enter a string: ")
+for i in range(-1,-len(st)-1,-1):
+    print(st[i],end='')
+
+# WITH a new reversed string returned from a function
+def reverseString(st):
+    newstr = ''
+    length = len(st)
+    for i in range(-1,-length-1,-1):
+        newstr += st[i]
+    return newstr
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 8-5 — palindrome check (two-pointer technique)</div>
+              <pre><code>def checkPalin(st):
+    i = 0
+    j = len(st) - 1
+    while i <= j:
+        if st[i] != st[j]:
+            return False
+        i += 1
+        j -= 1
+    return True
+# 'kanak' -> True     'computer' -> False
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why the two-pointer palindrome check matters</strong>
+                <p>It moves one pointer from the start, one from the end, closing inward — stopping the instant a mismatch is found, rather than always building a full reversed copy first. This pattern reappears constantly across string and list problems.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 8
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>
+                  Given <code>mySubject = "Computer Science"</code>, give the output of:
+                  <div class="code-block">
+                    <div class="code-block__label">predict the output</div>
+                    <pre><code>print(mySubject[0:len(mySubject)])
+print(mySubject[-7:-1])
+print(mySubject[::2])
+print(mySubject[len(mySubject)-1])
+print(2*mySubject)
+print(mySubject[::-2])
+print(mySubject[:3] + mySubject[3:])
+print(mySubject.swapcase())
+print(mySubject.startswith('Comp'))
+print(mySubject.isalpha())</code></pre>
+                  </div>
+                </li>
+                <li>
+                  Given <code>myAddress = "WZ-1,New Ganga Nagar,New Delhi"</code>, give the output of <code>.lower()</code>, <code>.upper()</code>, <code>.count('New')</code>, <code>.find('New')</code>, <code>.rfind('New')</code>, <code>.split(',')</code>, <code>.split(' ')</code>, <code>.replace('New','Old')</code>, <code>.partition(',')</code>, and <code>.index('Agra')</code>.
+                </li>
+                <li>Write a program that reads text until Enter, and counts: total characters (incl. spaces), total alphabets, total digits, total special symbols, and total words.</li>
+                <li>Write a user-defined function to convert a multi-word string into title case, without using <code>.title()</code>.</li>
+                <li>Write a function <code>deleteChar(st, ch)</code> that returns a new string with every occurrence of <code>ch</code> removed from <code>st</code>.</li>
+                <li>Input a string containing some digits; write a function that returns the sum of those digits.</li>
+                <li>Write a function that replaces every blank in a sentence with a hyphen, and returns the modified sentence.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-07.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 7: Functions</span>
+          </a>
+          <a href="week-09.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 9: Lists</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

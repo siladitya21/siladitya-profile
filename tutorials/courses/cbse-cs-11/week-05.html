@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 5: Getting Started with Python — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 5 of CBSE Class 11 Computer Science (083): Python keywords, identifiers, data types, operators, expressions, input/output, type conversion and debugging — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Python Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 5</span>
+      </div>
+
+      <h1>Chapter 5: Getting Started with Python</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Your first real Python chapter —
+        keywords and identifiers, variables, comments, Python's data types (and which are mutable
+        vs. immutable), the full operator set with precedence, expressions, <code>input()</code>/<code>print()</code>,
+        explicit vs. implicit type conversion, and the three categories of bugs a programmer runs into.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 5 of 11</span>
+        <span class="chip">NCERT pp. 87–120</span>
+        <span class="chip">~4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Name every Python data type and classify each as mutable or immutable</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Evaluate an expression by hand using Python's operator precedence table</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tell syntax, logical and runtime errors apart, and fix each</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction to Python</a>
+        <a href="#keywords"><span>2</span> Keywords, Identifiers &amp; Variables</a>
+        <a href="#datatypes"><span>3</span> Data Types</a>
+        <a href="#operators"><span>4</span> Operators &amp; Expressions</a>
+        <a href="#io"><span>5</span> Input, Output &amp; Type Conversion</a>
+        <a href="#debugging"><span>6</span> Debugging</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>5.1 Introduction to Python</h2>
+            <p>
+              An ordered set of instructions for a computer is a <strong>program</strong>; the
+              language used to write it is a <strong>programming language</strong>. Computers only
+              understand 0s and 1s (<strong>machine/low-level language</strong>) — high-level
+              languages like Python exist so humans can write <strong>source code</strong> instead,
+              which a <strong>translator</strong> (compiler or interpreter) converts to machine code.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Interpreter vs. Compiler</div>
+              <pre><code>INTERPRETER  processes statements ONE BY ONE -- translates, then
+             executes each -- stops the moment an error is hit.
+             Python uses an interpreter.
+COMPILER     translates the ENTIRE source code at once into object
+             code, reporting all errors after scanning the whole program.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.1.1 — Features of Python</div>
+              <pre><code>- High level, free and open source
+- Interpreted (executed by the Python interpreter/shell)
+- Clearly defined syntax, relatively simple structure
+- CASE-SENSITIVE (NUMBER and number are different)
+- Portable / platform independent
+- Rich library of predefined functions
+- Uses INDENTATION for blocks and nested blocks (not braces {})
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.1.3 — Two execution modes</div>
+              <pre><code>INTERACTIVE MODE  type a statement at the &gt;&gt;&gt; prompt, Enter runs
+                   it immediately -- can't be saved/rerun later
+
+SCRIPT MODE       write a full program in a .py file, save it,
+                   then run it (Run -&gt; Run Module, or F5, in IDLE)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="keywords">
+            <h2>5.2–5.4 Keywords, Identifiers, Variables &amp; Comments</h2>
+            <div class="code-block">
+              <div class="code-block__label">5.2 — Python Keywords (reserved words — exact case matters)</div>
+              <pre><code>False  class    finally  is       return
+None   continue for      lambda   try
+True   def      from     nonlocal while
+and    del      global   not      with
+as     elif     if       or       yield
+assert else     import   pass
+break  except   in       raise
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.3 — Rules for naming an identifier</div>
+              <pre><code>- Starts with a letter (upper/lower) or underscore (_)
+- Followed by any mix of a-z, A-Z, 0-9, _  (never starts with a digit)
+- Any length (but keep it short and meaningful)
+- Must NOT be a keyword
+- No special symbols: !, @, #, $, % etc.
+
+Good: marks1, avg, area, length, breadth
+Bad:  1st_Room (starts with digit), total-Marks (hyphen not allowed)
+</code></pre>
+            </div>
+            <p>
+              A <strong>variable</strong> refers to an object stored in memory, uniquely identified
+              by its name. Python's variable declaration is <strong>implicit</strong> — a variable
+              is created the moment it's first assigned a value; it must always be assigned
+              before use in an expression.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">5.5 — Comments (start with #, run to end of line)</div>
+              <pre><code>#Variable amount is the total spending on grocery
+amount = 3400
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>5.6 — Everything is an object</strong>
+                <p>Every value in Python — numeric, string, anything — is an object with a unique <strong>identity (ID)</strong> for its lifetime, like a memory address. <code>id()</code> returns it. Two variables holding the same value initially share the same ID.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="datatypes">
+            <h2>5.7 Data Types</h2>
+            <div class="code-block">
+              <div class="code-block__label">5.7.1 — Number (int, float, complex, bool)</div>
+              <pre><code>int      whole numbers        -12, -3, 0, 125, 2
+float    real/decimal numbers -2.04, 4.0, 14.23
+complex  complex numbers      3 + 4j, 2 - 2j
+bool     subtype of int: True / False
+         True = non-zero, non-null, non-empty; False = zero
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.7.2 — Sequence (String, List, Tuple)</div>
+              <pre><code>STRING  group of characters, in ' ' or " "         str1 = 'Hello Friend'
+LIST    ordered, in [ ], CAN be changed             list1 = [5, 3.4, "New Delhi", 45]
+TUPLE   ordered, in ( ), CANNOT be changed once made tuple1 = (10, 20, "Apple", 3.4)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.7.3–5.7.5 — Set, None, Mapping (Dictionary)</div>
+              <pre><code>SET   unordered, in { }, NO duplicates, can't be changed once made
+      set1 = {10, 20, 3.14, "New Delhi"}
+
+NONE  special single-value type signifying "absence of value" --
+      NOT the same as False or 0.   myVar = None
+
+DICTIONARY  key:value pairs in { }, access a value via its key in [ ]
+            dict1 = {'Fruit':'Apple', 'Price(kg)':120}
+            dict1['Price(kg)']   # 120
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.7.6 — Mutable vs. Immutable (a key exam distinction)</div>
+              <pre><code>IMMUTABLE (can't change after creation): int, float, bool, complex,
+                                          STRING, TUPLE
+MUTABLE   (CAN change after creation):   LIST, SET, DICTIONARY
+
+Attempting to "change" an immutable variable actually destroys the
+old object and creates a NEW one with the same name -- its id()
+changes. A mutable variable keeps the SAME id() when modified.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.7.7 — Deciding which to use</div>
+              <pre><code>LIST       simple iterable collection, frequently modified
+           (e.g. names of students in a class)
+TUPLE      data that should NOT change (e.g. names of months)
+SET        need uniqueness, no duplicates (e.g. museum artefacts)
+DICTIONARY need fast lookup by a custom key (e.g. a phone book)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="operators">
+            <h2>5.8–5.9 Operators &amp; Expressions</h2>
+            <div class="code-block">
+              <div class="code-block__label">5.8.1 — Arithmetic operators</div>
+              <pre><code>+   addition (also string concatenation: "Hello"+"India")
+-   subtraction
+*   multiplication (also string REPEAT: 'India'*2 -> 'IndiaIndia')
+/   division            -- always returns a float
+%   modulus (remainder) -- 13 % 5 = 3
+//  floor division (integer division, drops the decimal) -- 13//4 = 3
+**  exponent (power)    -- 3 ** 4 = 81
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.8.2–5.8.6 — Relational, Assignment, Logical, Identity, Membership</div>
+              <pre><code>RELATIONAL    ==  !=  &gt;  &lt;  &gt;=  &lt;=        (strings compared by ASCII)
+ASSIGNMENT    =  +=  -=  *=  /=  %=  //=  **=
+LOGICAL       and  or  not   (lowercase only; "not" is unary)
+IDENTITY      is       -- True if both refer to the SAME object (same id)
+              is not   -- True if they do NOT share the same id
+MEMBERSHIP    in       -- True if value found in a sequence
+              not in   -- True if value NOT found in a sequence
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.9.1 — Operator precedence, HIGHEST to LOWEST</div>
+              <pre><code>1.  **                              Exponentiation
+2.  ~, +, -  (unary)                Complement, unary plus/minus
+3.  *, /, %, //                     Multiply, divide, modulo, floor div
+4.  +, -  (binary)                  Addition, subtraction
+5.  &lt;=, &lt;, &gt;, &gt;=, ==, !=            Relational / comparison
+6.  =, %=, /=, //=, -=, +=, *=, **=  Assignment
+7.  is, is not                      Identity
+8.  in, not in                      Membership
+9.  not
+10. and                             Logical (ascending precedence)
+11. or
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Worked precedence examples</div>
+              <pre><code>20 + 30 * 40     = 20 + 1200 = 1220      (* before +)
+20 - 30 + 40     = (20-30) + 40 = 30     (equal precedence: left to right)
+15.0/4 + (8+3.0) = 3.75 + 11.0 = 14.75   (parentheses evaluated first)
+</code></pre>
+            </div>
+            <p>An <strong>expression</strong> is any combination of constants, variables and operators that evaluates to a value — even a lone value or variable counts, but a standalone operator does not.</p>
+          </section>
+
+          <section id="io">
+            <h2>5.11–5.12 Input, Output &amp; Type Conversion</h2>
+            <div class="code-block">
+              <div class="code-block__label">input() — ALWAYS returns a string</div>
+              <pre><code>fname = input("Enter your first name: ")   # 'Arnab'  (string)
+age = int(input("Enter your age:"))        # explicit conversion to int
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">print(value [, sep=' ', end='\n'])</div>
+              <pre><code>print("I" + "love" + "my" + "country")   # Ilovemycountry  (+ adds NO space)
+print("I'm", 16, "years old")            # I'm 16 years old (comma adds space)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.12.1 — Explicit conversion (type casting) — risk of data loss</div>
+              <pre><code>int(x)   float(x)   str(x)   chr(x)   ord(x)
+
+num1 = 10; num2 = 20
+num3 = num1 + num2            # 30, <class 'int'>
+num4 = float(num1 + num2)     # 30.0, <class 'float'>
+
+#WITHOUT explicit str():
+print("The total is Rs." + totalPrice)
+#TypeError: can only concatenate str (not "int") to str
+#WITH explicit str():
+print("The total in Rs." + str(totalPrice))   # works fine
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">5.12.2 — Implicit conversion (coercion) — done automatically</div>
+              <pre><code>num1 = 10       # int
+num2 = 20.0     # float
+sum1 = num1 + num2   # 30.0, automatically promoted to float
+#(type promotion: converts to the WIDER type, never narrower --
+# so an int+float sum is never silently truncated to int)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="debugging">
+            <h2>5.13 Debugging</h2>
+            <p><strong>Debugging</strong> is identifying and removing bugs/errors. Three categories:</p>
+            <div class="code-block">
+              <div class="code-block__label">Syntax, Logical, Runtime errors</div>
+              <pre><code>SYNTAX ERROR    violates Python's grammar rules -- interpreter won't
+                even run the program. E.g. (7 + 11 -- missing ")"
+
+LOGICAL ERROR   (a.k.a. semantic error) -- program runs and finishes,
+                but gives the WRONG output. E.g. writing 10 + 12/2 to
+                find the average of 10 and 12 (gives 16, not 11) --
+                correct form is (10 + 12)/2
+
+RUNTIME ERROR   syntactically fine, but the interpreter can't execute
+                it mid-run -- program terminates abnormally.
+                E.g. ZeroDivisionError from num1/num2 when num2 is 0,
+                or ValueError from int("apple")
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 5
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>Which of these identifier names are invalid, and why: <code>Serial_no.</code>, <code>1st_Room</code>, <code>Hundred$</code>, <code>Total Marks</code>, <code>Total_Marks</code>, <code>total-Marks</code>, <code>_Percentage</code>, <code>True</code>?</li>
+                <li>Write assignment statements: assign 10/20 to <code>length</code>/<code>breadth</code>; assign their average to <code>sum</code>; assign a list of 3 stationery items; assign 3 name-part strings and concatenate them (with spaces) into <code>fullname</code>.</li>
+                <li>Write logical expressions for: "sum of 20 and −10 is less than 12"; "<code>num3</code> is not more than 24"; "6.75 is between <code>num1</code> and <code>num2</code>"; "'middle' is larger than 'first' and smaller than 'last'"; "list <code>Stationery</code> is empty."</li>
+                <li>Add a pair of parentheses so each evaluates to <code>True</code>: <code>0 == 1 == 2</code>, <code>2 + 3 == 4 + 5 == 7</code>, <code>1 &lt; -1 == 3 &gt; 4</code>.</li>
+                <li>
+                  Trace the output:
+                  <div class="code-block">
+                    <div class="code-block__label">(a)</div>
+                    <pre><code>num1, num2 = 2, 6
+num1, num2 = num2, num1 + 2
+print(num1, num2)</code></pre>
+                  </div>
+                </li>
+                <li>Which data type fits each: months in a year, resident of Delhi (y/n), mobile number, pocket money, volume of a sphere, name of student, address of student?</li>
+                <li>
+                  Give the output when num1=4, num2=3, num3=2:
+                  <div class="code-block">
+                    <div class="code-block__label">quick checks</div>
+                    <pre><code>num1 += num2 + num3
+num1 = num1 ** (num2 + num3)
+num1 = '5' + '5'
+num1 = 24 // 4 // 2
+print(10 != 9 and 20 >= 20)
+print((0 < 6) or (not(10 == 6) and (10<0)))</code></pre>
+                  </div>
+                </li>
+                <li>Categorise as syntax, logical or runtime error: <code>25 / 0</code>; <code>num1 = 25; num2 = 0; num1/num2</code>.</li>
+                <li>Write a program to convert °C to °F (<code>T(°F) = T(°C) × 9/5 + 32</code>) and verify water's boiling/freezing points.</li>
+                <li>Write a program for Simple Interest: <code>SI = (P×R×T)/100</code>, Amount = Principal + SI, with P, R, T as input.</li>
+                <li>Write a program to swap two numbers (a) using a third variable, (b) without using a third variable.</li>
+                <li>The formula <code>E = mc²</code> gives energy from mass (c ≈ 3×10⁸ m/s). Write a program that accepts mass and computes energy.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 4: Introduction to Problem Solving</span>
+          </a>
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 6: Flow of Control</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

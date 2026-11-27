@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 4: Introduction to Problem Solving — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 4 of CBSE Class 11 Computer Science (083): problem-solving steps, algorithms, flowcharts and pseudocode, flow of control (sequence/selection/repetition), verifying and comparing algorithms, coding, and decomposition — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../dsa-cpp/index.html" class="nav-course-card c-dsa-cpp">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="13" r="2.5"/><circle cx="5" cy="20" r="2.5"/><circle cx="19" cy="20" r="2.5"/><path d="M6.8 7.8 10.2 11.2M17.2 7.8 13.8 11.2M10.2 14.8 6.8 18.2M13.8 14.8 17.2 18.2"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">DSA in C++</span>
+              <span class="nav-course-card__meta">20 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Problem Solving Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 4</span>
+      </div>
+
+      <h1>Chapter 4: Introduction to Problem Solving</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. Before any Python code, this chapter
+        teaches how to think like a programmer: the four steps of problem solving, what makes a
+        good algorithm, representing one as a flowchart or pseudocode, the three flow-of-control
+        patterns (sequence, selection, repetition), how to verify and compare algorithms, and
+        finally decomposing a complex problem into manageable sub-problems.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 4 of 11</span>
+        <span class="chip">NCERT pp. 61–86</span>
+        <span class="chip">~3–4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write pseudocode and draw a flowchart for a given problem, identifying input/process/output</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use selection (IF/ELSE) and repetition (WHILE) constructs correctly in pseudocode</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Dry-run an algorithm against edge cases to catch bugs before coding it</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#steps"><span>1</span> Steps for Problem Solving</a>
+        <a href="#algorithm"><span>2</span> Algorithm</a>
+        <a href="#representation"><span>3</span> Flowchart &amp; Pseudocode</a>
+        <a href="#flowofcontrol"><span>4</span> Flow of Control</a>
+        <a href="#verifying"><span>5</span> Verifying Algorithms</a>
+        <a href="#comparison"><span>6</span> Comparing Algorithms</a>
+        <a href="#coding-decomp"><span>7</span> Coding &amp; Decomposition</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="steps">
+            <h2>4.1–4.2 Steps for Problem Solving</h2>
+            <p>
+              Computers can't solve a problem on their own — <strong>precise step-by-step
+              instructions</strong> must be given. Success depends on correctly defining the
+              problem, designing a solution (algorithm), then implementing it (program).
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">The four-step cycle</div>
+              <pre><code>1. ANALYSING THE PROBLEM
+   Read the statement carefully -- identify required INPUT and
+   desired OUTPUT before attempting a solution.
+
+2. DEVELOPING AN ALGORITHM
+   Devise the solution in natural language first (the algorithm) --
+   like a well-written recipe. Keep refining until it covers every
+   aspect of the desired solution.
+
+3. CODING
+   Convert the finalised algorithm into a programming language.
+   Document the procedure for future reference.
+
+4. TESTING AND DEBUGGING
+   Check the program meets requirements, runs in acceptable time,
+   and gives correct output for ALL possible inputs. Fix logical
+   errors found; repeat until clean. (GIGO: Garbage In, Garbage Out
+   -- output correctness depends entirely on input correctness.)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="algorithm">
+            <h2>4.3 Algorithm</h2>
+            <p>
+              A <strong>finite sequence of steps</strong> that, if followed correctly, produces
+              the desired output in finite time. Has a definite beginning and end.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">4.3.1(A) — Five characteristics of a GOOD algorithm</div>
+              <pre><code>PRECISION    each step is precisely/exactly stated
+UNIQUENESS   each step's result depends only on the input and the
+             result of the step before it
+FINITENESS   always stops after a finite number of steps
+INPUT        the algorithm receives some input
+OUTPUT       the algorithm produces some output
+</code></pre>
+            </div>
+            <p>Writing an algorithm is considered the first step to programming — if it's correct, the program built from it will run correctly every single time.</p>
+          </section>
+
+          <section id="representation">
+            <h2>4.4 Representation of Algorithms</h2>
+            <p>Two common methods — a flowchart shows the logic visually; pseudocode shows it as structured English.</p>
+
+            <h3>4.4.1 Flowchart symbols</h3>
+            <div class="code-block">
+              <div class="code-block__label">Table 4.1</div>
+              <pre><code>Oval / Rounded rect   START / END ("Terminator")
+Rectangle             PROCESS -- an action or single step
+Diamond               DECISION -- yes/no, true/false branching
+Parallelogram         INPUT / OUTPUT (data symbol)
+Arrow                 flow of control between shapes
+</code></pre>
+            </div>
+
+            <h3>4.4.2 Pseudocode</h3>
+            <p>A non-formal, "not real code" description intended for HUMANS to read — never executed directly. No fixed standard, but common keywords:</p>
+            <div class="code-block">
+              <div class="code-block__label">Common pseudocode keywords</div>
+              <pre><code>INPUT   COMPUTE   PRINT   INCREMENT   DECREMENT
+IF/ELSE   WHILE   TRUE/FALSE
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 4.4 — area &amp; perimeter of a rectangle</div>
+              <pre><code>INPUT length
+INPUT breadth
+COMPUTE Area = length * breadth
+PRINT Area
+COMPUTE Perim = 2 * (length + breadth)
+PRINT Perim
+</code></pre>
+            </div>
+          </section>
+
+          <section id="flowofcontrol">
+            <h2>4.5 Flow of Control</h2>
+            <p>Events in an algorithm can flow three ways:</p>
+
+            <h3>4.5.1 Sequence</h3>
+            <p>Statements execute one after another, in order — the simplest case, as in the rectangle example above.</p>
+
+            <h3>4.5.2 Selection</h3>
+            <div class="code-block">
+              <div class="code-block__label">IF / IF-ELSE syntax</div>
+              <pre><code>IF &lt;condition&gt; THEN
+    steps when condition is true
+OTHERWISE (ELSE)
+    steps when condition is false
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 4.6 — multiple conditions (chained IF/ELSE IF)</div>
+              <pre><code>INPUT Age
+IF Age &lt; 13 THEN
+    PRINT "Child"
+ELSE IF Age &lt; 20 THEN
+    PRINT "Teenager"
+ELSE
+    PRINT "Adult"
+</code></pre>
+            </div>
+
+            <h3>4.5.3 Repetition (loop / iteration)</h3>
+            <p>Executing statements repeatedly until a condition is satisfied. Two patterns:</p>
+            <div class="code-block">
+              <div class="code-block__label">Example 4.8 — KNOWN repetition count (a counter)</div>
+              <pre><code>Step 1: SET count = 0, sum = 0
+Step 2: WHILE count &lt; 5, REPEAT steps 3 to 5
+Step 3:   INPUT a number to num
+Step 4:   sum = sum + num
+Step 5:   count = count + 1
+Step 6: COMPUTE average = sum/5
+Step 7: PRINT average
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 4.9 — UNKNOWN repetition count (sentinel-controlled WHILE)</div>
+              <pre><code>Step 1: SET count = 0, sum = 0
+Step 2: INPUT num
+Step 3: WHILE num is not equal to 0, REPEAT steps 4 to 6
+Step 4:   sum = sum + num
+Step 5:   count = count + 1
+Step 6:   INPUT num
+Step 7: COMPUTE average = sum/count
+Step 8: PRINT average
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Why INPUT num appears twice in Example 4.9</strong>
+                <p>Once BEFORE the loop (to have something to test on the very first WHILE check), and once INSIDE the loop (to get the next value before the condition is re-checked) — a classic "priming read" pattern.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="verifying">
+            <h2>4.6 Verifying Algorithms</h2>
+            <p>
+              A faulty algorithm produces faulty software — critical in banking or medical
+              systems. Verification means taking a <strong>dry run</strong>: picking an input,
+              manually stepping through every line, and checking the output is correct.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Worked bug — adding two times (hh:mm)</div>
+              <pre><code>-- First draft:
+hh_total = hh1 + hh2
+mm_total = mm1 + mm2
+PRINT T_total as hh_total, mm_total
+
+-- Test 1: T1=5h20m, T2=7h30m -> 12h50m   (looks fine)
+-- Test 2: T1=4h50m, T2=2h20m -> 6h70m   (WRONG -- not how we measure time!)
+
+-- Fix: carry the overflow
+IF (mm_total &gt;= 60) THEN
+    hh_total = hh_total + 1
+    mm_total = mm_total - 60
+-- Re-test 2: now correctly gives 7h10m
+</code></pre>
+            </div>
+            <p>This demonstrates why testing only "nice" inputs isn't enough — the edge case (minutes summing past 60) is exactly what exposed the bug. Fixing it in the algorithm is far cheaper than fixing it after the software ships.</p>
+          </section>
+
+          <section id="comparison">
+            <h2>4.7 Comparison of Algorithm</h2>
+            <p>More than one algorithm can solve the same problem — which to pick depends on efficiency. The textbook's running example: checking if a number is prime.</p>
+            <div class="code-block">
+              <div class="code-block__label">Four approaches to primality testing, from slowest to fastest</div>
+              <pre><code>(i)   Check every divisor from 2 up to (dividend - 1)       -- SLOWEST
+(ii)  Check only up to HALF the dividend (no factor exceeds it)
+(iii) Check only up to the SQUARE ROOT of the dividend       -- FASTEST of these
+(iv)  Check divisibility only against a PRE-STORED prime list
+      (fewer calculations, but costs extra MEMORY to store the list)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Two axes for comparing algorithms</div>
+              <pre><code>TIME COMPLEXITY    how much processing time the algorithm needs
+SPACE COMPLEXITY   how much memory the algorithm needs
+
+Method (iv) trades lower time complexity for higher space complexity --
+there's often a direct trade-off between the two.
+</code></pre>
+            </div>
+          </section>
+
+          <section id="coding-decomp">
+            <h2>4.8–4.9 Coding and Decomposition</h2>
+            <p>
+              Once an algorithm is finalised, it's translated into a high-level language following
+              that language's <strong>syntax</strong> (rules governing spelling, word order,
+              punctuation). High-level code (<strong>source code</strong>) is portable across
+              machine types, unlike low-level/machine code.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Choosing a language depends on the platform</strong>
+                <p>Desktop/mobile apps target a specific OS and hardware; web apps run in any browser and may lean on cloud resources; embedded systems (digital watches, traffic signals, medical equipment) often need specialised tools or even assembly language.</p>
+              </div>
+            </div>
+            <p>
+              <strong>Decomposition</strong> is "divide and conquer": breaking a complex problem
+              (like the railway reservation system from 4.1 — trains, reservations, staff/security,
+              billing, food service) into independent sub-problems that can be solved
+              separately — even by different teams — then integrated, tested, and combined into
+              the full solution.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook — representative subset)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 4
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>Write pseudocode that reads two numbers, divides one by the other, and displays the quotient.</li>
+                <li>Two friends flip a coin 5 times; first to win 3 flips wins a cake (1 = player 1 wins the flip, 2 = player 2). Design an algorithm to determine the winner.</li>
+                <li>Write pseudocode to print all multiples of 5 between 10 and 25 (inclusive).</li>
+                <li>Write pseudocode to print a bill from price and quantity, including "Bill GST" = bill + 5% tax.</li>
+                <li>Write an algorithm to find the greatest of two numbers entered by the user.</li>
+                <li>Write an algorithm: if the entered number is 5–15 print GREEN, 15–25 print BLUE, 25–35 print ORANGE, otherwise print "ALL COLOURS ARE BEAUTIFUL".</li>
+                <li>Write an algorithm to display a water bill: first 100 units @ ₹5/unit, next 150 @ ₹10/unit, beyond 250 @ ₹20/unit, plus a flat ₹75 meter charge.</li>
+                <li>What are conditionals? When are they required in a program?</li>
+                <li>Write a pseudocode to calculate the factorial of a number (5! = 5×4×3×2×1).</li>
+                <li>Draw a flowchart to check whether a number is an Armstrong number (e.g. 371 = 3³+7³+1³).</li>
+                <li>
+                  Verify and correct this algorithm for (5, 9, 47, 99, 100, 200):
+                  <div class="code-block">
+                    <div class="code-block__label">Classify_Numbers_Algo</div>
+                    <pre><code>INPUT Number
+IF Number &lt; 9
+    "Single Digit"
+Else If Number &lt; 99
+    "Double Digit"
+Else
+    "Big"</code></pre>
+                  </div>
+                </li>
+                <li>
+                  On what values does this algorithm fail, and how would you improve it?
+                  <div class="code-block">
+                    <div class="code-block__label">Accept_1to100_Algo</div>
+                    <pre><code>INPUT Number
+IF (0&lt;= Number) AND (Number &lt;= 100)
+    ACCEPT
+Else
+    REJECT</code></pre>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-03.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 3: Emerging Trends</span>
+          </a>
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 5: Getting Started with Python</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/dsa-cpp/index.html">DSA in C++</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

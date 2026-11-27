@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 11: Societal Impact — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 11 of CBSE Class 11 Computer Science (083): digital footprints, netizen etiquette, IPR (copyright/patent/trademark), plagiarism, FOSS, cyber crime, the Indian IT Act, and health impact of digital devices — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../cybersecurity/index.html" class="nav-course-card c-cybersecurity">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Cybersecurity Basics</span>
+              <span class="nav-course-card__meta">16 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Digital Society Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 11</span>
+      </div>
+
+      <h1>Chapter 11: Societal Impact</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook — the final chapter. Digital
+        technologies bring real benefits, but also real risks: this chapter covers digital
+        footprints, what it means to be a responsible netizen, Intellectual Property Rights
+        (copyright, patent, trademark) and their violation (plagiarism, infringement), free and
+        open-source software, the common categories of cyber crime, India's IT Act, and the
+        health impact of heavy digital-device use.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 11 of 11 — Final Chapter</span>
+        <span class="chip">NCERT pp. 229–250</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Distinguish active vs. passive digital footprints, and name the three categories of netizen etiquette</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tell copyright, patent and trademark apart, and recognise plagiarism vs. copyright infringement in a scenario</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Name common cyber crimes (hacking, phishing, identity theft, ransomware) and basic prevention steps</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#footprints"><span>1</span> Digital Footprints</a>
+        <a href="#netizen"><span>2</span> Digital Society &amp; Netizen</a>
+        <a href="#ipr"><span>3</span> Data Protection &amp; IPR</a>
+        <a href="#foss"><span>4</span> Public Access &amp; Open Source</a>
+        <a href="#cybercrime"><span>5</span> Cyber Crime</a>
+        <a href="#itact"><span>6</span> Indian IT Act</a>
+        <a href="#health"><span>7</span> Impact on Health</a>
+        <a href="#exercise"><span>8</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="footprints">
+            <h2>11.1–11.2 Introduction &amp; Digital Footprints</h2>
+            <p>
+              Every online activity — searching, buying a ticket, replying to an email, checking
+              a score — leaves a trail of data: your <strong>digital footprint</strong>. It
+              includes websites visited, emails sent, information submitted, plus your device's
+              IP address, location and other specifics. It can be created and used with or
+              without your knowledge.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Active vs. Passive footprints</div>
+              <pre><code>ACTIVE   data you INTENTIONALLY submit -- emails you write, posts/
+         comments you make on a website or app
+
+PASSIVE  data generated WITHOUT your direct intention -- created
+         just by visiting a website, using an app, browsing
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>No permanent deletion</strong>
+                <p>Most footprint data sits on the remote server hosting the app, not just your browser — you generally cannot access or control it. Even deleting your own post doesn't erase it from the digital footprint; this is exactly how many cyber criminals are later traced.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="netizen">
+            <h2>11.3 Digital Society and Netizen</h2>
+            <p>Anyone using digital technology with the Internet is a <strong>netizen</strong>. A responsible netizen follows three categories of etiquette:</p>
+            <div class="code-block">
+              <div class="code-block__label">11.3.1 — Net Etiquettes: Be Ethical, Respectful, Responsible</div>
+              <pre><code>BE ETHICAL
+  - No copyright violation (don't use copyrighted material without permission)
+  - Share expertise -- but only when sure of its accuracy
+
+BE RESPECTFUL
+  - Respect privacy -- don't share others' private images/files without consent
+  - Respect diversity -- of knowledge, experience, culture in a group/forum
+
+BE RESPONSIBLE
+  - Avoid cyber bullying -- repeated online behaviour meant to hurt/embarrass
+    (rumours, threats, publishing a victim's personal info, harassment)
+  - Don't feed the troll -- trolls thrive on attention, so ignore them
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.3.2 — Communication Etiquettes: Be Precise, Polite, Credible</div>
+              <pre><code>BE PRECISE   respect others' TIME (don't expect instant replies) and
+              DATA LIMITS (avoid huge attachments -- use cloud links instead)
+BE POLITE    stay non-aggressive whether communication is synchronous
+              (chat, calls) or asynchronous (email, forum posts)
+BE CREDIBLE  your past comments/posts build (or damage) your credibility
+              over time -- others judge your reliability by them
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.3.3 — Social Media Etiquettes: Be Secure, Be Reliable</div>
+              <pre><code>BE SECURE
+  - Choose a strong password, change it often, never share credentials
+  - Know who you befriend -- unknown "friends" may have malicious intent
+  - Beware of fake information -- validate news/posts before believing them
+
+BE RELIABLE
+  - Think before uploading -- content stays on the remote server even
+    after you "delete" it locally
+</code></pre>
+            </div>
+          </section>
+
+          <section id="ipr">
+            <h2>11.4 Data Protection &amp; Intellectual Property Rights (IPR)</h2>
+            <p>
+              <strong>Sensitive data</strong> — biometric, health, financial, personal documents —
+              can cause real harm if breached, so it's protected via encryption, authentication
+              and legal data-protection policies. <strong>Intellectual Property</strong> is an
+              original idea, invention, or creative/artistic work — legally protected three ways:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Copyright, Patent, Trademark — side by side</div>
+              <pre><code>COPYRIGHT
+  - Covers: writing, photos, audio, video, software, art
+  - Granted AUTOMATICALLY to the creator -- no filing needed
+  - Prevents others copying/using/selling the work without a license
+
+PATENT
+  - Covers: INVENTIONS
+  - Must be APPLIED FOR (filed) -- not automatic
+  - Gives full control over who can use/sell/distribute it
+  - Lasts 20 years, then becomes free to use
+
+TRADEMARK
+  - Covers: visual symbol, word, name, design, slogan, label (a BRAND)
+  - Stops confusingly similar marks too (e.g. "Nikke" vs "Nike")
+  - Can even be registered for UNRELATED goods by the same brand owner
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.4.2 — Three ways IPR is violated</div>
+              <pre><code>PLAGIARISM
+  Presenting someone else's idea/work as your own.
+  Still plagiarism even if content is "free for public use" --
+  you must still CITE the source/author.
+
+COPYRIGHT INFRINGEMENT
+  Using someone's work WITHOUT permission (or without paying, if sold) --
+  even citing the source does NOT excuse this if usage wasn't permitted.
+  Being "on the Internet" never automatically means "free to use."
+
+TRADEMARK INFRINGEMENT
+  Unauthorised use of someone's registered trademark on products/services.
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Plagiarism vs. Copyright Infringement — the key exam distinction</strong>
+                <p><strong>Plagiarism</strong> is an ethical failure: not giving credit, even for content you're allowed to use. <strong>Copyright infringement</strong> is a legal one: using content without the owner's permission or payment — citing the source doesn't fix this if usage itself wasn't authorised.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="foss">
+            <h2>11.4.3 Public Access and Open Source Software</h2>
+            <div class="code-block">
+              <div class="code-block__label">Public licenses — CC and GPL</div>
+              <pre><code>CREATIVE COMMONS (CC)
+  For ANY creative work (websites, music, film, literature).
+  Lets the author give others the right to share/use/build on a
+  work, while the AUTHOR still decides the exact licensing conditions.
+
+GNU GENERAL PUBLIC LICENSE (GPL)
+  Specifically for SOFTWARE.
+  Grants end users the freedom to run, study, share AND MODIFY the
+  software -- and these same freedoms must be PRESERVED in every
+  derivative work. Distributors MAY charge a fee or give it free.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">FOSS vs. Freeware vs. Proprietary (tying back to Chapter 1)</div>
+              <pre><code>FOSS         source code OPEN -- anyone can access, modify, improve
+             e.g. Ubuntu, Fedora, LibreOffice, Mozilla Firefox
+FREEWARE     free to USE, but source code is CLOSED/not shared
+             e.g. Skype, Adobe Acrobat Reader -- personal use OK,
+             commercial redistribution is NOT
+PROPRIETARY  copying prohibited by copyright law; must be purchased
+</code></pre>
+            </div>
+            <p><strong>Software piracy</strong> — unauthorised copying/distribution of licensed software, whether for sale, free distribution, or even just your own extra copy — is copyright infringement regardless of intent, and degrades both system performance and the wider software economy.</p>
+          </section>
+
+          <section id="cybercrime">
+            <h2>11.5 Cyber Crime</h2>
+            <p>A <strong>cyber crime</strong> is one where the computer is either the <em>target</em> or the <em>tool</em> of the offence.</p>
+            <div class="code-block">
+              <div class="code-block__label">11.5.1 — Hacking: White hat vs. Black hat</div>
+              <pre><code>WHITE HAT (ethical hacker)
+  Finds security loopholes deliberately, then REPORTS them to the
+  owner -- improves the system's security rather than exploiting it.
+
+BLACK HAT (cracker, non-ethical hacker)
+  Breaks through security for identity theft, monetary gain, to
+  bring down a rival site, or leak sensitive data.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.5.2 — Phishing, email spoofing &amp; identity theft</div>
+              <pre><code>PHISHING   fake websites/emails that LOOK authentic, used to collect
+           usernames, passwords, banking/credit card details
+
+EMAIL SPOOFING  the most common phishing method -- a forged sender
+                address made to look like it's from your bank/school
+
+IDENTITY THEFT  stolen personal data (demographic, banking, PAN,
+                Aadhaar) misused by the thief:
+   - Financial identity theft -- for monetary gain
+   - Criminal identity theft -- to hide the criminal's real identity
+   - Medical identity theft -- to obtain drugs/treatment
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.5.3 — Ransomware</div>
+              <pre><code>Attacker gains access, ENCRYPTS the victim's data, then demands
+payment to restore access -- or threatens to leak sensitive data/
+photos otherwise. Spreads via malicious sites, doubtful software
+downloads, spam email attachments, or malicious ads.
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">11.5.4 — Prevention checklist</div>
+              <pre><code>- Regular data backups
+- Keep antivirus software updated
+- Never use pirated software; download only from secure (HTTPS) sites
+- Keep browser and all application software updated
+- Avoid untrusted websites and their downloads
+- Use strong, PERIODICALLY CHANGED passwords -- different per site,
+  avoiding common words/names
+- Don't let browsers save passwords/auto-fill on a shared computer;
+  use private/incognito browsing there
+- Don't accept cookies on unknown sites when asked Yes/No
+- Shop/transact only on well-known, secure sites
+- Secure your home wireless network with a strong, regularly changed password
+</code></pre>
+            </div>
+          </section>
+
+          <section id="itact">
+            <h2>11.6 Indian Information Technology Act (IT Act)</h2>
+            <p>
+              India's <strong>IT Act, 2000</strong> (amended 2008) gives legal guidelines for
+              processing, storing and transmitting sensitive information, and legal recognition to
+              electronic records and <strong>digital signatures</strong>. Cyber cells in police
+              stations handle complaints; a <strong>Cyber Appellate Tribunal</strong> resolves
+              disputes like source-code tampering, hacking, unauthorised password use, and
+              publishing someone's sensitive data without consent. The Act also lets government
+              departments accept official documents purely in digital form.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Digital signatures, briefly</strong>
+                <p>The digital equivalent of a paper certificate — built on a unique digital ID issued by a licensed Certified Authority (CA) under Section 24 of the IT Act. Signing digitally attaches a verifiable identity to a document.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="health">
+            <h2>11.7 Impact on Health</h2>
+            <p>
+              Heavy screen time can cause real physical and psychological strain.
+              <strong>Ergonomics</strong> — the science of arranging workplaces/furniture/equipment
+              safely and comfortably — helps reduce this.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Common health effects &amp; mitigations</div>
+              <pre><code>EYE STRAIN       from screen glare, worse on small handheld devices
+                 -- periodically look at distant objects; take outdoor breaks
+
+BAD POSTURE /
+BACK, NECK,      corrected by ergonomic seating/desk/screen positioning
+SHOULDER PAIN    (90° angles at wrist, seat-back, knee; proper viewing
+                 distance ~19-24 inches, viewing angle ~30°)
+
+WRIST/FINGER     from prolonged, poorly-aligned keyboard (physical or
+PAIN             touchscreen) use -- may need medical attention if severe
+
+STRESS, FATIGUE, broader effects of excessive digital-device time
+OBESITY
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Device care checklist (keeps the system itself healthy)</div>
+              <pre><code>- Clean regularly with a solution MADE FOR electronic screens
+- Wipe the monitor with a soft microfibre cloth
+- Keep away from direct heat/sunlight; ensure ventilation
+- Never eat/drink over the keyboard -- crumbs and spills damage it
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>8. Exercise (from the textbook — representative subset)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 11
+              </span>
+              <h3>Work through these — mostly scenario-based reasoning</h3>
+              <ol>
+                <li>Revaan uses Atharv's still-logged-in email to send inflammatory messages to classmates. Which cyber crime is this — hacking, identity theft, cyber bullying, or plagiarism? Justify.</li>
+                <li>Rishika finds Garvit's crumpled email/password on paper. What is the ethically correct action: tell Garvit, share it with classmates, or use it herself?</li>
+                <li>Shaurya downloads a 2-minute clip on Python tuples, adds "Prepared by Shaurya," and emails it to a sick classmate. Is this fair use, hacking, copyright infringement, or cyber crime?</li>
+                <li>After a fight, which of these is <em>not</em> cyber bullying: an apology email; a threatening "don't call me" message; or uploading an embarrassing edited photo of a friend?</li>
+                <li>For a "Digital India" school project, which counts as plagiarism/infringement: rephrasing a paragraph in your own words and citing it; making a photo collage from downloaded images; or pasting a downloaded official icon on your cover page? Justify each.</li>
+                <li>Match: Plagiarism / Hacking / Credit card fraud / Digital Footprint — against: "copy-paste from the Internet," "breaking into computers to read private files," "fakers requesting bank details via rewards," "the trail left when using the Internet."</li>
+                <li>You receive an SMS claiming to be your bank, asking you to reply with your PIN to verify a transaction. Should you SMS your PIN? Should you instead call the bank's official helpline?</li>
+                <li>Preeti deletes a birthday photo from a social site after a fight with Himanshu, but later finds he still has and forwarded it. Why could he still access it? Could others too? Was it really deleted from her digital footprint?</li>
+                <li>Differentiate: (a) Copyright vs. Patent, (b) Plagiarism vs. Copyright infringement, (c) Ethical vs. non-ethical hacking, (d) Active vs. passive digital footprints, (e) Free software vs. Free and Open Source Software (FOSS).</li>
+                <li>What steps should you take before reusing a short web-article excerpt, to properly credit the source?</li>
+                <li>Will you share your home wifi router's password with: parents, friends, neighbours, home tutors? Justify each answer.</li>
+                <li>Write a short note on the health hazards of inappropriate/excessive laptop use, and how to mitigate them (for a parent explaining this to a child who just got a laptop).</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="whatsnext">
+            <h2>Course complete</h2>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>You've finished all 11 NCERT chapters</strong>
+                <p>From computer fundamentals and number systems in Chapter 1, through problem solving, every core Python data type (strings, lists, tuples, dictionaries), functions, and now digital citizenship — this mirrors the full official Class XI syllabus. The natural next step is the <a href="../cbse-cs-12/index.html">CBSE Class 12 Computer Science course</a>, which builds directly on this: exception handling, file handling, stacks/queues, sorting/searching, databases and SQL, networks, and security.</p>
+              </div>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-10.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 10: Tuples and Dictionaries</span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Course complete — continue to</span>
+            <span class="lesson-pager__title">CBSE Class 12 Computer Science</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/cybersecurity/index.html">Cybersecurity Basics</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 8: Database Concepts — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 8 of CBSE Class 12 Computer Science (083): file system limitations, DBMS, the relational data model, attributes/tuples/domain/degree/cardinality, and candidate/primary/composite/foreign keys — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Database Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 8</span>
+      </div>
+
+      <h1>Chapter 8: Database Concepts</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Why do we need a database at all,
+        instead of just files? This chapter walks through a school attendance example to expose
+        file system limitations — redundancy, inconsistency, isolation, dependence — then builds
+        up the <strong>relational data model</strong>: relations, attributes, tuples, domain,
+        degree, cardinality, and the four kinds of keys that hold a relational database together.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 8 of 13</span>
+        <span class="chip">NCERT pp. 111–130</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>List the six limitations of a plain file system and explain each with an example</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Identify attribute, tuple, domain, degree and cardinality in a given relation</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Pick out candidate, primary, composite primary and foreign keys in a schema</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction</a>
+        <a href="#filesystem"><span>2</span> File System &amp; Its Limitations</a>
+        <a href="#dbms"><span>3</span> Database Management System</a>
+        <a href="#relational"><span>4</span> Relational Data Model</a>
+        <a href="#keys"><span>5</span> Keys in a Relational Database</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>8.1 Introduction</h2>
+            <p>
+              A school keeping attendance on paper — 'P'/'A' against each roll number, every
+              working day — faces real problems at scale: re-entering student details each year,
+              inconsistent names, lost/damaged registers, and manual calculation errors. The fix
+              is to store <strong>STUDENT</strong> details and <strong>ATTENDANCE</strong>
+              separately on a computerised system — but first through plain files, which turn out
+              to have their own problems.
+            </p>
+          </section>
+
+          <section id="filesystem">
+            <h2>8.2 File System &amp; Its Limitations</h2>
+            <p>
+              A <strong>file</strong> is a container for data on a storage device. Our school
+              example needs two files — <code>STUDENT</code> (RollNumber, SName, SDateofBirth,
+              GName, GPhone, GAddress) and <code>ATTENDANCE</code> (AttendanceDate, RollNumber,
+              SName, AttendanceStatus). As the number of files and data volume grows, six
+              limitations surface:
+            </p>
+            <ul>
+              <li><strong>(A) Difficulty in Access</strong> — files provide no retrieval mechanism of their own; every access path needs a hand-written application program.</li>
+              <li><strong>(B) Data Redundancy</strong> — the same data duplicated across files/rows (SName appears in both files; two siblings' guardian details repeat).</li>
+              <li><strong>(C) Data Inconsistency</strong> — redundant copies that fall out of sync (a name corrected in one file but not the other).</li>
+              <li><strong>(D) Data Isolation</strong> — related files (STUDENT, ATTENDANCE) have no built-in link/mapping between them.</li>
+              <li><strong>(E) Data Dependence</strong> — change a file's structure, and every program reading it must be updated too.</li>
+              <li><strong>(F) Controlled Data Sharing</strong> — hard to enforce "guardians can view but not edit attendance" style access rules at the file level.</li>
+            </ul>
+          </section>
+
+          <section id="dbms">
+            <h2>8.3 Database Management System</h2>
+            <p>
+              A <strong>Database Management System (DBMS)</strong> is software to create and
+              manage databases — letting users store, update, modify and retrieve data, acting as
+              the interface between the database and end users/application programs. Examples:
+              MySQL, Oracle, PostgreSQL, SQL Server, Microsoft Access, MongoDB. Retrieving data
+              through special commands is called <strong>querying</strong>.
+            </p>
+
+            <h3>8.3.1 File System → DBMS</h3>
+            <p>Converting the school's two files into a database means:</p>
+            <ol>
+              <li>Drop <code>SName</code> from ATTENDANCE — it's already in STUDENT, linked via the common field <code>RollNumber</code>.</li>
+              <li>Split guardian details into their own <code>GUARDIAN</code> table, so each guardian's data is stored only once (not once per sibling).</li>
+              <li>Add a <code>GUID</code> (Guardian ID) column — unique per guardian, since names alone can't distinguish two people, and even phone numbers can change.</li>
+            </ol>
+            <div class="code-block">
+              <div class="code-block__label">Three related tables</div>
+              <pre><code>STUDENT(RollNumber, SName, SDateofBirth, GUID)
+GUARDIAN(GUID, GName, GPhone, GAddress)
+ATTENDANCE(AttendanceDate, RollNumber, AttendanceStatus)
+</code></pre>
+            </div>
+
+            <h3>8.3.2 Key Concepts in DBMS</h3>
+            <ul>
+              <li><strong>Database Schema</strong> — the design: table names, columns, data types, constraints, relationships.</li>
+              <li><strong>Data Constraint</strong> — a restriction on what a column can hold, e.g. <code>NOT NULL</code> + <code>UNIQUE</code> on RollNumber.</li>
+              <li><strong>Meta-data / Data Dictionary</strong> — the schema plus constraints, stored in the database catalog; "data about the data."</li>
+              <li><strong>Database Instance</strong> — the snapshot of actual data at a given moment (empty right after schema creation, then populated).</li>
+              <li><strong>Query</strong> — a request for information, written in SQL (Chapter 9).</li>
+              <li><strong>Data Manipulation</strong> — Insertion, Deletion, Update of records.</li>
+              <li><strong>Database Engine</strong> — the underlying programs a DBMS uses to create the database and handle queries.</li>
+            </ul>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>DBMS has costs too</strong>
+                <p>Textbook caveat: shifting from files to a DBMS means buying hardware/software, training users on querying, and recurring backup/recovery costs — and centralising data increases vulnerability, since a single hardware/software failure can halt operations for everyone.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="relational">
+            <h2>8.4 Relational Data Model</h2>
+            <p>
+              The most common data model. In the relational model, tables are called
+              <strong>relations</strong>. Each row corresponds to a real-world entity (a student,
+              a guardian); each column interprets what that data means.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Relational terminology</div>
+              <pre><code>ATTRIBUTE    a column/field -- e.g. GUID, GName, GPhone, GAddress
+TUPLE        a row -- one related set of n values
+DOMAIN       the set of allowed values for an attribute (usually = its data type)
+DEGREE       the NUMBER OF ATTRIBUTES (columns) in a relation
+CARDINALITY  the NUMBER OF TUPLES (rows) in a relation
+
+GUARDIAN relation: 4 attributes, 5 tuples
+  → Degree = 4, Cardinality = 5
+</code></pre>
+            </div>
+
+            <h3>8.4.1 Three Properties of a Relation</h3>
+            <div class="code-block">
+              <div class="code-block__label">What makes a relation different from a plain table</div>
+              <pre><code>Property 1 (attributes):
+  - each attribute name is unique within the relation
+  - attribute order doesn't matter
+
+Property 2 (tuples):
+  - every tuple is distinct -- no two rows identical across ALL attributes
+  - tuple order doesn't matter
+
+Property 3 (values):
+  - all values in one attribute come from the same domain/data type
+  - every value is atomic (not further divisible, e.g. one 10-digit phone number)
+  - an attribute holds ONE value per tuple, never multiple
+  - NULL represents an unknown/non-applicable value
+</code></pre>
+            </div>
+          </section>
+
+          <section id="keys">
+            <h2>8.5 Keys in a Relational Database</h2>
+            <p>Every tuple must be distinguishable from every other — keys enforce that and link relations together.</p>
+
+            <h3>8.5.1 Candidate Key</h3>
+            <p>Any attribute (or attribute set) whose values are always unique — a <em>candidate</em> for primary key. In GUARDIAN, both <code>GUID</code> and <code>GPhone</code> are candidate keys (no two guardians share either).</p>
+
+            <h3>8.5.2 Primary Key</h3>
+            <p>The candidate key the database designer actually picks to uniquely identify tuples. The remaining candidate key(s) become <strong>alternate keys</strong> — e.g. with GUID chosen as primary key, GPhone becomes the alternate key.</p>
+
+            <h3>8.5.3 Composite Primary Key</h3>
+            <p>
+              When no single attribute is unique enough alone, two or more are combined. In
+              ATTENDANCE, neither RollNumber alone (repeats across dates) nor AttendanceDate alone
+              (repeats across students) works — but
+              <code>{RollNumber, AttendanceDate}</code> together is always unique, since a student
+              is marked only once per working day.
+            </p>
+
+            <h3>8.5.4 Foreign Key</h3>
+            <p>
+              An attribute in one relation (the <strong>referencing</strong>/foreign relation)
+              whose values are drawn from the primary key of another relation (the
+              <strong>primary</strong>/master relation) — this is what links tables together. A
+              foreign key can be NULL if it isn't itself part of its own table's primary key.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">STUDENTATTENDANCE schema with keys (underline = primary key)</div>
+              <pre><code>STUDENT(   RollNumber, SName, SDateofBirth, GUID )
+                                                 \
+GUARDIAN(  GUID, GName, GPhone, GAddress )  &lt;----'  -- GUID in STUDENT is a
+                                                        foreign key referencing
+                                                        GUARDIAN's primary key
+
+ATTENDANCE( AttendanceDate, RollNumber, AttendanceStatus )
+                             \
+STUDENT(    RollNumber, ... ) &lt;--'  -- RollNumber in ATTENDANCE is a foreign
+                                       key referencing STUDENT's primary key
+
+-- ATTENDANCE's own primary key is the COMPOSITE {AttendanceDate, RollNumber}
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 8
+              </span>
+              <h3>Work through these on paper</h3>
+              <ol>
+                <li>
+                  Give the term for each: (a) collection of logically related records, (b) a DBMS file describing the data stored in the database, (c) an attribute that can uniquely identify tuples, (d) the special value for an unknown attribute, (e) an attribute that can uniquely identify tuples but isn't the chosen primary key, (f) software used to create/manipulate/maintain a relational database.
+                </li>
+                <li>Why are foreign keys allowed to hold NULL? Give an example.</li>
+                <li>
+                  Differentiate: (a) database state vs. database schema, (b) primary key vs. foreign key, (c) degree vs. cardinality of a relation.
+                </li>
+                <li>Compared to a file system, how does a DBMS avoid data redundancy?</li>
+                <li>What file-system limitations does a relational DBMS overcome?</li>
+                <li>
+                  A sports preference table has roll_no 17 listed twice (Badminton and Football), and a row with roll_no NULL for Kabaddi. (a) Can roll_no 24's preference legitimately be NULL? (b) Which relational property does roll_no 17's duplicate entry violate — what key/constraint would catch it? (c) Can the NULL-roll_no Kabaddi row exist in this relation?
+                </li>
+                <li>Two sections each keep a sports-preference table with different row/column order. Are the two relation <em>states</em> equivalent? Justify.</li>
+                <li>
+                  Design a canteen database: (a) what relation/attributes store each item + price (each only once — what constraint enforces that)? (b) should purchase quantity go in a new relation or the existing one — name the attributes, primary key and foreign key so a bill can't duplicate and can only reference available items. (c) where should "calories" live?
+                </li>
+                <li>
+                  For <code>EMPLOYEE(AadharNumber, Name, Address, Department, EmployeeID)</code> and <code>DEPENDENT(EmployeeID, DependentName, Relationship)</code>: (a) which EMPLOYEE attributes could be candidate keys? (b) which tables/key retrieve a given employee's dependents? (c) what's the degree of each relation?
+                </li>
+                <li>
+                  Given a SCHOOL_UNIFORM database with <code>UNIFORM(UCode PK, UName NOT NULL, UColor)</code> and <code>COST(UCode, Size, Price &gt;0)</code> composite PK: can you insert (a) <code>(7, Handkerchief, NULL)</code>, <code>(4, Ribbon, Red)</code>, <code>(8, NULL, White)</code> into UNIFORM? (b) <code>(7, S, 0)</code>, <code>(9, XL, 100)</code> into COST? Justify each.
+                </li>
+                <li>
+                  For <code>MOVIE(Movie_ID, MovieName, ReleaseDate)</code> and <code>AUDI(AudiNo, Movie_ID, Seats, ScreenType, TicketPrice)</code> where one movie can show in multiple auditoriums: (a) is Movie_ID alone a correct primary key? (b) is AudiNo alone correct for AUDI? (c) is there a foreign key here?
+                </li>
+                <li>
+                  For a STUDENT-PROJECT database with <code>STUDENT(RollNo, Name, Class, Section, Registration_ID)</code>, <code>PROJECT(ProjectNo, PName, SubmissionDate)</code>, <code>PROJECT_ASSIGNED(Registration_ID, ProjectNo)</code>: (a) name each table's primary key, (b) find the foreign key(s) in PROJECT_ASSIGNED, (c) is there an alternate key in STUDENT, (d) can RollNo repeat?
+                </li>
+                <li>
+                  For the same database, can you: (a) insert a student with a missing roll number, (b) insert a student with a missing registration number, (c) insert a project without a submission date, (d) insert <code>(IP-101-19, 206)</code> into PROJECT_ASSIGNED?
+                </li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-07.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 7: Understanding Data</span>
+          </a>
+          <a href="week-09.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 9: Structured Query Language (SQL)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

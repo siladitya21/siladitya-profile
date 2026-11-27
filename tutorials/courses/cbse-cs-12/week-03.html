@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 3: Stack — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 3 of CBSE Class 12 Computer Science (083): the Stack data structure, PUSH/POP, implementing a stack with a Python list, infix/prefix/postfix notations, and converting and evaluating expressions with a stack — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Data Structure Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 3</span>
+      </div>
+
+      <h1>Chapter 3: Stack</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. This chapter introduces the
+        <strong>Stack</strong> — a Last-In-First-Out (LIFO) data structure — its PUSH and POP
+        operations, how to implement it with a plain Python list, and its most important
+        exam application: converting an infix arithmetic expression to postfix notation, then
+        evaluating that postfix expression, entirely with a stack.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 3 of 13</span>
+        <span class="chip">NCERT pp. 39–52</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain LIFO, and implement PUSH/POP using <code>append()</code> and <code>pop()</code> on a Python list</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tell infix, prefix and postfix notation apart, and convert infix to postfix using a stack</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Evaluate a postfix expression by hand, tracking the stack at every step</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction &amp; Stack</a>
+        <a href="#operations"><span>2</span> PUSH / POP</a>
+        <a href="#implementation"><span>3</span> Implementing a Stack</a>
+        <a href="#notations"><span>4</span> Infix / Prefix / Postfix</a>
+        <a href="#infix-postfix"><span>5</span> Infix → Postfix Conversion</a>
+        <a href="#evaluation"><span>6</span> Evaluating a Postfix Expression</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>3.1–3.2 Introduction &amp; Stack</h2>
+            <p>
+              A <strong>data structure</strong> defines a mechanism to store, organise and
+              access data along with the operations that can be efficiently performed on it —
+              string and list from Class XI are examples. <strong>Stack</strong> and
+              <strong>Queue</strong> are two more, and although Python has no dedicated stack
+              type, they're used constantly across programming languages.
+            </p>
+            <p>
+              Think of a pile of plates or a pile of books: you always add a new one on top, and
+              always remove the top one first. That's a <strong>stack</strong> — elements are
+              added and removed from one end only, called the <strong>TOP</strong>, following the
+              <strong>Last-In-First-Out (LIFO)</strong> principle: the most recently inserted
+              element is the first one taken out.
+            </p>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Real-life &amp; programming applications</strong>
+                <p>Bangles on a wrist, a pile of boxes in a pantry — and in software: reversing a string, a text editor's undo/redo, a browser's BACK button history, and checking that parentheses in an expression are properly matched and nested.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="operations">
+            <h2>3.3 Operations on Stack</h2>
+            <ul>
+              <li><strong>PUSH</strong> — inserts a new element at the TOP. Trying to push onto a full stack is <strong>overflow</strong>.</li>
+              <li><strong>POP</strong> — removes the element at the TOP. Trying to pop an empty stack is <strong>underflow</strong>.</li>
+            </ul>
+            <p>Picture a stack of numbered glasses: PUSH 1, PUSH 2, POP (removes 2), PUSH 3, PUSH 4, then POP four times in a row — each POP removes whatever was pushed most recently (4, then 3, then 1 — remember 2 was already removed), until the stack is empty again.</p>
+          </section>
+
+          <section id="implementation">
+            <h2>3.4 Implementation of Stack in Python</h2>
+            <p>
+              The simplest way to implement a stack in Python is with a <strong>list</strong>,
+              fixing one end as TOP. Using <code>append()</code> for PUSH and <code>pop()</code>
+              for POP — both of which act on the <em>rightmost</em> end of the list — means no
+              explicit TOP index is ever needed. Because Python lists have no fixed size, this
+              stack never actually overflows (barring running out of memory).
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Stack functions built on a Python list</div>
+              <pre><code>glassStack = list()   # create an empty stack
+
+def isEmpty(glassStack):
+    if len(glassStack) == 0:
+        return True
+    else:
+        return False
+
+def opPush(glassStack, element):
+    glassStack.append(element)
+
+def size(glassStack):
+    return len(glassStack)
+
+def top(glassStack):
+    if isEmpty(glassStack):
+        print('Stack is empty')
+        return None
+    else:
+        x = len(glassStack)
+        return glassStack[x-1]
+
+def opPop(glassStack):
+    if isEmpty(glassStack):
+        print('underflow')
+        return None
+    else:
+        return glassStack.pop()
+
+def display(glassStack):
+    x = len(glassStack)
+    print("Current elements in the stack are: ")
+    for i in range(x-1, -1, -1):
+        print(glassStack[i])
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Using the stack</div>
+              <pre><code>glassStack = list()
+
+opPush(glassStack, 'glass1')
+opPush(glassStack, 'glass2')
+print("Current number of elements in stack is", size(glassStack))
+
+element = opPop(glassStack)        # removes 'glass2'
+opPush(glassStack, 'glass3')
+print("top element is", top(glassStack))   # 'glass3'
+display(glassStack)                # glass3, glass1 (top to bottom)
+
+while True:
+    item = opPop(glassStack)
+    if item == None:
+        print("Stack is empty now")
+        break
+    else:
+        print("Popped element is", item)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="notations">
+            <h2>3.5 Notations for Arithmetic Expressions</h2>
+            <p>Any arithmetic expression can be written three ways:</p>
+            <div class="code-block">
+              <div class="code-block__label">Table 3.1 — Infix, Prefix, Postfix</div>
+              <pre><code>Infix   (operator BETWEEN operands, needs BODMAS + parentheses)
+        x * y + z        3 * (4 + 5)      (x + y) / (z * 5)
+
+Prefix  (Polish notation — operator BEFORE its operands)
+        + z * x y        * 3 + 4 5        / + x y * z 5
+
+Postfix (Reverse Polish — operator AFTER its operands)
+        x y * z +        3 4 5 + *        x y + z 5 * /
+</code></pre>
+            </div>
+            <p>Prefix/postfix need no parentheses and no precedence rules at evaluation time — the position of each operator already encodes the order of evaluation, so a single left-to-right pass is enough.</p>
+          </section>
+
+          <section id="infix-postfix">
+            <h2>3.6 Conversion from Infix to Postfix Notation</h2>
+            <p>A stack tracks operators and parentheses encountered while scanning the infix expression left to right; a string accumulates the postfix result.</p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 3.1</div>
+              <pre><code>1. Create an empty string postExp.
+2. INPUT infix expression inExp.
+3. For each character in inExp:
+     IF character is '('       → PUSH it on the Stack
+     ELSE IF character is ')'  → POP from Stack and append to postExp
+                                  until the matching '(' is popped
+                                  (discard both parentheses)
+     ELSE IF character is an operator:
+         IF its precedence &lt;= operator at top of Stack
+             → POP operators (append each to postExp) until one
+               of lower precedence is found, THEN push this operator
+         ELSE → PUSH this operator on the Stack
+     ELSE (it's an operand)    → append it directly to postExp
+4. After the last character, POP all remaining Stack elements
+   and append them to postExp.
+5. OUTPUT postExp.
+</code></pre>
+            </div>
+            <p><strong>Example 3.1</strong> — converting <code>(x + y)/(z*8)</code>:</p>
+            <div class="code-block">
+              <div class="code-block__label">Step-by-step trace</div>
+              <pre><code>Symbol:  (    x    +    y    )    /    (    z    *    8    )   [end]
+Stack:   (    (   +(   +(    /         /(   /(  */(  */(   /       empty
+postExp: ""   x    x   xy   xy+  xy+  xy+ xy+z xy+z xy+z8 xy+z8* xy+z8*/
+</code></pre>
+            </div>
+            <p>Result: <code>x y + z 8 * /</code> — operators are the only things ever pushed during this conversion.</p>
+          </section>
+
+          <section id="evaluation">
+            <h2>3.7 Evaluation of Postfix Expression</h2>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 3.2</div>
+              <pre><code>1. INPUT postfix expression postExp.
+2. For each character in postExp:
+     IF it's an operand → PUSH it on the Stack
+     ELSE (it's an operator)
+          → POP two elements, apply the operator to them,
+            PUSH the computed result back onto the Stack
+3. When input is exhausted, the Stack should hold exactly one
+   element: POP it — that's the final result.
+   (More than one element left means an invalid expression.)
+</code></pre>
+            </div>
+            <p><strong>Example 3.2</strong> — evaluating <code>7 8 2 * 4 / +</code>:</p>
+            <div class="code-block">
+              <div class="code-block__label">Step-by-step trace</div>
+              <pre><code>Symbol:  7    8    2    *          4    /         +
+Action:  PUSH PUSH PUSH POP 8,2;   PUSH POP 16,4;  POP 7,4;
+                         8*2=16;        16/4=4;    4+7=11
+                         PUSH 16                    PUSH 11
+Stack:   [7]  [7,8][7,8,2] [7,16] [7,16,4] [7,4]    [11]
+</code></pre>
+            </div>
+            <p>Final result: <strong>11</strong>. Note this algorithm only ever pushes <em>operands</em> onto the stack — the mirror image of the infix→postfix conversion, which only ever pushes operators.</p>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 3
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>
+                  State TRUE or FALSE:
+                  <ol type="a">
+                    <li>Stack is a linear data structure</li>
+                    <li>Stack does not follow the LIFO rule</li>
+                    <li>PUSH operation may result in an underflow condition</li>
+                    <li>In postfix notation, operators are placed after operands</li>
+                  </ol>
+                </li>
+                <li>
+                  Find the output of:
+                  <div class="code-block">
+                    <div class="code-block__label">(a)</div>
+                    <pre><code>result = 0
+numberList = [10, 20, 30]
+numberList.append(40)
+result = result + numberList.pop()
+result = result + numberList.pop()
+print("Result=", result)</code></pre>
+                  </div>
+                  <div class="code-block">
+                    <div class="code-block__label">(b)</div>
+                    <pre><code>answer = []; output = ''
+answer.append('T'); answer.append('A'); answer.append('M')
+ch = answer.pop(); output = output + ch
+ch = answer.pop(); output = output + ch
+ch = answer.pop(); output = output + ch
+print("Result=", output)</code></pre>
+                  </div>
+                </li>
+                <li>Write a program to reverse a string using a stack.</li>
+                <li>For <code>((2+3)*(4/2))+2</code>, show the step-by-step process of matching parentheses using a stack.</li>
+                <li>Evaluate these postfix expressions, showing the stack status after each operation, given A=3, B=5, C=1, D=4: (a) <code>A B + C *</code>, (b) <code>A B * C / D *</code></li>
+                <li>Convert these infix expressions to postfix, showing stack and string contents at each step: (a) <code>A + B - C * D</code>, (b) <code>A * ((C + D)/E)</code></li>
+                <li>Write a program to create a stack that stores only the odd numbers out of all numbers entered by the user. Display the stack's contents along with the largest odd number in it. (Hint: pop every element, tracking the largest seen so far, until the stack is empty.)</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 2: File Handling in Python</span>
+          </a>
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 4: Queue</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

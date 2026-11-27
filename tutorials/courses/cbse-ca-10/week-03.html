@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 3: HTML — Tables, Forms, Links &amp; Media — CBSE Class 10 Computer Applications</title>
+<meta name="description" content="Chapter 3 of CBSE Class 10 Computer Applications (165): HTML tables (table/tr/th/td/rowspan/colspan), forms (textbox/radio/checkbox/password/list/combobox), anchor links, and embedding audio/video — based on the official CBSE curriculum, Unit 2." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../javascript-typescript/index.html" class="nav-course-card c-javascript-typescript">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">JavaScript &amp; TypeScript</span>
+              <span class="nav-course-card__meta">14 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-10/index.html#timeline">Unit 2</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 3</span>
+      </div>
+
+      <h1>Chapter 3: HTML — Tables, Forms, Links &amp; Media</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum, Unit 2 (continued).
+        With the basics from Chapter 2 in place, this chapter covers the tags that turn a page
+        into something properly <em>structured</em> and <em>interactive</em>: tables for tabular
+        data, forms for user input, hyperlinks for navigation between pages, and embedding audio
+        and video directly in the page.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 3 of 6</span>
+        <span class="chip">Unit 2, Part B</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Hands-on Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Build a table with merged cells using <code>rowspan</code> and <code>colspan</code></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Create every common form input type the syllabus lists</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Link between pages, link to an email address, and embed audio/video</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#tables"><span>1</span> Tables</a>
+        <a href="#rowcolspan"><span>2</span> rowspan &amp; colspan</a>
+        <a href="#forms"><span>3</span> HTML Forms</a>
+        <a href="#links"><span>4</span> Links — the Anchor Element</a>
+        <a href="#media"><span>5</span> Embedding Audio &amp; Video</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="tables">
+            <h2>3.1 Creating a Table</h2>
+            <div class="code-block">
+              <div class="code-block__label">table, tr, th, td — the four core tags</div>
+              <pre><code>&lt;table border="1"&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Name&lt;/th&gt;
+        &lt;th&gt;Subject&lt;/th&gt;
+        &lt;th&gt;Marks&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Ravi&lt;/td&gt;
+        &lt;td&gt;Computer Applications&lt;/td&gt;
+        &lt;td&gt;92&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Priya&lt;/td&gt;
+        &lt;td&gt;Mathematics&lt;/td&gt;
+        &lt;td&gt;88&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+table  wraps the WHOLE table
+tr     one TABLE ROW
+th     a TABLE HEADING cell (bold, centred by default)
+td     an ordinary TABLE DATA cell
+</code></pre>
+            </div>
+          </section>
+
+          <section id="rowcolspan">
+            <h2>3.2 rowspan and colspan — merging cells</h2>
+            <div class="code-block">
+              <div class="code-block__label">colspan — merges cells ACROSS columns (horizontally)</div>
+              <pre><code>&lt;table border="1"&gt;
+    &lt;tr&gt;
+        &lt;th colspan="3"&gt;Term 1 Report Card&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;English&lt;/td&gt;&lt;td&gt;Hindi&lt;/td&gt;&lt;td&gt;Science&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+&lt;!-- the colspan="3" header cell stretches across all 3 columns below it --&gt;
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">rowspan — merges cells DOWN rows (vertically)</div>
+              <pre><code>&lt;table border="1"&gt;
+    &lt;tr&gt;
+        &lt;td rowspan="2"&gt;Class X&lt;/td&gt;
+        &lt;td&gt;Section A&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Section B&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+&lt;!-- "Class X" spans down both rows -- only ONE &lt;td&gt; is needed per
+     merged cell, so the second row has ONE FEWER &lt;td&gt; than normal --&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="forms">
+            <h2>3.3 HTML Forms</h2>
+            <p>Forms collect input from the user — every input type listed in the syllabus:</p>
+            <div class="code-block">
+              <div class="code-block__label">Textbox, Radio buttons, Checkbox, Password</div>
+              <pre><code>&lt;form&gt;
+    Name: &lt;input type="text" name="uname"&gt;&lt;br&gt;&lt;br&gt;
+
+    Gender:
+    &lt;input type="radio" name="gender" value="M"&gt; Male
+    &lt;input type="radio" name="gender" value="F"&gt; Female&lt;br&gt;&lt;br&gt;
+
+    Hobbies:
+    &lt;input type="checkbox" name="hobby" value="reading"&gt; Reading
+    &lt;input type="checkbox" name="hobby" value="sports"&gt; Sports&lt;br&gt;&lt;br&gt;
+
+    Password: &lt;input type="password" name="pwd"&gt;
+&lt;/form&gt;
+
+TEXT BOX   &lt;input type="text"&gt; -- single-line free text entry
+RADIO      &lt;input type="radio"&gt; -- pick EXACTLY ONE from a group
+           (same "name" attribute groups radio buttons together)
+CHECKBOX   &lt;input type="checkbox"&gt; -- pick ANY NUMBER of options
+PASSWORD   &lt;input type="password"&gt; -- text entry, characters MASKED
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">List and Combobox — the select element</div>
+              <pre><code>&lt;!-- COMBOBOX: a dropdown showing ONE option at a time --&gt;
+&lt;select name="city"&gt;
+    &lt;option value="del"&gt;Delhi&lt;/option&gt;
+    &lt;option value="kol"&gt;Kolkata&lt;/option&gt;
+    &lt;option value="mum"&gt;Mumbai&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- LIST BOX: the same select element, but "size" shows several
+     options at once, and multiple selects multiple choices --&gt;
+&lt;select name="subjects" size="3" multiple&gt;
+    &lt;option value="eng"&gt;English&lt;/option&gt;
+    &lt;option value="math"&gt;Mathematics&lt;/option&gt;
+    &lt;option value="sci"&gt;Science&lt;/option&gt;
+    &lt;option value="ca"&gt;Computer Applications&lt;/option&gt;
+&lt;/select&gt;
+</code></pre>
+            </div>
+          </section>
+
+          <section id="links">
+            <h2>3.4 Links — The Anchor Element</h2>
+            <p>
+              Linking is what makes the Web a <em>web</em> — the ability to jump from one page (or
+              resource) to another makes documents interconnected rather than isolated.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">The anchor tag — href, mailto, target</div>
+              <pre><code>&lt;!-- linking to another page --&gt;
+&lt;a href="about.html"&gt;About Us&lt;/a&gt;
+
+&lt;!-- linking to an external website --&gt;
+&lt;a href="https://www.cbse.gov.in"&gt;CBSE Official Site&lt;/a&gt;
+
+&lt;!-- linking to an email address --&gt;
+&lt;a href="mailto:someone@example.com"&gt;Email Us&lt;/a&gt;
+
+&lt;!-- opening the link in a NEW browser tab/window --&gt;
+&lt;a href="https://www.cbse.gov.in" target="_blank"&gt;CBSE (new tab)&lt;/a&gt;
+
+href     the DESTINATION of the link (a page, a URL, or mailto:address)
+mailto:  a special href value that opens the user's email client
+target   where to open the link -- "_blank" = new tab, "_self" = same tab (default)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="media">
+            <h2>3.5 Embedding Audio and Video</h2>
+            <div class="code-block">
+              <div class="code-block__label">The audio and video tags, with playback controls</div>
+              <pre><code>&lt;audio controls&gt;
+    &lt;source src="anthem.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio tag.
+&lt;/audio&gt;
+
+&lt;video width="400" height="300" controls&gt;
+    &lt;source src="demo.mp4" type="video/mp4"&gt;
+    Your browser does not support the video tag.
+&lt;/video&gt;
+
+controls   shows the browser's built-in play/pause/volume controls
+source     the actual media file; you can list several formats as a
+           fallback -- the browser plays the first one it supports
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Putting a table + form + links together — a realistic practical task</strong>
+                <p>A typical lab question combines all of this chapter's tags in one page: a results table with merged header cells, a feedback form below it with a few input types, and a link back to the home page — exactly the kind of page the Lab Test asks you to build from a diagram (covered in Chapter 6).</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (exam-style, based on the CBSE curriculum)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Unit 2 Practice Questions (Part B)
+              </span>
+              <h3>Work through these, then verify by opening the HTML in a browser</h3>
+              <ol>
+                <li>Write HTML for a 3×3 table (with a header row) showing your weekly class timetable for any 2 days.</li>
+                <li>Create a table where one header cell spans 4 columns to show the title "Monthly Fee Structure," with a data row below it.</li>
+                <li>Create a table listing 3 students, where "Class X" is shown once using <code>rowspan</code> for 2 students in the same class.</li>
+                <li>Write a feedback form with: a text box for name, radio buttons for "Satisfied/Not Satisfied," a checkbox list of 3 reasons, and a password field.</li>
+                <li>Write a dropdown (combobox) listing 4 Indian states, and a list box (multi-select) listing 4 hobbies.</li>
+                <li>What is the difference between a combobox and a list box, in terms of the <code>select</code> tag's attributes?</li>
+                <li>Write an anchor tag that links to a page called <code>contact.html</code>, opening it in a new tab.</li>
+                <li>Write an anchor tag that opens the user's email client addressed to <code>info@myschool.edu</code>.</li>
+                <li>Write HTML to embed an audio file called <code>song.mp3</code> with visible playback controls.</li>
+                <li>Design a web page with a table of 3 products and prices, and a link at the bottom back to a page called <code>home.html</code>.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-02.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 2: HTML — Structure &amp; Text Formatting</span>
+          </a>
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 4: Cascading Style Sheets (CSS)</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/javascript-typescript/index.html">JavaScript &amp; TypeScript</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

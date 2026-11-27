@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 5: Sorting — CBSE Class 12 CS</title>
+<meta name="description" content="Chapter 5 of CBSE Class 12 Computer Science (083): Bubble sort, Selection sort, Insertion sort in Python, and time complexity of algorithms — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-12">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../ugc-net-cse/index.html" class="nav-course-card c-ugc-net-cse">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/><path d="M22 10v6"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">UGC NET Computer Science</span>
+              <span class="nav-course-card__meta">19 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-12/index.html">CBSE Class 12 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-12/index.html#timeline">Data Structure Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 5</span>
+      </div>
+
+      <h1>Chapter 5: Sorting</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XII Computer Science textbook. Sorting is arranging a collection
+        into a particular order — ascending, descending, or alphabetical. This chapter walks
+        through three classic O(n²) algorithms — <strong>Bubble sort</strong>, <strong>Selection
+        sort</strong> and <strong>Insertion sort</strong> — with full Python implementations,
+        then introduces <strong>time complexity</strong> as the way to reason about how an
+        algorithm scales.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 5 of 13</span>
+        <span class="chip">NCERT pp. 67–80</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Trace bubble, selection and insertion sort pass-by-pass on a given list</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Implement all three in Python from memory</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Classify an algorithm's time complexity as constant, linear or quadratic from its loop structure</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction</a>
+        <a href="#bubble"><span>2</span> Bubble Sort</a>
+        <a href="#selection"><span>3</span> Selection Sort</a>
+        <a href="#insertion"><span>4</span> Insertion Sort</a>
+        <a href="#complexity"><span>5</span> Time Complexity</a>
+        <a href="#exercise"><span>6</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>5.1 Introduction</h2>
+            <p>
+              <strong>Sorting</strong> is the process of ordering or arranging a collection of
+              elements — numbers ascending/descending, strings alphabetically or by length.
+              A dictionary's words are sorted alphabetically precisely so looking one up doesn't
+              mean scanning every page. Sorting large collections costs time upfront (called
+              <strong>overhead</strong>), but that cost is worth paying against how much slower
+              searching an unsorted collection would be.
+            </p>
+          </section>
+
+          <section id="bubble">
+            <h2>5.2 Bubble Sort</h2>
+            <p>
+              Repeatedly compares <strong>adjacent</strong> elements and swaps them if
+              out of order. Each full left-to-right scan is called a <strong>pass</strong>; for
+              n elements, bubble sort makes n−1 passes. After each pass, the largest remaining
+              element has "bubbled up" to its correct position at the end — and is excluded from
+              every later pass.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 5.1 — BUBBLESORT(numList, n)</div>
+              <pre><code>SET i = 0
+WHILE i &lt; n:
+    SET j = 0
+    WHILE j &lt; n-i-1:
+        IF numList[j] &gt; numList[j+1]:
+            swap(numList[j], numList[j+1])
+        SET j = j+1
+    SET i = i+1
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 5-1</div>
+              <pre><code>def bubble_Sort(list1):
+    n = len(list1)
+    for i in range(n):              # number of passes
+        for j in range(0, n-i-1):   # last i elements already sorted
+            if list1[j] &gt; list1[j+1]:
+                list1[j], list1[j+1] = list1[j+1], list1[j]
+
+numList = [8, 7, 13, 1, -9, 4]
+bubble_Sort(numList)
+print("The sorted list is:")
+for i in range(len(numList)):
+    print(numList[i], end=" ")
+# Output: -9 1 4 7 8 13
+</code></pre>
+            </div>
+            <p>Tracing <code>[8, 7, 13, 1, -9, 4]</code>: Pass 1 ends with 13 bubbled to the last position; Pass 2 ends with 8 placed correctly; by the end of Pass 4 the list is already <code>[-9, 1, 4, 7, 8, 13]</code> — Pass 5 runs but makes no swaps, which is the textbook's own hint toward an optimisation: stop early once a pass makes zero swaps.</p>
+          </section>
+
+          <section id="selection">
+            <h2>5.3 Selection Sort</h2>
+            <p>
+              Splits the list conceptually into a <strong>sorted</strong> left part (empty at
+              first) and an <strong>unsorted</strong> right part (everything, at first). Each of
+              the n−1 passes scans the entire unsorted part to find its <strong>smallest</strong>
+              element, then swaps it into the leftmost position of the unsorted part — growing
+              the sorted part by one element every pass.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 5.2 — SELECTIONSORT(numList, n)</div>
+              <pre><code>SET i = 0
+WHILE i &lt; n:
+    SET min = i, flag = 0
+    SET j = i+1
+    WHILE j &lt; n:
+        IF numList[j] &lt; numList[min]:
+            min = j
+            flag = 1
+        SET j = j+1
+    IF flag == 1:
+        swap(numList[i], numList[min])
+    SET i = i+1
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 5-2</div>
+              <pre><code>def selection_Sort(list2):
+    flag = 0
+    n = len(list2)
+    for i in range(n):
+        min = i
+        for j in range(i + 1, len(list2)):
+            if list2[j] &lt; list2[min]:
+                min = j
+                flag = 1
+        if flag == 1:
+            list2[min], list2[i] = list2[i], list2[min]
+
+numList = [8, 7, 13, 1, -9, 4]
+selection_Sort(numList)
+# Output: -9 1 4 7 8 13
+</code></pre>
+            </div>
+            <p>Key difference from bubble sort: selection sort does <strong>at most n−1 swaps total</strong> (one per pass) — bubble sort can swap many times within a single pass. Selection sort trades more comparisons for far fewer writes.</p>
+          </section>
+
+          <section id="insertion">
+            <h2>5.4 Insertion Sort</h2>
+            <p>
+              Also splits the list into sorted (left) and unsorted (right) parts, but works like
+              sorting playing cards in your hand: take the next unsorted element and walk
+              <strong>backward</strong> through the sorted part, shifting each larger element one
+              position right, until you find where the new element belongs — then insert it
+              there.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Algorithm 5.3 — INSERTIONSORT(numList, n)</div>
+              <pre><code>SET i = 1
+WHILE i &lt; n:
+    temp = numList[i]
+    SET j = i-1
+    WHILE j &gt;= 0 and numList[j] &gt; temp:
+        numList[j+1] = numList[j]
+        SET j = j-1
+    numList[j+1] = temp      # insert temp at its correct position
+    SET i = i+1
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 5-3</div>
+              <pre><code>def insertion_Sort(list3):
+    n = len(list3)
+    for i in range(n):
+        temp = list3[i]
+        j = i-1
+        while j &gt;= 0 and temp &lt; list3[j]:
+            list3[j+1] = list3[j]
+            j = j-1
+        list3[j+1] = temp
+
+numList = [8, 7, 13, 1, -9, 4]
+insertion_Sort(numList)
+# Output: -9 1 4 7 8 13
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>Exam point</strong>
+                <p>An already-sorted list is insertion sort's best case — each inner <code>while</code> stops immediately, so very few comparisons happen. A reverse-sorted list is its worst case — maximum shifting every single pass.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="complexity">
+            <h2>5.5 Time Complexity of Algorithms</h2>
+            <p>
+              <strong>Time complexity</strong> is the amount of time an algorithm takes to process
+              given data — it matters most once data sets grow large, where small-list timing
+              differences between algorithms disappear into noise. Four rules of thumb from the
+              textbook:
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Classifying time complexity by loop structure</div>
+              <pre><code>No loop at all              → constant time,  complexity 1
+A single loop (1 to n)      → linear time,     complexity n
+A loop nested inside a loop → quadratic time,  complexity n^2
+A nested loop + a separate
+  single loop in the same
+  algorithm                 → complexity is based on the NESTED loop only
+</code></pre>
+            </div>
+            <p>
+              All three sorting programs in this chapter — bubble, selection and insertion sort —
+              have one loop nested inside another, so all three are <strong>quadratic time, n²</strong>
+              algorithms.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>6. Exercise (from the textbook)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 5
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>For <code>numList = [7, 11, 3, 10, 17, 23, 1, 4, 21, 5]</code>, show the partially sorted list after three complete passes of bubble sort.</li>
+                <li>For <code>List 1: 63 42 21 9</code>, count the swaps required by selection sort vs. bubble sort, and decide which is better by number of comparisons.</li>
+                <li>Given List 1 <code>2 3 5 7 11</code> and List 2 <code>11 7 5 3 2</code>, which makes the minimum number of comparisons under insertion sort? Justify with a diagram.</li>
+                <li>Write a program (using a user-defined function) that accepts a list of numbers and returns its median. (Hint: sort with bubble sort first; for odd count take the centre term, for even count average the two middle terms.)</li>
+                <li>
+                  Write a program that accepts a list of n students' marks and calculates the x<sup>th</sup> percentile:
+                  <ol type="I">
+                    <li>Sort the values (selection sort, or any method).</li>
+                    <li>index = x% × n — e.g. 90th percentile of 120 students: 0.90 × 120 = 108.</li>
+                    <li>Round the index to a whole number with <code>math.round()</code>.</li>
+                    <li>The value at that index is the x<sup>th</sup> percentile.</li>
+                  </ol>
+                </li>
+                <li>During course admission, student names are inserted keeping the list in ascending order at all times — identify which sorting technique this resembles, and write a user-defined function invoked on every new name that inserts it in the correct sorted position.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-04.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 4: Queue</span>
+          </a>
+          <a href="week-06.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 6: Searching</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/ugc-net-cse/index.html">UGC NET Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

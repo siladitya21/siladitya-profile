@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 6: Flow of Control — CBSE Class 11 CS</title>
+<meta name="description" content="Chapter 6 of CBSE Class 11 Computer Science (083): if/elif/else selection, indentation, for and while loops, range(), break/continue, and nested loops — based on the official NCERT textbook." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-cs-11">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../python/index.html" class="nav-course-card c-python">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-2 0-4 .5-4 2v3h4v1H6c-1.5 0-3 1-3 4s1.5 4 3 4h2v-2.5c0-1.5 1-2.5 2.5-2.5h4c1 0 2-1 2-2V4c0-1.5-2-2-4.5-2Z"/><path d="M12 22c2 0 4-.5 4-2v-3h-4v-1h6c1.5 0 3-1 3-4s-1.5-4-3-4h-2v2.5c0 1.5-1 2.5-2.5 2.5h-4c-1 0-2 1-2 2v4c0 1.5 2 2 4.5 2Z"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Python</span>
+              <span class="nav-course-card__meta">26 Weeks</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-cs-11/index.html">CBSE Class 11 CS</a>
+        <span>/</span>
+        <a href="../cbse-cs-11/index.html#timeline">Python Programming Theme</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 6</span>
+      </div>
+
+      <h1>Chapter 6: Flow of Control</h1>
+      <p class="lesson-header__lede">
+        Based on NCERT's Class XI Computer Science textbook. The order statements execute in is
+        the <strong>flow of control</strong> — sequence, selection and repetition. This chapter
+        covers <code>if</code>/<code>elif</code>/<code>else</code>, Python's strict indentation rules,
+        the <code>for</code> and <code>while</code> loops (plus the <code>range()</code> function),
+        <code>break</code>/<code>continue</code>, and nested loops.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 6 of 11</span>
+        <span class="chip">NCERT pp. 121–142</span>
+        <span class="chip">~4 Hours</span>
+        <span class="chip">Exercise Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Write nested <code>if</code>/<code>elif</code>/<code>else</code> chains with correct indentation</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Choose between <code>for</code> and <code>while</code>, and use <code>range()</code> correctly</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Use <code>break</code>/<code>continue</code> and write nested loops for pattern-printing problems</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#intro"><span>1</span> Introduction</a>
+        <a href="#selection"><span>2</span> Selection</a>
+        <a href="#indentation"><span>3</span> Indentation</a>
+        <a href="#repetition"><span>4</span> Repetition — for &amp; while</a>
+        <a href="#breakcontinue"><span>5</span> Break &amp; Continue</a>
+        <a href="#nested"><span>6</span> Nested Loops</a>
+        <a href="#exercise"><span>7</span> Exercise</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="intro">
+            <h2>6.1 Introduction</h2>
+            <p>
+              The order in which a program's statements execute is called <strong>flow of
+              control</strong>. Executing statements top-to-bottom in order is <strong>sequence</strong>
+              (what every program has done so far). Python supports two further control
+              structures: <strong>selection</strong> and <strong>repetition</strong>.
+            </p>
+          </section>
+
+          <section id="selection">
+            <h2>6.2 Selection</h2>
+            <div class="code-block">
+              <div class="code-block__label">if / if-else / if-elif-else</div>
+              <pre><code>if condition:
+    statement(s)
+
+if condition:
+    statement(s)
+else:
+    statement(s)
+
+if condition:
+    statement(s)
+elif condition:
+    statement(s)
+elif condition:
+    statement(s)
+else:
+    statement(s)
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Example 6.1-6.2 — voting age &amp; sign of a number</div>
+              <pre><code>age = int(input("Enter your age "))
+if age >= 18:
+    print("Eligible to vote")
+else:
+    print("Not eligible to vote")
+
+number = int(input("Enter a number: "))
+if number > 0:
+    print("Number is positive")
+elif number < 0:
+    print("Number is negative")
+else:
+    print("Number is zero")
+</code></pre>
+            </div>
+            <p>
+              The number of <code>elif</code> blocks depends on how many conditions need checking
+              — as soon as one evaluates <code>True</code>, its block runs and the whole chain ends.
+              An <code>if</code> inside another <code>if</code>/<code>else</code> block is called a
+              <strong>nested if</strong> — Python allows many levels of nesting.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-3 — a four-function calculator (nested if inside elif)</div>
+              <pre><code>result = 0
+val1 = float(input("Enter value 1: "))
+val2 = float(input("Enter value 2: "))
+op = input("Enter any one of the operator (+,-,*,/): ")
+if op == "+":
+    result = val1 + val2
+elif op == "-":
+    if val1 > val2:
+        result = val1 - val2
+    else:
+        result = val2 - val1
+elif op == "*":
+    result = val1 * val2
+elif op == "/":
+    if val2 == 0:
+        print("Error! Division by zero is not allowed.")
+    else:
+        result = val1/val2
+else:
+    print("Wrong input, program terminated")
+print("The result is ", result)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="indentation">
+            <h2>6.3 Indentation</h2>
+            <p>
+              Python uses <strong>indentation</strong> (leading whitespace) — not curly braces —
+              to mark a block of code. Statements at the same indentation level belong to the
+              same block. The interpreter is strict about this and raises a syntax error if
+              indentation is inconsistent. Convention: one tab (or consistent spaces) per level.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-4 — two correctly-indented blocks</div>
+              <pre><code>num1 = 5
+num2 = 6
+if num1 > num2:        #Block1
+    print("first number is larger")
+    print("Bye")
+else:                  #Block2
+    print("second number is larger")
+    print("Bye Bye")
+</code></pre>
+            </div>
+          </section>
+
+          <section id="repetition">
+            <h2>6.4 Repetition</h2>
+            <p>Repetition (iteration/looping) executes a set of statements repeatedly via a <strong>control variable</strong>, checked against a condition — when that condition becomes false, the loop ends. Python has two loop constructs: <code>for</code> and <code>while</code>.</p>
+
+            <h3>6.4.1 The for loop</h3>
+            <div class="code-block">
+              <div class="code-block__label">Syntax — iterate over a sequence or range</div>
+              <pre><code>for &lt;control-variable&gt; in &lt;sequence/range&gt;:
+    &lt;statements inside the body of the loop&gt;
+</code></pre>
+            </div>
+            <p>Used when the number of iterations is known in advance. When the sequence/range is exhausted, control passes to the statement right after the loop.</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-6 to 6-8 — three for-loop patterns</div>
+              <pre><code>for letter in 'PYTHON':        # iterate over a string
+    print(letter)
+
+count = [10,20,30,40,50]
+for num in count:              # iterate over a list
+    print(num)
+
+numbers = [1,2,3,4,5,6,7,8,9,10]
+for num in numbers:             # iterate + filter
+    if (num % 2) == 0:
+        print(num,'is an even Number')
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">range([start], stop[, step]) — the for loop's best friend</div>
+              <pre><code>list(range(10))        # [0,1,2,3,4,5,6,7,8,9]   -- start=0, step=1 by default
+list(range(2, 10))     # [2,3,4,5,6,7,8,9]
+list(range(0, 30, 5))  # [0,5,10,15,20,25]
+list(range(0, -9, -1)) # [0,-1,-2,-3,-4,-5,-6,-7,-8]  -- negative step counts DOWN
+
+#stop value is always EXCLUDED
+</code></pre>
+            </div>
+
+            <h3>6.4.2 The while loop</h3>
+            <div class="code-block">
+              <div class="code-block__label">Syntax</div>
+              <pre><code>while test_condition:
+    body of while</code></pre>
+            </div>
+            <p>
+              The condition is checked <em>before</em> every iteration, including the very first
+              — if it's initially false, the body never runs at all. Used when the number of
+              iterations is <em>not</em> known in advance. The programmer must ensure the condition
+              eventually becomes false, or it's an <strong>infinite loop</strong> (a logical error).
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-11 — finding factors with while</div>
+              <pre><code>num = int(input("Enter a number to find its factor: "))
+print(1, end=' ')              # 1 is a factor of every number
+factor = 2
+while factor <= num/2:
+    if num % factor == 0:
+        print(factor, end=' ')
+    factor += 1
+print(num, end=' ')             # every number is a factor of itself
+</code></pre>
+            </div>
+          </section>
+
+          <section id="breakcontinue">
+            <h2>6.5 Break and Continue Statement</h2>
+            <div class="code-block">
+              <div class="code-block__label">break — exits the CURRENT loop immediately</div>
+              <pre><code>num = 0
+for num in range(10):
+    num = num + 1
+    if num == 8:
+        break
+    print('Num has value ' + str(num))
+print('Encountered break!! Out of loop')
+#stops right after printing 1 through 7 -- never prints 8+
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">continue — skips to the NEXT iteration, loop keeps running</div>
+              <pre><code>num = 0
+for num in range(6):
+    num = num + 1
+    if num == 3:
+        continue
+    print('Num has value ' + str(num))
+print('End of loop')
+#prints 1, 2, 4, 5, 6 -- skips ONLY the value 3, loop doesn't stop
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-14 — classic use: stop a prime-check loop early with break</div>
+              <pre><code>num = int(input("Enter the number to be checked: "))
+flag = 0
+if num > 1:
+    for i in range(2, int(num / 2)):
+        if (num % i == 0):
+            flag = 1
+            break              # no need to check any further factors
+    if flag == 1:
+        print(num, "is not a prime number")
+    else:
+        print(num, "is a prime number")
+</code></pre>
+            </div>
+          </section>
+
+          <section id="nested">
+            <h2>6.6 Nested Loops</h2>
+            <p>A loop inside another loop is a <strong>nested loop</strong> — Python allows any depth, and either <code>for</code> or <code>while</code> can nest inside the other.</p>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-17 — number triangle pattern</div>
+              <pre><code>num = int(input("Enter a number to generate its pattern = "))
+for i in range(1,num + 1):
+    for j in range(1,i + 1):
+        print(j, end = " ")
+    print()
+#Output for num=5:
+#1
+#1 2
+#1 2 3
+#1 2 3 4
+#1 2 3 4 5
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">Program 6-19 — factorial, combining if/elif/else with a for loop</div>
+              <pre><code>num = int(input("Enter a number: "))
+fact = 1
+if num < 0:
+    print("Sorry, factorial does not exist for negative numbers")
+elif num == 0:
+    print("The factorial of 0 is 1")
+else:
+    for i in range(1, num + 1):
+        fact = fact * i
+    print("factorial of ", num, " is ", fact)
+</code></pre>
+            </div>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Exercise (from the textbook — selected)</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                NCERT Exercise, Chapter 6
+              </span>
+              <h3>Work through these on paper, then verify in Python</h3>
+              <ol>
+                <li>What is the difference between <code>else</code> and <code>elif</code>?</li>
+                <li>What is the purpose of <code>range()</code>? Give one example.</li>
+                <li>Differentiate between <code>break</code> and <code>continue</code> using examples.</li>
+                <li>What is an infinite loop? Give one example.</li>
+                <li>
+                  Find the output:
+                  <div class="code-block">
+                    <div class="code-block__label">(iv)</div>
+                    <pre><code>i = 0; sum = 0
+while i < 9:
+    if i % 4 == 0:
+        sum = sum + i
+    i = i + 2
+print (sum)</code></pre>
+                  </div>
+                </li>
+                <li>Write a program that takes name and age, and checks eligibility for a driving licence (eligible age is 18).</li>
+                <li>Write a program to check if a year input by the user is a leap year or not.</li>
+                <li>Write a program to find the sum of digits of an integer number input by the user.</li>
+                <li>Write a function that checks whether an input number is a palindrome or not.</li>
+                <li>
+                  Write a program to print these patterns:
+                  <div class="code-block">
+                    <div class="code-block__label">pattern (i)</div>
+                    <pre><code>    *
+  * * *
+* * * * *
+  * * *
+    *</code></pre>
+                  </div>
+                </li>
+                <li>Write a program to find the grade of a student from percentage: &gt;90% A, 80-90% B, 70-80% C, 60-70% D, below 60% E.</li>
+              </ol>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 5: Getting Started with Python</span>
+          </a>
+          <a href="week-07.html" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Next</span>
+            <span class="lesson-pager__title">Chapter 7: Functions</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/python/index.html">Python</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+          <a href="../../courses/sql-postgresql/index.html">SQL &amp; PostgreSQL</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>

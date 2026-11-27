@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("cvc-theme");
+      var theme = saved || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    } catch (err) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chapter 6: Practicals &amp; Project Guide — CBSE Class 10 Computer Applications</title>
+<meta name="description" content="Chapter 6 of CBSE Class 10 Computer Applications (165): the 50-mark practical exam structure — Lab Test, Report File + Viva, and Project — with the full official lab exercise list and a sample multi-page website project, based on the official CBSE curriculum." />
+<link rel="icon" href="../../assets/favicons/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="../../assets/favicons/favicon.ico" sizes="any" />
+<link rel="icon" href="../../assets/favicons/favicon-32x32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="../../assets/favicons/favicon-16x16.png" sizes="16x16" type="image/png" />
+<link rel="apple-touch-icon" href="../../assets/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="../../assets/favicons/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body data-course="cbse-ca-10">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--accent)" />
+      <stop offset="100%" style="stop-color:var(--accent-2)" />
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <a href="../../index.html" class="brand">
+      <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+      Siladitya's Tutorials
+    </a>
+
+    <nav class="nav-links" data-nav-links>
+      <a href="../../index.html">Home</a>
+      <a href="/">About Me</a>
+      <div class="nav-dropdown" data-nav-dropdown data-active="true">
+        <button type="button" class="nav-dropdown__trigger" data-nav-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+          Courses
+          <svg class="nav-dropdown__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="nav-dropdown__panel" data-nav-dropdown-panel>
+          <a href="../cbse-ca-10/index.html" class="nav-course-card c-cbse-ca-10" aria-current="page">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 10 Computer Applications</span>
+              <span class="nav-course-card__meta">6 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-11/index.html" class="nav-course-card c-cbse-cs-11">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 11 Computer Science</span>
+              <span class="nav-course-card__meta">11 Chapters</span>
+            </span>
+          </a>
+          <a href="../cbse-cs-12/index.html" class="nav-course-card c-cbse-cs-12">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">CBSE Class 12 Computer Science</span>
+              <span class="nav-course-card__meta">13 Chapters</span>
+            </span>
+          </a>
+          <a href="../../index.html" class="nav-course-card c-coding-practice">
+            <span class="nav-course-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3"/><path d="m9 14 2 2 4-4"/></svg></span>
+            <span class="nav-course-card__text">
+              <span class="nav-course-card__title">Browse All Courses</span>
+              <span class="nav-course-card__meta">31 Courses</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="navbar__actions">
+      <div class="nav-search" data-nav-search>
+        <button type="button" class="search-toggle" data-search-toggle aria-label="Search courses" aria-expanded="false" title="Search courses (press /)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <div class="search-panel" data-search-panel>
+          <div class="search-panel__field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" class="search-panel__input" data-search-input placeholder="Search courses&hellip;" aria-label="Search courses" autocomplete="off" />
+            <kbd class="search-panel__kbd">Esc</kbd>
+          </div>
+          <div class="search-panel__results" data-search-results></div>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle navigation menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Lesson header -->
+  <section class="lesson-header">
+    <div class="container">
+      <div class="lesson-crumb">
+        <a href="../cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+        <span>/</span>
+        <a href="../cbse-ca-10/index.html#timeline">Practicals</a>
+        <span>/</span>
+        <span aria-current="page">Chapter 6</span>
+      </div>
+
+      <h1>Chapter 6: Practicals &amp; Project Guide</h1>
+      <p class="lesson-header__lede">
+        Based on the official CBSE Computer Applications (165) curriculum — the Practicals
+        component, worth <strong>50 of the exam's 100 marks</strong>, exactly as much as all
+        three theory units combined. This final chapter maps out precisely how those 50 marks are
+        earned, lists every official lab exercise, and walks through a complete sample project.
+      </p>
+
+      <div class="lesson-meta">
+        <span class="chip chip--accent">Chapter 6 of 6 — Final Chapter</span>
+        <span class="chip">Practicals — 50 Marks</span>
+        <span class="chip">~3 Hours</span>
+        <span class="chip">Full Sample Project Included</span>
+      </div>
+
+      <div class="obj-recap reveal">
+        <h2>By the end of this chapter, you'll be able to</h2>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Explain exactly how the 50 practical marks are distributed across the Lab Test, Report File + Viva, and Project</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Prepare a report file of at least 10 HTML pages covering every official lab exercise</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Plan and build a small multi-page project website combining HTML, CSS and forms</li>
+        </ul>
+      </div>
+
+      <div class="phase-nav">
+        <a href="#breakdown"><span>1</span> The 50-Mark Breakdown</a>
+        <a href="#labtest"><span>2</span> The Lab Test (20 Marks)</a>
+        <a href="#reportfile"><span>3</span> Report File + Viva (20 Marks)</a>
+        <a href="#labexercises"><span>4</span> The Official Lab Exercise List</a>
+        <a href="#project"><span>5</span> The Project (10 Marks)</a>
+        <a href="#sampleproject"><span>6</span> A Worked Sample Project</a>
+        <a href="#exercise"><span>7</span> Preparation Checklist</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lesson body -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="lesson-layout">
+        <article class="lesson-article">
+
+          <section id="breakdown">
+            <h2>1. The Official 50-Mark Breakdown</h2>
+            <div class="code-block">
+              <div class="code-block__label">Exactly as specified in the CBSE 165 curriculum</div>
+              <pre><code>COMPONENT                        MARKS
+Lab Test (design a page from a
+  given diagram)                    20
+Report File (at least 10 HTML
+  pages) + Viva Voce               15 + 5  = 20
+Project (uses most concepts
+  learnt in the course)             10
+                                   ------
+TOTAL PRACTICAL MARKS               50
+</code></pre>
+            </div>
+          </section>
+
+          <section id="labtest">
+            <h2>2. The Lab Test (20 Marks)</h2>
+            <p>
+              You're given a <strong>diagram or printed layout</strong> of a web page during the
+              exam and must recreate it in HTML in the lab, on the spot.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">What examiners typically check</div>
+              <pre><code>- Does the page STRUCTURE match the diagram (headings, paragraphs,
+  images in the right place)?
+- Are COLOURS and TEXT FORMATTING applied as shown?
+- If a table or form appears in the diagram, is it correctly built
+  (right number of rows/columns, correct input types)?
+- Is the code syntactically correct (opening/closing tags, proper
+  nesting)?
+- Does the page actually RENDER and look reasonably close to the
+  diagram when opened in a browser?
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>How to prepare</strong>
+                <p>Practice recreating random layouts (ads, posters, notice boards, timetables you see around you) in plain HTML under a time limit. The skill being tested is translating a visual layout into the right combination of tags from Chapters 2–4, quickly and correctly.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="reportfile">
+            <h2>3. Report File + Viva Voce (20 Marks)</h2>
+            <div class="code-block">
+              <div class="code-block__label">Report file requirement</div>
+              <pre><code>- AT LEAST 10 HTML pages, printed (or saved) and bound together
+- Should demonstrate a WIDE RANGE of tags/concepts from Chapters 2-4
+  -- not 10 pages that all do the same thing
+- Typically includes: the HTML source code printout AND a screenshot/
+  printout of how the page looks in a browser, side by side
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">A good spread of 10 pages — one possible plan</div>
+              <pre><code>1.  Basic page: headings, paragraphs, br/hr, comments
+2.  Text formatting: bold/italic/underline, font tag
+3.  Unordered + ordered lists (with type/start attributes)
+4.  Description list of 5 technical terms
+5.  Images with sup/sub (a science-fact page)
+6.  A table with rowspan AND colspan both used
+7.  A form using every input type: text, radio, checkbox, password
+8.  A form with a combobox and a multi-select list box
+9.  A page with internal CSS: colours, border, margin, font
+10. A page with an embedded audio or video, plus links (internal +
+    mailto) to tie the whole site together
+</code></pre>
+            </div>
+            <p>
+              <strong>Viva voce</strong> (5 of the 20 marks) is an oral exam based on your report
+              file — expect questions like "what does this attribute do," "why did you use a
+              <code>colspan</code> here," or "what's the difference between this tag and that
+              one." Know your own pages well enough to explain every line.
+            </p>
+          </section>
+
+          <section id="labexercises">
+            <h2>4. The Official Lab Exercise List</h2>
+            <p>These are the exact lab exercises named in the CBSE curriculum document — your report file pages should collectively cover all of them.</p>
+            <div class="code-block">
+              <div class="code-block__label">From the curriculum, verbatim topics</div>
+              <pre><code>- Create static web pages
+- Use style sheets to enforce a format in an HTML page (CSS)
+- Embed pictures, audio and videos in an HTML page
+- Add tables and frames in an HTML page
+- Decorate web pages using graphical elements
+- Create a website using several web pages (any open source or
+  proprietary tool is allowed)
+- Work with HTML forms: text box, radio buttons, checkbox, password,
+  list, combo box
+- Write a blog using HTML pages discussing viruses, malware, spam
+  and antiviruses
+- Create a web page discussing plagiarism -- list some reported
+  cases and the resulting punishment, including how different
+  countries' IP laws treat it differently
+</code></pre>
+            </div>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>The last two items connect Units 2 and 3 directly</strong>
+                <p>Notice the "blog on viruses/malware" and "plagiarism page" exercises — they're <em>HTML</em> exercises (Unit 2 skills) with <em>Cyber Ethics</em> content (Unit 3, Chapter 5). The curriculum deliberately ties the units together in the practical component.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="project">
+            <h2>5. The Project (10 Marks)</h2>
+            <p>
+              The project should <strong>use most of the concepts learnt in the course</strong> —
+              it's meant to be a small but complete multi-page website, not a single isolated page.
+            </p>
+            <div class="code-block">
+              <div class="code-block__label">What a strong project typically includes</div>
+              <pre><code>- At least 3-5 linked pages (a home page + a few content pages)
+- Consistent navigation -- every page links back to the others
+- At least one table AND one form somewhere in the site
+- A consistent look across pages -- ideally via an EXTERNAL
+  stylesheet shared by all pages (Chapter 4)
+- A clear, specific THEME rather than random unrelated content
+</code></pre>
+            </div>
+          </section>
+
+          <section id="sampleproject">
+            <h2>6. A Worked Sample Project — "My School" Website</h2>
+            <p>A simple theme that naturally uses tables, forms, images, links and CSS together:</p>
+            <div class="code-block">
+              <div class="code-block__label">Suggested page plan</div>
+              <pre><code>index.html        Home page: school name/logo image, a short welcome
+                  paragraph, navigation links to the other 3 pages
+about.html        About the school: history, an image, a description
+                  list of key facts (founded, motto, principal)
+timetable.html    A table showing a sample weekly timetable, using
+                  colspan for a "Monday-Friday" header row
+contact.html      A contact form (name, email-style text box, a
+                  dropdown for "reason for contact", a message box)
+                  PLUS a mailto: link and an embedded location note
+style.css         ONE external stylesheet, linked from all 4 pages,
+                  giving a consistent background colour, heading
+                  colour, and navigation link styling
+</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-block__label">The shared navigation block (repeated identically on every page)</div>
+              <pre><code>&lt;p&gt;
+    &lt;a href="index.html"&gt;Home&lt;/a&gt; |
+    &lt;a href="about.html"&gt;About&lt;/a&gt; |
+    &lt;a href="timetable.html"&gt;Timetable&lt;/a&gt; |
+    &lt;a href="contact.html"&gt;Contact&lt;/a&gt;
+&lt;/p&gt;
+&lt;hr&gt;
+</code></pre>
+            </div>
+            <p>
+              This single small project exercises tags/concepts from <em>every</em> chapter in
+              this course — structure and text (Ch. 2), tables/forms/links (Ch. 3), shared CSS
+              (Ch. 4) — which is exactly what "uses most of the concepts learnt" means in practice.
+            </p>
+          </section>
+
+          <section id="exercise">
+            <h2>7. Final Preparation Checklist</h2>
+            <div class="lesson-exercise">
+              <span class="lesson-exercise__badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 11-14h-7l1-6Z"/></svg>
+                Before Your Practical Exam
+              </span>
+              <h3>Work through this checklist, building each item as a real HTML file</h3>
+              <ol>
+                <li>Build and open in a browser: a page using every tag from Chapter 2 (headings, b/i/u, font, lists, images with sup/sub).</li>
+                <li>Build a table combining both <code>rowspan</code> and <code>colspan</code> in the same table.</li>
+                <li>Build one form that includes all six input types named in the syllabus: textbox, radio, checkbox, password, list, combobox.</li>
+                <li>Build a page with an embedded audio or video file, plus at least one internal link and one <code>mailto:</code> link.</li>
+                <li>Write an external stylesheet and link it from two different HTML pages, confirming both pick up the same styling.</li>
+                <li>Write the "virus/malware blog" lab exercise page, and the "plagiarism" lab exercise page, from the official list above.</li>
+                <li>Assemble your 10-page report file plan — list which tags/concepts each page demonstrates, making sure nothing from Chapters 2–4 is missing.</li>
+                <li>Build the 4-page sample project above (or your own themed equivalent), with a shared external stylesheet and consistent navigation.</li>
+                <li>Rehearse explaining 3 of your report-file pages out loud, as if answering viva questions — what each tag does and why you chose it.</li>
+                <li>Review Chapter 1 (Networking) and Chapter 5 (Cyber Ethics) theory questions one more time — together they're 25 of the 50 theory marks.</li>
+              </ol>
+            </div>
+          </section>
+
+          <section id="whatsnext">
+            <h2>Course complete</h2>
+            <div class="callout callout--tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2Z"/><path d="M9 21h6"/></svg>
+              <div>
+                <strong>You've covered all three units and the full practical structure</strong>
+                <p>Networking, HTML (structure through CSS), and Cyber Ethics — the complete theory syllabus — plus exactly how the 50 practical marks are earned. If you continue to Class 11–12 Computer Science, you'll find the HTML/web knowledge here is a useful (though separate) foundation — those courses move into full programming with Python, data structures and databases.</p>
+              </div>
+            </div>
+          </section>
+
+        </article>
+
+        <div class="lesson-pager">
+          <a href="week-05.html" class="lesson-pager__link lesson-pager__link--prev">
+            <span class="lesson-pager__label">← Back to</span>
+            <span class="lesson-pager__title">Chapter 5: Cyber Ethics</span>
+          </a>
+          <a href="../cbse-ca-10/index.html#timeline" class="lesson-pager__link lesson-pager__link--next">
+            <span class="lesson-pager__label">Course complete</span>
+            <span class="lesson-pager__title">Back to Full Syllabus</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <a href="../../index.html" class="brand">
+          <svg class="brand__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><rect width="100" height="100" rx="22" fill="url(#brandGrad)"/><path d="M 46 28 L 22 50 L 46 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="M 54 28 L 78 50 L 54 72" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle cx="50" cy="50" r="6.5" fill="#fff"/></svg>
+          Siladitya's Tutorials
+        </a>
+        <p class="footer__tagline">Free, project-based curricula for developers who'd rather ship than scroll — from first commit to deployed capstone.</p>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Courses</span>
+        <div class="footer__course-grid">
+          <a href="../../courses/cbse-ca-10/index.html">CBSE Class 10 Computer Applications</a>
+          <a href="../../courses/cbse-cs-11/index.html">CBSE Class 11 Computer Science</a>
+          <a href="../../courses/cbse-cs-12/index.html">CBSE Class 12 Computer Science</a>
+        </div>
+      </div>
+
+      <div class="footer__group">
+        <span class="footer__heading">Explore</span>
+        <nav class="footer__nav">
+          <a href="../../index.html">Home</a>
+          <a href="../../index.html#courses">Browse all 31 courses</a>
+          <a href="#" data-back-to-top>↑ Back to top</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <small>© 2026 Siladitya Datta. All rights reserved.</small>
+    </div>
+  </div>
+</footer>
+
+<script src="../../js/main.js"></script>
+</body>
+</html>
